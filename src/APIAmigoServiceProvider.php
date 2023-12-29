@@ -3,6 +3,8 @@
 namespace ChrisReedIO\APIAmigo;
 
 use ChrisReedIO\APIAmigo\Commands\APIAmigoCommand;
+use ChrisReedIO\APIAmigo\Middleware\Saloon\Request\TrackRequest;
+use ChrisReedIO\APIAmigo\Middleware\Saloon\Response\LogResponse;
 use ChrisReedIO\APIAmigo\Testing\TestsAPIAmigo;
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
@@ -12,6 +14,8 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
 use Livewire\Features\SupportTesting\Testable;
+use Saloon\Enums\PipeOrder;
+use Saloon\Exceptions\DuplicatePipeNameException;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -89,6 +93,20 @@ class APIAmigoServiceProvider extends PackageServiceProvider
 
         // Testing
         Testable::mixin(new TestsAPIAmigo());
+
+        // Begin Tracking work
+        try {
+            // If the package is enabled, we'll hook up the middleware to track requests and log responses
+            if (config('api-amigo.enabled')) {
+                \Saloon\Config::globalMiddleware()
+                    ->onRequest(new TrackRequest(), 'amigo-track-request', PipeOrder::LAST)
+                    ->onResponse(new LogResponse(), 'amigo-log-response', PipeOrder::FIRST);
+            }
+
+
+        } catch (DuplicatePipeNameException $e) {
+            // TODO: Log that we failed to hook up the response logger
+        }
     }
 
     protected function getAssetPackageName(): ?string

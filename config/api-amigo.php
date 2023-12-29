@@ -2,5 +2,24 @@
 
 // config for ChrisReedIO/APIAmigo
 return [
+    'enabled' => env('AMIGO_ENABLED', false),
+    'table_prefix' => 'amigo_',
 
+    'requests' => [
+        'header_key' => env('AMIGO_REQUEST_ID_KEY', 'X-Amigo-Request-Id'),
+        // 'header_key' => env('AMIGO_REQUEST_ID_KEY', 'X-Request-Id'),
+    ],
+    'responses' => [
+        // 'header_key' => env('AMIGO_RESPONSE_ID_KEY', 'X-Amigo-Response-Id'),
+        'headers' => [
+            'keys' => [
+                'request_id' => env('AMIGO_RESPONSE_ID_KEY', 'X-Request-Id'),
+                'rate' => [
+                    'limit' => env('AMIGO_RATE_LIMIT_HEADER_KEY', 'X-RateLimit-Limit'),
+                    'remaining' => env('AMIGO_RATE_LIMIT_REMAINING_HEADER_KEY', 'X-RateLimit-Remaining'),
+                    // 'reset_header_key' => env('AMIGO_RATE_LIMIT_RESET_HEADER_KEY', 'X-RateLimit-Reset'),
+                ],
+            ],
+        ],
+    ],
 ];

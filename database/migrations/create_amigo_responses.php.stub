@@ -1,0 +1,41 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $tablePrefix = config('athena.table_prefix');
+        Schema::create($tablePrefix . 'responses', function (Blueprint $table) use ($tablePrefix) {
+            $table->id();
+
+            $table->foreignId('integration_id')
+                ->nullable()
+                ->constrained($tablePrefix . 'integrations')
+                ->cascadeOnDelete();
+
+            $table->string('request_unique_id')->unique();
+
+            $table->foreignId('request_id')
+                ->nullable()
+                ->constrained($tablePrefix . 'requests')
+                ->cascadeOnDelete();
+
+            $table->foreignId('endpoint_id')
+                ->constrained($tablePrefix . 'endpoints')
+                ->cascadeOnDelete();
+
+            $table->jsonb('headers')->nullable();
+            $table->jsonb('body')->nullable();
+            $table->integer('status_code')->nullable()->index();
+            $table->string('status_message')->nullable();
+
+            $table->decimal('response_time', 10, 2)->nullable();
+
+            $table->timestamps();
+        });
+    }
+};

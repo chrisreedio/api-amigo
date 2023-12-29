@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $tablePrefix = config('athena.table_prefix');
+        Schema::create($tablePrefix . 'endpoints', function (Blueprint $table) use ($tablePrefix) {
+            $table->id();
+
+            $table->foreignId('integration_id')
+                ->nullable()
+                ->constrained($tablePrefix . 'integrations')
+                ->cascadeOnDelete();
+
+            $table->string('name')
+                ->nullable();
+
+            $table->string('path');
+
+            $table->timestamps();
+        });
+    }
+};
