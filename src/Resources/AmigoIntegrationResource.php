@@ -2,23 +2,23 @@
 
 namespace ChrisReedIO\APIAmigo\Resources;
 
-use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\Pages;
-// use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
+// use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\RelationManagers;
+use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\Pages;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AmigoIntegrationResource extends Resource
 {
     protected static ?string $model = AmigoIntegration::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationGroup = 'API Amigo';
+
     protected static ?string $navigationLabel = 'Integrations';
 
     public static function form(Form $form): Form
