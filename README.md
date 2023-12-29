@@ -90,4 +90,6 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+This is currently closed source.
+
+License choice is pending. Please check back soon.
