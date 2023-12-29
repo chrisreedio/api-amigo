@@ -103,7 +103,6 @@ class APIAmigoServiceProvider extends PackageServiceProvider
                     ->onResponse(new LogResponse(), 'amigo-log-response', PipeOrder::FIRST);
             }
 
-
         } catch (DuplicatePipeNameException $e) {
             // TODO: Log that we failed to hook up the response logger
         }
