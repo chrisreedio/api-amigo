@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $tablePrefix = config('api-amigo.table_prefix');
+        Schema::create($tablePrefix . 'connectors', function (Blueprint $table) use ($tablePrefix) {
+            $table->id();
+
+            // $table->foreignId($tablePrefix . 'integration_id')
+            $table->foreignId('integration_id')
+                ->nullable()
+                ->constrained($tablePrefix . 'integrations')
+                ->cascadeOnDelete();
+
+            $table->string('name');
+            $table->string('display_name')->nullable();
+            $table->string('base_url');
+
+            $table->integer('rate_limit')->nullable();
+            $table->integer('rate_limit_remaining')->nullable();
+
+            $table->timestamps();
+        });
+    }
+};

@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        $tablePrefix = config('athena.table_prefix');
-        Schema::create($tablePrefix . 'aggregates', function (Blueprint $table) use ($tablePrefix) {
+        $tablePrefix = config('api-amigo.table_prefix');
+        Schema::create($tablePrefix . 'endpoint_aggregates', function (Blueprint $table) use ($tablePrefix) {
             $table->id();
 
             $table->foreignId('integration_id')

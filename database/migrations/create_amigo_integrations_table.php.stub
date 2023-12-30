@@ -8,13 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $tablePrefix = config('athena.table_prefix');
-        Schema::create($tablePrefix . 'requests', function (Blueprint $table) {
+        $tablePrefix = config('api-amigo.table_prefix');
+        Schema::create($tablePrefix . 'integrations', function (Blueprint $table) {
             $table->id();
 
             $table->string('name');
-            $table->string('friendly_name')->nullable();
-            $table->string('base_url');
+            $table->string('display_name')->nullable();
+            // $table->string('base_url');
 
             $table->timestamps();
         });

@@ -165,7 +165,12 @@ class APIAmigoServiceProvider extends PackageServiceProvider
     protected function getMigrations(): array
     {
         return [
-            'create_api-amigo_table',
+            'create_amigo_integrations_table',
+            'create_amigo_connectors_table',
+            'create_amigo_endpoints_table',
+            'create_amigo_endpoint_aggregates_table',
+            'create_amigo_requests_table',
+            'create_amigo_responses_table',
         ];
     }
 }

@@ -8,20 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $tablePrefix = config('athena.table_prefix');
-        Schema::create($tablePrefix . 'requests', function (Blueprint $table) use ($tablePrefix) {
+        $tablePrefix = config('api-amigo.table_prefix');
+        Schema::create($tablePrefix . 'endpoints', function (Blueprint $table) use ($tablePrefix) {
             $table->id();
-
-            $table->string('unique_id')->unique();
 
             $table->foreignId('integration_id')
                 ->nullable()
                 ->constrained($tablePrefix . 'integrations')
                 ->cascadeOnDelete();
 
-            $table->foreignId('endpoint_id')
-                ->constrained($tablePrefix . 'endpoints')
-                ->cascadeOnDelete();
+            $table->string('name')
+                ->nullable();
+
+            $table->string('path');
 
             $table->timestamps();
         });

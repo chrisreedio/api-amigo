@@ -2,24 +2,24 @@
 
 namespace ChrisReedIO\APIAmigo\Resources;
 
-use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
-// use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\RelationManagers;
-use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\Pages;
+use ChrisReedIO\APIAmigo\Models\AmigoConnector;
+// use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\RelationManagers;
+use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\Pages;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-class AmigoIntegrationResource extends Resource
+class AmigoConnectorResource extends Resource
 {
-    protected static ?string $model = AmigoIntegration::class;
+    protected static ?string $model = AmigoConnector::class;
 
-    protected static ?string $navigationIcon = 'far-integral';
+    protected static ?string $navigationIcon = 'far-plug';
 
     protected static ?string $navigationGroup = 'API Amigo';
 
-    protected static ?string $navigationLabel = 'Integrations';
+    protected static ?string $navigationLabel = 'Connectors';
 
     public static function form(Form $form): Form
     {
@@ -47,17 +47,18 @@ class AmigoIntegrationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('display_name')
                     ->placeholder('Not Set')
                     ->searchable()
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('total_requests')
-                //     ->numeric()
-                //     ->sortable(),
-                // Tables\Columns\TextColumn::make('total_errors')
-                //     ->numeric()
-                //     ->sortable(),
+                Tables\Columns\TextColumn::make('rate_limit')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('rate_limit_remaining')
+                    ->numeric()
+                    ->sortable(),
                 // Tables\Columns\TextColumn::make('deleted_at')
                 //     ->dateTime()
                 //     ->sortable()
@@ -95,10 +96,10 @@ class AmigoIntegrationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAmigoIntegrations::route('/'),
-            'create' => Pages\CreateAmigoIntegration::route('/create'),
-            'view' => Pages\ViewAmigoIntegration::route('/{record}'),
-            'edit' => Pages\EditAmigoIntegration::route('/{record}/edit'),
+            'index' => Pages\ListAmigoConnectors::route('/'),
+            'create' => Pages\CreateAmigoConnector::route('/create'),
+            'view' => Pages\ViewAmigoConnector::route('/{record}'),
+            'edit' => Pages\EditAmigoConnector::route('/{record}/edit'),
         ];
     }
 }

@@ -3,24 +3,27 @@
 namespace ChrisReedIO\APIAmigo\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 // use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AmigoIntegration extends Model
+class AmigoConnector extends Model
 {
     // use SoftDeletes;
 
     protected $fillable = [
+        'integration_id',
         'name',
         'display_name',
-        // 'base_url',
+        'base_url',
+        'rate_limit',
+        'rate_limit_remaining',
         // 'total_requests',
         // 'total_errors',
     ];
 
-    public function connectors(): HasMany
+    public function integration(): BelongsTo
     {
-        return $this->hasMany(AmigoConnector::class);
+        return $this->belongsTo(AmigoIntegration::class);
     }
 }
