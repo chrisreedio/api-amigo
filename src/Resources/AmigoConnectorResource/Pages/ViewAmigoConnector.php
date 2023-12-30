@@ -3,7 +3,6 @@
 namespace ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\Pages;
 
 use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource;
-use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 

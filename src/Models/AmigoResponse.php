@@ -4,6 +4,7 @@ namespace ChrisReedIO\APIAmigo\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Saloon\Http\Response;
+
 use function class_basename;
 use function config;
 use function dump;

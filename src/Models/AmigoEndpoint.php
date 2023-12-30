@@ -5,6 +5,7 @@ namespace ChrisReedIO\APIAmigo\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Saloon\Http\PendingRequest;
+
 use function class_basename;
 
 class AmigoEndpoint extends AmigoModel

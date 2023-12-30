@@ -2,7 +2,6 @@
 
 namespace ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\Pages;
 
-use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource;
 use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;

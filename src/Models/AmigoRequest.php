@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Saloon\Http\PendingRequest;
-use function class_basename;
-use function parse_url;
 
 class AmigoRequest extends AmigoModel
 {
