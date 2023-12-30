@@ -16,10 +16,10 @@ class LogResponse implements ResponseMiddleware
 {
     public function __invoke(Response $response): void
     {
-        dump('== API Amigo - LogResponse middleware invoked ==');
+        // dump('== API Amigo - LogResponse middleware invoked ==');
 
         AmigoResponse::track($response);
 
-        dd('Done Tracking Response');
+        // dd('Done Tracking Response');
     }
 }

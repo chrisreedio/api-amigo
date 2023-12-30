@@ -1,15 +1,15 @@
 <?php
 
-namespace ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\Pages;
+namespace ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\Pages;
 
-use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource;
 use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource;
+use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListAmigoConnectors extends ListRecords
+class ListAmigoResponses extends ListRecords
 {
-    protected static string $resource = AmigoConnectorResource::class;
+    protected static string $resource = AmigoResponseResource::class;
 
     protected function getHeaderActions(): array
     {

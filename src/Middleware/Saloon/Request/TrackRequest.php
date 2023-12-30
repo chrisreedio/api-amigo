@@ -16,7 +16,7 @@ class TrackRequest implements RequestMiddleware
 {
     public function __invoke(PendingRequest $pendingRequest): void
     {
-        dump('== API Amigo TrackRequest middleware invoked ==');
+        // dump('== API Amigo TrackRequest middleware invoked ==');
 
         // Here we need to log the request
         // Things to track: request URL, request method, request headers, request body
