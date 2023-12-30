@@ -4,6 +4,7 @@ namespace ChrisReedIO\APIAmigo\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Saloon\Http\PendingRequest;
 
 // use Illuminate\Database\Eloquent\SoftDeletes;
 

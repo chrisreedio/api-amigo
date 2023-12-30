@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Middleware\Saloon\Request;
 
+use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Illuminate\Support\Str;
 use Saloon\Contracts\RequestMiddleware;
 use Saloon\Http\PendingRequest;
@@ -17,17 +18,10 @@ class TrackRequest implements RequestMiddleware
     {
         dump('== API Amigo TrackRequest middleware invoked ==');
 
-        $requestId = Str::ulid()->toBase58();
-        // $headerKey = config('api-amigo.requests.header_key');
-        // $pendingRequest->config()->add($headerKey, $requestId);
-        $pendingRequest->config()->add('amigo.request_id', $requestId);
-        $pendingRequest->config()->add('amigo.request_time', microtime(true));
-        dump('Injected Amigo tracking data into request config');
-
         // Here we need to log the request
         // Things to track: request URL, request method, request headers, request body
         // Depending on our logging strategy, we may want to log the response as well
-
-        // Create a new request log entry
+        AmigoRequest::track($pendingRequest);
+        // dump('Created AmigoRequest model:', $request->toArray());
     }
 }

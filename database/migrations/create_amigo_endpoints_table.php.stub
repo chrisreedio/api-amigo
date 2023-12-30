@@ -12,9 +12,9 @@ return new class extends Migration
         Schema::create($tablePrefix . 'endpoints', function (Blueprint $table) use ($tablePrefix) {
             $table->id();
 
-            $table->foreignId('integration_id')
-                ->nullable()
-                ->constrained($tablePrefix . 'integrations')
+            $table->foreignId('connector_id')
+                // ->nullable()
+                ->constrained($tablePrefix . 'connectors')
                 ->cascadeOnDelete();
 
             $table->string('name')
