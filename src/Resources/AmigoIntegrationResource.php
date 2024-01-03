@@ -33,6 +33,10 @@ class AmigoIntegrationResource extends Resource
                 Forms\Components\TextInput::make('display_name')
                     // ->required()
                     ->maxLength(255),
+
+                Forms\Components\ColorPicker::make('color')
+                    ->required(),
+
                 // Forms\Components\TextInput::make('total_requests')
                 //     ->required()
                 //     ->numeric(),

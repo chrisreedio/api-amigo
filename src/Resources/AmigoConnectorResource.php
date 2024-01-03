@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Resources;
 
 use ChrisReedIO\APIAmigo\Models\AmigoConnector;
+
 // use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\Pages;
 use Filament\Forms;
@@ -33,6 +34,9 @@ class AmigoConnectorResource extends Resource
                 Forms\Components\TextInput::make('display_name')
                     // ->required()
                     ->maxLength(255),
+
+                Forms\Components\ColorPicker::make('color')
+                    ->required(),
                 // Forms\Components\TextInput::make('total_requests')
                 //     ->required()
                 //     ->numeric(),
@@ -49,6 +53,9 @@ class AmigoConnectorResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('integration.name')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('display_name')
                     ->placeholder('Not Set')
                     ->searchable()
@@ -56,8 +63,17 @@ class AmigoConnectorResource extends Resource
                 Tables\Columns\TextColumn::make('rate_limit')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('rate_usage')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('rate_limit_remaining')
                     ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('rate_usage_percentage')
+                    ->numeric()
+                    ->label('Usage Percent')
+                    ->badge()
+                    ->suffix('%')
                     ->sortable(),
                 // Tables\Columns\TextColumn::make('deleted_at')
                 //     ->dateTime()
