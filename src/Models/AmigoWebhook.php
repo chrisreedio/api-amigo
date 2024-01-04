@@ -2,10 +2,10 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
-use ChrisReedIO\APIAmigo\Models\AmigoModel;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+
 use function now;
 
 class AmigoWebhook extends AmigoModel
@@ -45,7 +45,7 @@ class AmigoWebhook extends AmigoModel
         $this->save();
     }
 
-    public function fail(int $code = 500, string $message = null, string $trace = null): void
+    public function fail(int $code = 500, ?string $message = null, ?string $trace = null): void
     {
         $this->processed_at = now();
         $this->error = array_filter([
