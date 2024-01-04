@@ -2,7 +2,6 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
-use ChrisReedIO\APIAmigo\Models\AmigoModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
@@ -36,5 +35,4 @@ class AmigoListener extends AmigoModel
     {
         return $this->hasMany(AmigoWebhook::class, 'listener_id');
     }
-
 }
