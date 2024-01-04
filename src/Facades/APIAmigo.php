@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Facade;
  */
 class APIAmigo extends Facade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return \ChrisReedIO\APIAmigo\APIAmigo::class;
     }

@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Resources;
 
 // use ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\RelationManagers;
+use ChrisReedIO\APIAmigo\Facades\APIAmigo;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -47,7 +48,7 @@ class AmigoListenerResource extends Resource
                     ->copyable()
                     ->hidePasswordManagerIcons()
                     ->regeneratePassword()
-                    ->generatePasswordUsing(fn () => Str::password(symbols: false))
+                    ->generatePasswordUsing(fn() => Str::password(symbols: false))
                     ->maxLength(255),
 
                 Forms\Components\Section::make('URL')
@@ -94,9 +95,16 @@ class AmigoListenerResource extends Resource
                             ->default('Generated on save'),
                     ]),
 
-                Forms\Components\TextInput::make('handler')
+                // Forms\Components\TextInput::make('handler')
+                //     ->columnSpan(2)
+                //     ->maxLength(255),
+
+                Forms\Components\Select::make('handler')
                     ->columnSpan(2)
-                    ->maxLength(255),
+                    ->options(fn() => collect(APIAmigo::getWebhookHandlers())->mapWithKeys(fn($handler) => [$handler => $handler]))
+
+                    // ->default('ChrisReedIO\APIAmigo\Listeners\AmigoListenerHandler')
+                    ->required(),
 
                 Forms\Components\ColorPicker::make('color')
                     ->columnSpan(2)
@@ -108,14 +116,12 @@ class AmigoListenerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ColorColumn::make('color')
-                    ->label(''),
-                // ->searchable()
-                // ->copyable(),
+                // Tables\Columns\ColorColumn::make('color')
+                //     ->label(''),
 
                 Tables\Columns\TextColumn::make('display_name')
                     ->searchable()
-                    ->badge()
+                    // ->badge()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('integration.name')
@@ -123,31 +129,31 @@ class AmigoListenerResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('url_prefix')
-                    ->label('URL Prefix')
-                    ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('event')
-                    ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('unique_id')
-                    ->searchable()
-                    ->sortable(),
-
-                // Tables\Columns\TextColumn::make('url_preview')
-                //     ->label('URL Preview')
+                // Tables\Columns\TextColumn::make('url_prefix')
+                //     ->label('URL Prefix')
                 //     ->searchable()
-                //     ->sortable()
-                //     ->getStateUsing(fn (AmigoListener $record) => implode('/', array_filter([
-                //         // config('app.url'),
-                //         'api',
-                //         'webhooks',
-                //         $record->url_prefix,
-                //         $record->event,
-                //         $record->unique_id,
-                //     ]))),
+                //     ->sortable(),
+                //
+                // Tables\Columns\TextColumn::make('event')
+                //     ->searchable()
+                //     ->sortable(),
+                //
+                // Tables\Columns\TextColumn::make('unique_id')
+                //     ->searchable()
+                //     ->sortable(),
+
+                Tables\Columns\TextColumn::make('url_preview')
+                    ->label('URL Preview')
+                    ->searchable()
+                    ->sortable()
+                    ->getStateUsing(fn(AmigoListener $record) => implode('/', array_filter([
+                        // config('app.url'),
+                        'api',
+                        'webhooks',
+                        $record->url_prefix,
+                        $record->event,
+                        $record->unique_id,
+                    ]))),
 
                 Tables\Columns\TextColumn::make('handler')
                     ->searchable()
