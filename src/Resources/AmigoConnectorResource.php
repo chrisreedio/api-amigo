@@ -3,7 +3,6 @@
 namespace ChrisReedIO\APIAmigo\Resources;
 
 use ChrisReedIO\APIAmigo\Models\AmigoConnector;
-
 // use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\Pages;
 use Filament\Forms;
@@ -24,7 +23,6 @@ class AmigoConnectorResource extends Resource
     {
         return config('api-amigo.filament.navigation_group');
     }
-
 
     public static function form(Form $form): Form
     {

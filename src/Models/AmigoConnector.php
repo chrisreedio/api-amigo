@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Saloon\Http\Connectors\NullConnector;
 use Saloon\Http\PendingRequest;
-
 use Saloon\Http\SoloRequest;
+
 use function class_basename;
 use function get_class;
 use function get_parent_class;

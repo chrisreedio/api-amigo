@@ -7,7 +7,6 @@ use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -48,7 +47,7 @@ class AmigoListenerResource extends Resource
                     ->copyable()
                     ->hidePasswordManagerIcons()
                     ->regeneratePassword()
-                    ->generatePasswordUsing(fn() => Str::password(symbols: false))
+                    ->generatePasswordUsing(fn () => Str::password(symbols: false))
                     ->maxLength(255),
 
                 Forms\Components\Section::make('URL')
@@ -111,8 +110,8 @@ class AmigoListenerResource extends Resource
             ->columns([
                 Tables\Columns\ColorColumn::make('color')
                     ->label(''),
-                    // ->searchable()
-                    // ->copyable(),
+                // ->searchable()
+                // ->copyable(),
 
                 Tables\Columns\TextColumn::make('display_name')
                     ->searchable()
