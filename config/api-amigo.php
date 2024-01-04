@@ -5,10 +5,15 @@ return [
     'enabled' => env('AMIGO_ENABLED', false),
     'table_prefix' => 'amigo_',
 
+    'filament' => [
+        'navigation_group' => 'API Management',
+    ],
+
     'requests' => [
         'header_key' => env('AMIGO_REQUEST_ID_KEY', 'X-Amigo-Request-Id'),
         // 'header_key' => env('AMIGO_REQUEST_ID_KEY', 'X-Request-Id'),
     ],
+
     'responses' => [
         // 'header_key' => env('AMIGO_RESPONSE_ID_KEY', 'X-Amigo-Response-Id'),
         'headers' => [

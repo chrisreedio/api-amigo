@@ -17,9 +17,12 @@ class AmigoResponseResource extends Resource
 
     protected static ?string $navigationIcon = 'far-reply';
 
-    protected static ?string $navigationGroup = 'API Amigo';
+    protected static ?string $modelLabel = 'Response';
 
-    protected static ?string $navigationLabel = 'Responses';
+    public static function getNavigationGroup(): ?string
+    {
+        return config('api-amigo.filament.navigation_group');
+    }
 
     public static function form(Form $form): Form
     {

@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Resources;
 
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
+
 // use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\Pages;
 use Filament\Forms;
@@ -17,9 +18,12 @@ class AmigoIntegrationResource extends Resource
 
     protected static ?string $navigationIcon = 'far-integral';
 
-    protected static ?string $navigationGroup = 'API Amigo';
+    protected static ?string $modelLabel = 'Integration';
 
-    protected static ?string $navigationLabel = 'Integrations';
+    public static function getNavigationGroup(): ?string
+    {
+        return config('api-amigo.filament.navigation_group');
+    }
 
     public static function form(Form $form): Form
     {

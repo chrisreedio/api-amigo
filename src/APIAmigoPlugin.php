@@ -18,6 +18,8 @@ class APIAmigoPlugin implements Plugin
             Resources\AmigoIntegrationResource::class,
             Resources\AmigoConnectorResource::class,
             Resources\AmigoResponseResource::class,
+            Resources\AmigoListenerResource::class,
+            Resources\AmigoWebhookResource::class,
         ]);
     }
 

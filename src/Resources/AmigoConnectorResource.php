@@ -18,9 +18,13 @@ class AmigoConnectorResource extends Resource
 
     protected static ?string $navigationIcon = 'far-plug';
 
-    protected static ?string $navigationGroup = 'API Amigo';
+    protected static ?string $modelLabel = 'Connector';
 
-    protected static ?string $navigationLabel = 'Connectors';
+    public static function getNavigationGroup(): ?string
+    {
+        return config('api-amigo.filament.navigation_group');
+    }
+
 
     public static function form(Form $form): Form
     {

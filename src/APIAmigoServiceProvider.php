@@ -171,6 +171,8 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             'create_amigo_endpoint_aggregates_table',
             'create_amigo_requests_table',
             'create_amigo_responses_table',
+            'create_amigo_listeners_table',
+            'create_amigo_webhooks_table',
         ];
     }
 }
