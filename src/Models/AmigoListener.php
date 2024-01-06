@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 
 /**
  * Class AmigoListener
- * @package ChrisReedIO\APIAmigo\Models
  *
  * @property int $id
  * @property int $integration_id
