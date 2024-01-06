@@ -27,4 +27,11 @@ return [
             ],
         ],
     ],
+
+    'webhooks' => [
+        // This cannot be empty and should not be changed once set
+        'prefix' => 'webhooks',
+
+        'signature_header' => 'X-Signature',
+    ],
 ];

@@ -6,14 +6,27 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+/**
+ * Class AmigoListener
+ * @package ChrisReedIO\APIAmigo\Models
+ *
+ * @property int $id
+ * @property int $integration_id
+ * @property string $display_name
+ * @property string $unique_id
+ * @property string $handler
+ * @property string $color
+ * @property string $webhook_secret
+ * @property string $url
+ * @property AmigoIntegration $integration
+ * @property AmigoWebhook[] $webhooks
+ */
 class AmigoListener extends AmigoModel
 {
     protected $fillable = [
         'integration_id',
         'display_name',
-        'url_prefix',
         'unique_id',
-        'event',
         'handler',
         'color',
         'webhook_secret',
@@ -34,5 +47,18 @@ class AmigoListener extends AmigoModel
     public function webhooks(): HasMany
     {
         return $this->hasMany(AmigoWebhook::class, 'listener_id');
+    }
+
+    public function getUrlAttribute(): string
+    {
+        return implode(
+            '/',
+            array_filter([
+                config('app.url'),
+                'api',
+                'webhooks',
+                $this->unique_id,
+            ])
+        );
     }
 }

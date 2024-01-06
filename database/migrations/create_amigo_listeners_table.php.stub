@@ -18,9 +18,9 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->string('display_name')->nullable();
-            $table->string('url_prefix')->nullable();
+            // $table->string('url_prefix')->nullable();
             $table->string('unique_id')->unique();
-            $table->string('event')->nullable()->comment('Event name');
+            // $table->string('event')->nullable()->comment('Event name');
             $table->string('handler')->nullable()->comment('Class name of the handler of this webhook');
             $table->string('webhook_secret')->nullable();
 

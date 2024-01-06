@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo;
 
 use ChrisReedIO\APIAmigo\Commands\APIAmigoCommand;
+use ChrisReedIO\APIAmigo\Controllers\WebhookController;
 use ChrisReedIO\APIAmigo\Middleware\Saloon\Request\TrackRequest;
 use ChrisReedIO\APIAmigo\Middleware\Saloon\Response\LogResponse;
 use ChrisReedIO\APIAmigo\Testing\TestsAPIAmigo;
@@ -13,6 +14,7 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
 use Saloon\Enums\PipeOrder;
 use Saloon\Exceptions\DuplicatePipeNameException;
@@ -64,6 +66,12 @@ class APIAmigoServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        Route::macro('webhooks', function () {
+            $prefix = config('api-amigo.webhooks.prefix', 'webhooks');
+            Route::post("/$prefix/{listener:unique_id}", WebhookController::class)
+                ->withoutMiddleware(['csrf', 'auth'])
+                ->name('webhooks.handler');
+        });
     }
 
     public function packageBooted(): void
