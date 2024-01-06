@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $tablePrefix = config('api-amigo.table_prefix');
+        Schema::create($tablePrefix . 'listeners', function (Blueprint $table) use ($tablePrefix) {
+            $table->id();
+
+            $table->foreignId('integration_id')
+                ->nullable()
+                ->constrained($tablePrefix . 'integrations')
+                ->cascadeOnDelete();
+
+            $table->string('display_name')->nullable();
+            // $table->string('url_prefix')->nullable();
+            $table->string('unique_id')->unique();
+            // $table->string('event')->nullable()->comment('Event name');
+            $table->string('handler')->nullable()->comment('Class name of the handler of this webhook');
+            $table->string('webhook_secret')->nullable();
+
+            $table->string('color')->nullable();
+
+            // $table->decimal('duration', 10, 3)->nullable()->comment('In seconds');
+
+            $table->timestamps();
+        });
+    }
+};

@@ -14,7 +14,13 @@ class APIAmigoPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        //
+        $panel->resources([
+            Resources\AmigoIntegrationResource::class,
+            Resources\AmigoConnectorResource::class,
+            Resources\AmigoResponseResource::class,
+            Resources\AmigoListenerResource::class,
+            Resources\AmigoWebhookResource::class,
+        ]);
     }
 
     public function boot(Panel $panel): void

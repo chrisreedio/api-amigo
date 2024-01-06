@@ -3,6 +3,9 @@
 namespace ChrisReedIO\APIAmigo;
 
 use ChrisReedIO\APIAmigo\Commands\APIAmigoCommand;
+use ChrisReedIO\APIAmigo\Controllers\WebhookController;
+use ChrisReedIO\APIAmigo\Middleware\Saloon\Request\TrackRequest;
+use ChrisReedIO\APIAmigo\Middleware\Saloon\Response\LogResponse;
 use ChrisReedIO\APIAmigo\Testing\TestsAPIAmigo;
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
@@ -11,7 +14,10 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
+use Saloon\Enums\PipeOrder;
+use Saloon\Exceptions\DuplicatePipeNameException;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -60,6 +66,12 @@ class APIAmigoServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        Route::macro('webhooks', function () {
+            $prefix = config('api-amigo.webhooks.prefix', 'webhooks');
+            Route::post("/$prefix/{listener:unique_id}", WebhookController::class)
+                ->withoutMiddleware(['csrf', 'auth'])
+                ->name('webhooks.handler');
+        });
     }
 
     public function packageBooted(): void
@@ -89,6 +101,19 @@ class APIAmigoServiceProvider extends PackageServiceProvider
 
         // Testing
         Testable::mixin(new TestsAPIAmigo());
+
+        // Begin Tracking work
+        try {
+            // If the package is enabled, we'll hook up the middleware to track requests and log responses
+            if (config('api-amigo.enabled')) {
+                \Saloon\Config::globalMiddleware()
+                    ->onRequest(new TrackRequest(), 'amigo-track-request', PipeOrder::LAST)
+                    ->onResponse(new LogResponse(), 'amigo-log-response', PipeOrder::FIRST);
+            }
+
+        } catch (DuplicatePipeNameException $e) {
+            // TODO: Log that we failed to hook up the response logger
+        }
     }
 
     protected function getAssetPackageName(): ?string
@@ -103,7 +128,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
     {
         return [
             // AlpineComponent::make('api-amigo', __DIR__ . '/../resources/dist/components/api-amigo.js'),
-            Css::make('api-amigo-styles', __DIR__ . '/../resources/dist/api-amigo.css'),
+            // Css::make('api-amigo-styles', __DIR__ . '/../resources/dist/api-amigo.css'),
             // Js::make('api-amigo-scripts', __DIR__ . '/../resources/dist/api-amigo.js'),
         ];
     }
@@ -148,7 +173,14 @@ class APIAmigoServiceProvider extends PackageServiceProvider
     protected function getMigrations(): array
     {
         return [
-            'create_api-amigo_table',
+            'create_amigo_integrations_table',
+            'create_amigo_connectors_table',
+            'create_amigo_endpoints_table',
+            'create_amigo_endpoint_aggregates_table',
+            'create_amigo_requests_table',
+            'create_amigo_responses_table',
+            'create_amigo_listeners_table',
+            'create_amigo_webhooks_table',
         ];
     }
 }
