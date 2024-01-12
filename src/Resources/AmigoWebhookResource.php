@@ -22,6 +22,11 @@ class AmigoWebhookResource extends Resource
         return config('api-amigo.filament.navigation_group');
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return number_format(static::getModel()::count());
+    }
+
     public static function form(Form $form): Form
     {
         return $form

@@ -25,6 +25,11 @@ class AmigoEndpointResource extends Resource
         return config('api-amigo.filament.navigation_group');
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return number_format(static::getModel()::count());
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -32,7 +37,12 @@ class AmigoEndpointResource extends Resource
                 Forms\Components\Select::make('connector_id')
                     ->relationship('connector', 'name')
                     ->required(),
+                Forms\Components\TextInput::make('method')
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('name')
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('class')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('path')
                     ->required()
@@ -48,9 +58,21 @@ class AmigoEndpointResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('method')
+                    ->searchable()
+                    ->badge()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('path')
+                    ->copyable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('responses_count')
+                    ->label('Responses')
+                    ->badge()
+                    ->counts('responses')
+                    ->sortable(),
+                // ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -60,12 +82,15 @@ class AmigoEndpointResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('responses_count', 'desc')
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('connector_id')
+                    ->label('Connector')
+                    ->relationship('connector', 'name'),
             ])
             ->actions([
                 // Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
