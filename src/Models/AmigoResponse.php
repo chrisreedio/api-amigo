@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
 use Saloon\Http\Response;
 
 use function class_basename;
@@ -91,8 +92,12 @@ class AmigoResponse extends AmigoModel
                 'duration' => $responseTimeDelta,
             ]);
         } catch (\Exception $e) {
-            dump($e->getMessage());
-            dd($e->getTraceAsString());
+            Log::error('API Amigo failed to track response: ' . $e->getMessage(), [
+                'exception' => $e,
+                'response' => $saloonResponse,
+            ]);
+            // dump($e->getMessage());
+            // dd($e->getTraceAsString());
         }
     }
 }

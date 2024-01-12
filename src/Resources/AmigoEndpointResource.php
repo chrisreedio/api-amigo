@@ -25,6 +25,11 @@ class AmigoEndpointResource extends Resource
         return config('api-amigo.filament.navigation_group');
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return number_format(static::getModel()::count());
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -62,6 +67,12 @@ class AmigoEndpointResource extends Resource
                 Tables\Columns\TextColumn::make('path')
                     ->copyable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('responses_count')
+                    ->label('Responses')
+                    ->badge()
+                    ->counts('responses')
+                    ->sortable(),
+                    // ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -71,6 +82,7 @@ class AmigoEndpointResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('responses_count', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('connector_id')
                     ->label('Connector')
