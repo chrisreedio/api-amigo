@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.2 - 2024-01-12
+
+### What's Changed
+
+* Add AmigoEndpoint resource CRUD pages by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/3
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.1...v1.0.0-alpha.2
+
 ## v1.0.0-alpha.1 - 2024-01-06
 
 ### What's Changed
