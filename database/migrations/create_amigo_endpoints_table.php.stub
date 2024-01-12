@@ -17,7 +17,12 @@ return new class extends Migration
                 ->constrained($tablePrefix . 'connectors')
                 ->cascadeOnDelete();
 
+            $table->string('method');
+
             $table->string('name')
+                ->nullable();
+
+            $table->string('class')
                 ->nullable();
 
             $table->string('path');

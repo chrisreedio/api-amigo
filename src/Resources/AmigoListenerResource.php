@@ -121,26 +121,26 @@ class AmigoListenerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\Action::make('test')
-                    ->label('Test')
-                    ->icon('far-play')
-                    ->color('primary')
-                    ->action(function ($livewire, $record) {
-                        $data = [
-                            'my_key' => 'my_value',
-                        ];
-                        $request = SimpleWebhook::make($record->url, $data, $record->webhook_secret);
-                        // This is needed to allow the local, non-verified SSL cert to work
-                        if (App::environment('local')) {
-                            $request->config()->add('verify', false);
-                        }
-
-                        $response = $request->send();
-                        dd($response->json());
-
-                    }),
+                // Tables\Actions\Action::make('test')
+                //     ->label('Test')
+                //     ->icon('far-play')
+                //     ->color('primary')
+                //     ->action(function ($livewire, $record) {
+                //         $data = [
+                //             'my_key' => 'my_value',
+                //         ];
+                //         $request = SimpleWebhook::make($record->url, $data, $record->webhook_secret);
+                //         // This is needed to allow the local, non-verified SSL cert to work
+                //         if (App::environment('local')) {
+                //             $request->config()->add('verify', false);
+                //         }
+                //
+                //         $response = $request->send();
+                //         dd($response->json());
+                //
+                //     }),
                 // Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([

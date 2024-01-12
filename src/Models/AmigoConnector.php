@@ -5,6 +5,7 @@ namespace ChrisReedIO\APIAmigo\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 use Saloon\Http\Connectors\NullConnector;
 use Saloon\Http\PendingRequest;
 use Saloon\Http\SoloRequest;
@@ -29,6 +30,12 @@ class AmigoConnector extends Model
         // 'total_requests',
         // 'total_errors',
     ];
+
+    public function getNameAttribute(): string
+    {
+        $snake = Str::snake($this->attributes['name']);
+        return Str::title(str_replace('_', ' ', $snake));
+    }
 
     public function integration(): BelongsTo
     {
