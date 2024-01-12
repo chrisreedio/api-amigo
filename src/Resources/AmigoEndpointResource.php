@@ -72,7 +72,7 @@ class AmigoEndpointResource extends Resource
                     ->badge()
                     ->counts('responses')
                     ->sortable(),
-                    // ->searchable(),
+                // ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
