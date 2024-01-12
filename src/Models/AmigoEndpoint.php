@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use ReflectionProperty;
 use Saloon\Http\PendingRequest;
-
 use Saloon\Http\Request;
+
 use function class_basename;
 use function collect;
 use function dd;
@@ -37,6 +36,7 @@ class AmigoEndpoint extends AmigoModel
             return class_basename($this->class);
         }
         $snake = Str::snake($this->attributes['name']);
+
         return Str::title(str_replace('_', ' ', $snake));
     }
 
@@ -84,14 +84,12 @@ class AmigoEndpoint extends AmigoModel
         $params->each(function ($value, $key) use (&$genericPath) {
             $genericPath = str_replace($value, "{{$key}}", $genericPath);
         });
+
         return $genericPath;
     }
 
     /**
      * Gets the non-null constructor parameters for the given request.
-     *
-     * @param Request $request
-     * @return Collection
      */
     private static function getConstructorParameters(Request $request): Collection
     {
@@ -101,6 +99,7 @@ class AmigoEndpoint extends AmigoModel
         $properties = collect($reflection->getProperties())
             ->mapWithKeys(function ($property) use ($request) {
                 $property->setAccessible(true);
+
                 return [$property->getName() => $property->getValue($request)];
             });
 
@@ -111,7 +110,7 @@ class AmigoEndpoint extends AmigoModel
         // Filter properties based on constructor parameters and non-null values
         return $properties
             ->filter(function ($value, $key) use ($constructorParameters) {
-                return $constructorParameters->contains($key) && !is_null($value);
+                return $constructorParameters->contains($key) && ! is_null($value);
             });
     }
 }

@@ -34,6 +34,7 @@ class AmigoConnector extends Model
     public function getNameAttribute(): string
     {
         $snake = Str::snake($this->attributes['name']);
+
         return Str::title(str_replace('_', ' ', $snake));
     }
 
