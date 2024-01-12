@@ -11,12 +11,12 @@ class APIAmigo
     public static function registerWebhookHandler(string $handlerJobClass): void
     {
         // Ensure that the handler job class exists
-        if (!class_exists($handlerJobClass)) {
+        if (! class_exists($handlerJobClass)) {
             throw new \InvalidArgumentException("The webhook handler job class {$handlerJobClass} does not exist.");
         }
 
         // Also make sure it extends the ProcessWebhookJob class
-        if (!is_subclass_of($handlerJobClass, ProcessWebhookJob::class)) {
+        if (! is_subclass_of($handlerJobClass, ProcessWebhookJob::class)) {
             throw new \InvalidArgumentException("The webhook handler job class {$handlerJobClass} must extend the ProcessWebhookJob class.");
         }
 
