@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.3 - 2024-01-12
+
+### What's Changed
+
+* feat: add method enum and enhance endpoint tracking by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/4
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.2...v1.0.0-alpha.3
+
 ## v1.0.0-alpha.2 - 2024-01-12
 
 ### What's Changed
