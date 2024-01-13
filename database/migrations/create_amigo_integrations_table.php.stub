@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('webhook_secret')->nullable();
             // $table->string('base_url');
 
+            $table->decimal('average_duration', 10, 3)->nullable()->comment('In seconds');
+
             $table->timestamps();
         });
     }

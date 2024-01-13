@@ -75,11 +75,13 @@ class AmigoResponseResource extends Resource
 
                 Tables\Columns\TextColumn::make('endpoint.name')
                     ->label('Endpoint')
+                    ->tooltip(fn (AmigoResponse $record) => $record->endpoint->path)
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('status_code')
                     ->label('Status')
+                    ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
                     ->badge()
                     ->sortable(),
 

@@ -72,6 +72,13 @@ class AmigoEndpointResource extends Resource
                     ->badge()
                     ->counts('responses')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('responses_avg_duration')
+                    ->avg('responses', 'duration')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => round($state * 1000) . 'ms')
+                    ->label('Avg. Duration')
+                    // ->numeric()
+                    ->sortable(),
                 // ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
