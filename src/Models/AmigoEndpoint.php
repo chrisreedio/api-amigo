@@ -131,7 +131,7 @@ class AmigoEndpoint extends AmigoModel
         // Filter properties based on constructor parameters and non-null values
         return $properties
             ->filter(function ($value, $key) use ($constructorParameters) {
-                return $constructorParameters->contains($key) && !is_null($value);
+                return $constructorParameters->contains($key) && ! is_null($value);
             });
     }
 }
