@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
 use Saloon\Http\Response;
@@ -26,6 +27,7 @@ class AmigoResponse extends AmigoModel
 
     protected $casts = [
         'headers' => 'array',
+        'status_code' => HTTPStatus::class,
         // 'body' => 'array',
     ];
 
@@ -41,6 +43,7 @@ class AmigoResponse extends AmigoModel
 
     public static function track(Response $saloonResponse): self
     {
+        // dd('hi', $saloonResponse);
         // $responseIdKey = config('api-amigo.responses.headers.keys.request_id');
         $rateLimitKey = config('api-amigo.responses.headers.keys.rate.limit');
         $rateLimitRemainingKey = config('api-amigo.responses.headers.keys.rate.remaining');
@@ -92,6 +95,7 @@ class AmigoResponse extends AmigoModel
                 'duration' => $responseTimeDelta,
             ]);
         } catch (\Exception $e) {
+            dd($e);
             Log::error('API Amigo failed to track response: ' . $e->getMessage(), [
                 'exception' => $e,
                 'response' => $saloonResponse,

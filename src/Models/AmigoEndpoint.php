@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use ReflectionClass;
+use Saloon\Helpers\OAuth2\OAuthConfig;
 use Saloon\Http\PendingRequest;
 use Saloon\Http\Request;
 
@@ -79,11 +80,31 @@ class AmigoEndpoint extends AmigoModel
     {
         $params = self::getConstructorParameters($request);
         $fullPath = $request->resolveEndpoint();
+
+        if ($params->isEmpty()) {
+            return $fullPath;
+        }
+
+        if ($params->first() instanceof OAuthConfig) {
+            $authEndpoint = $params->first()->getTokenEndpoint();
+
+            // Strip the domain from the auth endpoint if it starts with http(s)://
+            // TODO: Allow configuration as to whether to strip the domain or not
+            if (Str::startsWith($authEndpoint, 'http')) {
+                $authEndpoint = parse_url($authEndpoint)['path'];
+            }
+
+            return $authEndpoint;
+        }
+
         $genericPath = $fullPath;
         // Look for any of these params in the fullPath and replace them with their names
         $params->each(function ($value, $key) use (&$genericPath) {
             $genericPath = str_replace($value, "{{$key}}", $genericPath);
         });
+
+        // TODO : Implement an alternative detection scheme based
+        // TODO:    on doc-blocks or a variable name in the request
 
         return $genericPath;
     }
