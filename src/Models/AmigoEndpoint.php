@@ -16,6 +16,7 @@ use function class_basename;
 use function collect;
 use function dd;
 use function get_class;
+use function is_scalar;
 
 class AmigoEndpoint extends AmigoModel
 {
@@ -100,7 +101,10 @@ class AmigoEndpoint extends AmigoModel
         $genericPath = $fullPath;
         // Look for any of these params in the fullPath and replace them with their names
         $params->each(function ($value, $key) use (&$genericPath) {
-            $genericPath = str_replace($value, "{{$key}}", $genericPath);
+            // If the value is a scalar, then we can de-interpolate it
+            if (is_scalar($value)) {
+                $genericPath = str_replace($value, "{{$key}}", $genericPath);
+            }
         });
 
         // TODO : Implement an alternative detection scheme based
@@ -131,7 +135,7 @@ class AmigoEndpoint extends AmigoModel
         // Filter properties based on constructor parameters and non-null values
         return $properties
             ->filter(function ($value, $key) use ($constructorParameters) {
-                return $constructorParameters->contains($key) && !is_null($value);
+                return $constructorParameters->contains($key) && ! is_null($value);
             });
     }
 }
