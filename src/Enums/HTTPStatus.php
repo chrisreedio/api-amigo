@@ -61,7 +61,7 @@ enum HTTPStatus: int implements HasColor, HasLabel
     case GATEWAY_TIMEOUT = 504;
     case HTTP_VERSION_NOT_SUPPORTED = 505;
 
-    public function getColor(): string|array|null
+    public function getColor(): string | array | null
     {
         return match ($this) {
             self::OK, self::CREATED, self::ACCEPTED, self::NON_AUTHORITATIVE_INFORMATION,
