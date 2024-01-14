@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.6 - 2024-01-14
+
+### What's Changed
+
+* feat: enhance param deinterpolation in AmigoEndpoint by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/6
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.5...v1.0.0-alpha.6
+
 ## v1.0.0-alpha.5 - 2024-01-13
 
 ### What's Changed
