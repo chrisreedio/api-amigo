@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 use function config;
 
 class AmigoRecording extends Model
@@ -59,7 +60,8 @@ class AmigoRecording extends Model
 
     public function requests(): BelongsToMany
     {
-        return $this->belongsToMany(AmigoRequest::class,
+        return $this->belongsToMany(
+            AmigoRequest::class,
             'amigo_recording_amigo_request',
             'recording_id',
             'request_id'
@@ -80,7 +82,7 @@ class AmigoRecording extends Model
 
     public function stop(): bool
     {
-        if (!$this->started_at || $this->ended_at) {
+        if (! $this->started_at || $this->ended_at) {
             return false;
         }
 
@@ -89,5 +91,4 @@ class AmigoRecording extends Model
 
         return true;
     }
-
 }
