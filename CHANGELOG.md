@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.7 - 2024-01-16
+
+### What's Changed
+
+* feat: add AmigoRecording management by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/7
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.6...v1.0.0-alpha.7
+
 ## v1.0.0-alpha.6 - 2024-01-14
 
 ### What's Changed
