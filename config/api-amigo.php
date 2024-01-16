@@ -34,4 +34,8 @@ return [
 
         'signature_header' => 'X-Signature',
     ],
+
+    'models' => [
+        'user' => "App\Models\User",
+    ],
 ];
