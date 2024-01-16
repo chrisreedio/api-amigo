@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $tablePrefix = config('api-amigo.table_prefix');
+        Schema::create($tablePrefix . 'recordings', function (Blueprint $table) use ($tablePrefix) {
+            $table->id();
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('connector_id')
+                ->nullable()
+                ->constrained($tablePrefix . 'connectors')
+                ->cascadeOnDelete();
+
+            $table->string('name')->nullable();
+            $table->text('description')->nullable();
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('ended_at')->nullable();
+            $table->boolean('capture_body')
+                ->default(false)
+                ->comment('If true, capture the request body.');
+            $table->boolean('global')
+                ->default(false)
+                ->comment('If false, only capture requests from the user who created the recording.');
+            $table->timestamps();
+        });
+    }
+};

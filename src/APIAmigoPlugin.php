@@ -17,6 +17,7 @@ class APIAmigoPlugin implements Plugin
         $panel->resources([
             Resources\AmigoIntegrationResource::class,
             Resources\AmigoConnectorResource::class,
+            Resources\AmigoRecordingResource::class,
             Resources\AmigoEndpointResource::class,
             Resources\AmigoResponseResource::class,
             Resources\AmigoListenerResource::class,

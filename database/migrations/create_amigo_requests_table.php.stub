@@ -12,7 +12,15 @@ return new class extends Migration
         Schema::create($tablePrefix . 'requests', function (Blueprint $table) use ($tablePrefix) {
             $table->id();
 
-            $table->string('unique_id')->unique();
+            $table->string('unique_id')
+                ->unique();
+
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+
+            $table->text('path')->nullable();
 
             // $table->foreignId('integration_id')
             //     ->nullable()
