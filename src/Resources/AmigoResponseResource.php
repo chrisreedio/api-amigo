@@ -103,7 +103,9 @@ class AmigoResponseResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('connector_id')
+                    ->label('Connector')
+                    ->relationship('endpoint.connector', 'name'),
             ])
             ->defaultSort('created_at', 'desc')
             ->actions([
