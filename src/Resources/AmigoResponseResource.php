@@ -2,15 +2,12 @@
 
 namespace ChrisReedIO\APIAmigo\Resources;
 
-use Illuminate\Support\HtmlString;
-use function collect;
 use const JSON_PRETTY_PRINT;
 
 use ChrisReedIO\APIAmigo\Filament\Infolists\Components\ArrayEntry;
-
-// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\Pages;
+// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
@@ -18,6 +15,9 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
+
+use function collect;
 
 class AmigoResponseResource extends Resource
 {
@@ -155,26 +155,26 @@ class AmigoResponseResource extends Resource
 
                 Tables\Columns\TextColumn::make('endpoint.connector.name')
                     ->label('Connector')
-                    ->tooltip(fn(AmigoResponse $record) => $record->endpoint->connector->base_url)
+                    ->tooltip(fn (AmigoResponse $record) => $record->endpoint->connector->base_url)
                     ->badge()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('endpoint.name')
                     ->label('Endpoint')
-                    ->tooltip(fn(AmigoResponse $record) => $record->endpoint->path)
+                    ->tooltip(fn (AmigoResponse $record) => $record->endpoint->path)
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('status_code')
                     ->label('Status')
-                    ->formatStateUsing(fn(AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
+                    ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
                     ->badge()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('duration')
                     ->label('Duration')
                     ->badge()
-                    ->getStateUsing(fn(AmigoResponse $record) => ($record->duration * 1000) . 'ms')
+                    ->getStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
                     // ->suffix('s')
                     ->sortable(),
 

@@ -66,7 +66,7 @@ class AmigoRequest extends AmigoModel
         AmigoRecording::active()
             ->each(function (AmigoRecording $recording) use ($request, $user) {
                 // If this isn't a global recording and the user is not the owner, skip it
-                if (!$recording->global && (is_null($user) || $recording->user_id !== $user->id)) {
+                if (! $recording->global && (is_null($user) || $recording->user_id !== $user->id)) {
                     return;
                 }
                 // dd('Recording request', $recording, $request);
