@@ -87,6 +87,9 @@ class AmigoResponse extends AmigoModel
 
             // Should we log the response body?
             $recordBody = $request?->recordings()->active()->where('capture_body', true)->count() > 0;
+            if (! $recordBody) {
+                $recordBody = config('api-amigo.responses.capture_body');
+            }
 
             return $endpoint->responses()->create([
                 'request_id' => $request?->id,
