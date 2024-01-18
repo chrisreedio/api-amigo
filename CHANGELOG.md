@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.9 - 2024-01-18
+
+### What's Changed
+
+* feat: add global response body capture config by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/10
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.8...v1.0.0-alpha.9
+
 ## v1.0.0-alpha.8 - 2024-01-18
 
 ### What's Changed
