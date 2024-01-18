@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class AmigoRequestsRelationManager extends RelationManager
 {
@@ -34,7 +35,15 @@ class AmigoRequestsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('endpoint.name')
                     ->label('Endpoint'),
                 Tables\Columns\TextColumn::make('endpoint.path')
-                    ->label('Endpoint'),
+                    ->label('Endpoint')
+                    ->formatStateUsing(function ($state) {
+                        $replacedVars = preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $state);
+
+                        return new HtmlString("$replacedVars");
+                    })
+                    ->html()
+                    ->copyable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('response.duration')
                     ->label('Duration')
                     ->badge()

@@ -28,7 +28,7 @@ class AmigoResponse extends AmigoModel
     protected $casts = [
         'headers' => 'array',
         'status_code' => HTTPStatus::class,
-        // 'body' => 'array',
+        'body' => 'array',
     ];
 
     public function endpoint(): BelongsTo
@@ -82,13 +82,18 @@ class AmigoResponse extends AmigoModel
             $endpoint->connector->rate_limit_remaining = $rateLimitRemaining;
             $endpoint->connector->save();
 
+            // Find the request that this response belongs to (if any)
+            $request = AmigoRequest::where('unique_id', $amigoRequestId)->first();
+
+            // Should we log the response body?
+            $recordBody = $request?->recordings()->active()->where('capture_body', true)->count() > 0;
+
             return $endpoint->responses()->create([
-                'request_id' => AmigoRequest::whereUniqueId($amigoRequestId)->first()?->id,
+                'request_id' => $request?->id,
                 'status_code' => $saloonResponse->status(),
                 // 'status_message' => $response->status(),
                 'headers' => $saloonResponse->headers()->all(),
-                // TODO: Allow body tracking to be configurable
-                // 'body' => $saloonResponse->body(),
+                'body' => $recordBody ? $saloonResponse->body() : null,
                 'request_unique_id' => $amigoRequestId,
                 // 'rate_limit' => $rateLimit,
                 // 'rate_limit_remaining' => $rateLimitRemaining,
