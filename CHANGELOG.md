@@ -2,6 +2,15 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.8 - 2024-01-18
+
+### What's Changed
+
+* feat: add connector filter to AmigoResponseResource by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/8
+* feat: highlight path variables and add relations by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/9
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.7...v1.0.0-alpha.8
+
 ## v1.0.0-alpha.7 - 2024-01-16
 
 ### What's Changed
