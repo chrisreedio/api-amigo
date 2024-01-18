@@ -14,8 +14,6 @@ use function class_basename;
 use function get_class;
 use function get_parent_class;
 
-// use Illuminate\Database\Eloquent\SoftDeletes;
-
 class AmigoConnector extends Model
 {
     // use SoftDeletes;

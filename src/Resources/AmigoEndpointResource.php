@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 use function config;
 
@@ -66,6 +67,12 @@ class AmigoEndpointResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('path')
                     ->copyable()
+                    ->formatStateUsing(function ($state) {
+                        $replacedVars = preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $state);
+
+                        return new HtmlString("$replacedVars");
+                    })
+                    ->html()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('responses_count')
                     ->label('Responses')

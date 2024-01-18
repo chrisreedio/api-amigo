@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Saloon\Http\PendingRequest;
@@ -33,6 +34,16 @@ class AmigoRequest extends AmigoModel
         return $this->hasOne(AmigoResponse::class, 'request_id');
     }
 
+    public function recordings(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            AmigoRecording::class,
+            'amigo_recording_amigo_request',
+            'request_id',
+            'recording_id'
+        );
+    }
+
     public static function track(PendingRequest $pendingRequest): self
     {
         $requestId = Str::ulid()->toBase58();
@@ -48,13 +59,14 @@ class AmigoRequest extends AmigoModel
         $request = $endpoint->requests()->create([
             'unique_id' => $requestId,
             'user_id' => $user?->id,
+            'path' => $pendingRequest->getRequest()->resolveEndpoint(),
         ]);
 
         // Check for any active global recordings
         AmigoRecording::active()
             ->each(function (AmigoRecording $recording) use ($request, $user) {
                 // If this isn't a global recording and the user is not the owner, skip it
-                if (! $recording->global && (is_null($user) || $recording->user_id !== $user->id)) {
+                if (!$recording->global && (is_null($user) || $recording->user_id !== $user->id)) {
                     return;
                 }
                 // dd('Recording request', $recording, $request);
