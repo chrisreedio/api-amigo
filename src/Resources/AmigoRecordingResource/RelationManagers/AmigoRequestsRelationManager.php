@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Resources\AmigoRecordingResource\RelationManagers;
 
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
+use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -72,6 +73,7 @@ class AmigoRequestsRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->url(fn (AmigoRequest $record) => AmigoResponseResource::getUrl('view', $record->response)),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
