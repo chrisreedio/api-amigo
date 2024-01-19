@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.13 - 2024-01-19
+
+### What's Changed
+
+* Expanded recording page to full width by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/14
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.12...v1.0.0-alpha.13
+
 ## v1.0.0-alpha.12 - 2024-01-19
 
 ### What's Changed
