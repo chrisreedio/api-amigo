@@ -73,7 +73,8 @@ class AmigoRequestsRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make()->url(fn (AmigoRequest $record) => AmigoResponseResource::getUrl('view', ['record' => $record->response])),
+                Tables\Actions\ViewAction::make()
+                    ->url(fn (AmigoRequest $record) => AmigoResponseResource::getUrl('view', ['record' => $record->response])),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
