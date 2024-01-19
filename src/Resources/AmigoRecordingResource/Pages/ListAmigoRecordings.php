@@ -10,6 +10,8 @@ class ListAmigoRecordings extends ListRecords
 {
     protected static string $resource = AmigoRecordingResource::class;
 
+    protected ?string $maxContentWidth = 'full';
+
     protected function getHeaderActions(): array
     {
         return [
