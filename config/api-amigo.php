@@ -17,6 +17,7 @@ return [
     'responses' => [
         // This is a master switch for capturing response bodies, if off, can still be toggled on via recordings
         'capture_body' => env('AMIGO_CAPTURE_RESPONSE_BODY', false),
+        'capture_body_on_error' => env('AMIGO_CAPTURE_RESPONSE_BODY_ON_ERROR', true),
 
         // 'header_key' => env('AMIGO_RESPONSE_ID_KEY', 'X-Amigo-Response-Id'),
         'headers' => [
