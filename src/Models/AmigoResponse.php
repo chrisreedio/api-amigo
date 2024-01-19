@@ -86,9 +86,15 @@ class AmigoResponse extends AmigoModel
             $request = AmigoRequest::where('unique_id', $amigoRequestId)->first();
 
             // Should we log the response body?
+            // Do we have an active recording that wants to capture the body?
             $recordBody = $request?->recordings()->active()->where('capture_body', true)->count() > 0;
+            // Capture all bodies based on config
             if (! $recordBody) {
                 $recordBody = config('api-amigo.responses.capture_body');
+            }
+            // Capture Error bodies if enabled
+            if (! $recordBody) {
+                $recordBody = config('api-amigo.responses.capture_body_on_error') && $saloonResponse->failed();
             }
 
             return $endpoint->responses()->create([
