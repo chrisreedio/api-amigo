@@ -23,7 +23,7 @@ class ListAmigoListeners extends ListRecords
             //     ->action(function () {
             //
             //     }),
-            // Actions\CreateAction::make(),
+            Actions\CreateAction::make(),
         ];
     }
 }

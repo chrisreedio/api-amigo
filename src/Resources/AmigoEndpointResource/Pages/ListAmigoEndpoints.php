@@ -10,6 +10,8 @@ class ListAmigoEndpoints extends ListRecords
 {
     protected static string $resource = AmigoEndpointResource::class;
 
+    protected ?string $maxContentWidth = 'full';
+
     protected function getHeaderActions(): array
     {
         return [

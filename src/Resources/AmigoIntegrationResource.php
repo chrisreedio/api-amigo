@@ -3,7 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Resources;
 
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
-// use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\RelationManagers;
+use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\Pages;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -42,8 +42,8 @@ class AmigoIntegrationResource extends Resource
                     // ->required()
                     ->maxLength(255),
 
-                Forms\Components\ColorPicker::make('color')
-                    ->required(),
+                // Forms\Components\ColorPicker::make('color')
+                //     ->required(),
 
                 // Forms\Components\TextInput::make('total_requests')
                 //     ->required()
@@ -100,7 +100,7 @@ class AmigoIntegrationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AmigoConnectorsRelationManager::class,
         ];
     }
 

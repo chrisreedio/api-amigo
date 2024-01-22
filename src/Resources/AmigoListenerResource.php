@@ -38,7 +38,7 @@ class AmigoListenerResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->columns(4)
+            ->columns(2)
             ->schema([
                 Forms\Components\TextInput::make('display_name')
                     ->required()
@@ -65,7 +65,7 @@ class AmigoListenerResource extends Resource
 
                 Forms\Components\TextInput::make('url')
                     // ->default(fn (AmigoListener $record) => $record->url)
-                    ->placeholder(fn (AmigoListener $record) => 'default')
+                    ->placeholder(fn (?AmigoListener $record) => 'default')
                     ->readOnly()
                     // ->hintAction(
                     //     Forms\Components\Actions\Action::make('View Handlers')
