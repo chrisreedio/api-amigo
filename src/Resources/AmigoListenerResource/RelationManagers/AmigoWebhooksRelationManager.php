@@ -46,10 +46,12 @@ class AmigoWebhooksRelationManager extends RelationManager
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('error.message')
-                    ->label('Error')
-                    ->icon(fn (AmigoWebhook $record) => $record->error !== null ? 'far-triangle-exclamation' : null)
+                    ->label('Result / Error Message')
+                    // ->icon(fn (AmigoWebhook $record) => $record->error !== null ? 'far-triangle-exclamation' : null)
                     ->words(5)
-                    ->color(fn (AmigoWebhook $record) => $record->error ? Color::Rose : null),
+                    ->copyable()
+                    ->default('Success')
+                    ->color(fn (AmigoWebhook $record) => $record->error ? Color::Rose : Color::Green),
                 // ->tooltip(fn (AmigoWebhook $record) => $record->error ? new HtmlString('<code>' . $record->error['message'] . '</code>') : null),
 
                 // Tables\Columns\IconColumn::make('error.message')

@@ -6,8 +6,10 @@ namespace ChrisReedIO\APIAmigo\Resources;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 
 class AmigoWebhookResource extends Resource
 {
@@ -39,7 +41,42 @@ class AmigoWebhookResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('listener.display_name')
+                    ->label('Listener')
+                    ->url(fn (AmigoWebhook $record) => $record->listener ? AmigoListenerResource::getUrl('view', ['record' => $record->listener]) : null)
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('processed_at')
+                    ->label('Processed')
+                    ->icon(fn (AmigoWebhook $record) => $record->processed_at ? 'far-circle-check' : 'far-hourglass-start')
+                    ->default('Not Processed')
+                    ->getStateUsing(fn (AmigoWebhook $record) => $record->processed_at ? Carbon::make($record->processed_at)->format('M j, Y H:i:s') : 'Not Processed')
+                    // ->formatStateUsing(fn (AmigoWebhook $record) => $record->processed_at != null ? $record->processed_at : 'Not Processed')
+                    // ->formatStateUsing(fn (AmigoWebhook $record) => $record->processed_at != null ? $record->processed_at : 'Not Processed')
+                    ->color(fn (AmigoWebhook $record) => $record->processed_at ? 'success' : 'warning')
+                    // ->formatStateUsing(fn (AmigoRequest $record) => $record->response->status_code->value . ' ' . $record->response->status_code->getLabel())
+                    ->badge()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('error.message')
+                    ->label('Error')
+                    ->icon(fn (AmigoWebhook $record) => $record->error !== null ? 'far-triangle-exclamation' : null)
+                    ->words(5)
+                    ->color(fn (AmigoWebhook $record) => $record->error ? Color::Rose : null),
+
+                Tables\Columns\TextColumn::make('sender')
+                    ->label('Sender')
+                    // ->getStateUsing(fn (AmigoWebhook $record) => $record->sender)
+                    // ->html()
+                    ->copyable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Sent At')
+                    ->sortable()
+                    ->dateTime()
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
                 //
