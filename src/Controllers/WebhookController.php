@@ -25,7 +25,6 @@ class WebhookController extends Controller
 
         // Start building our webhook object
         $webhook = $listener->webhooks()->create([
-            // 'url' => $request->url(),
             'sender' => $request->ip(),
             'headers' => $request->headers->all(),
             'payload' => $payload,
@@ -38,19 +37,11 @@ class WebhookController extends Controller
             return response()->json(['error' => 'Invalid Configuration'], 500);
         }
 
-        // Debug echo payload
-        // return response()->json([
-        //     'listener' => $listener->toArray(),
-        //     'webhook' => $webhook->toArray(),
-        // ]);
-        // return response()->json($payload);
-
         // Get the listener's handler
         /** @var ProcessWebhookJob $handler */
         $handler = $listener->handler;
         // Create a new instance of the handler and dispatch it
-        // $job = new $handler($webhook);
-        // $job->dispatchSync(); // TODO - Queue this job
+        // TODO - Queue this job
         $job = $handler::dispatchSync($webhook);
 
         return response()->json(['webhook_unique_id' => $webhook->unique_id]);

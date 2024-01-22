@@ -30,6 +30,7 @@ class AmigoRequest extends AmigoModel
         'user_id',
         'unique_id',
         'endpoint_id',
+        'path',
     ];
 
     public function user(): BelongsTo
