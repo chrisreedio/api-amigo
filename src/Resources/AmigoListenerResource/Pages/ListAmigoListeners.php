@@ -10,6 +10,8 @@ class ListAmigoListeners extends ListRecords
 {
     protected static string $resource = AmigoListenerResource::class;
 
+    protected ?string $maxContentWidth = 'full';
+
     protected function getHeaderActions(): array
     {
         return [
@@ -23,7 +25,7 @@ class ListAmigoListeners extends ListRecords
             //     ->action(function () {
             //
             //     }),
-            // Actions\CreateAction::make(),
+            Actions\CreateAction::make(),
         ];
     }
 }

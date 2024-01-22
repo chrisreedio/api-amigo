@@ -42,6 +42,13 @@ class AmigoEndpoint extends AmigoModel
         return Str::title(str_replace('_', ' ', $snake));
     }
 
+    public function getStyledPathAttribute(): string
+    {
+        $path = $this->attributes['path'];
+
+        return preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $path);
+    }
+
     public function connector(): BelongsTo
     {
         return $this->belongsTo(AmigoConnector::class, 'connector_id');
@@ -129,8 +136,11 @@ class AmigoEndpoint extends AmigoModel
             });
 
         // Get constructor parameters
-        $constructorParameters = collect($reflection->getConstructor()->getParameters())
-            ->map->getName();
+        $constructor = $reflection->getConstructor();
+        if ($constructor === null) {
+            return collect(); // No constructor, no parameters
+        }
+        $constructorParameters = collect($constructor->getParameters())->map->getName();
 
         // Filter properties based on constructor parameters and non-null values
         return $properties

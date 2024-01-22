@@ -8,5 +8,5 @@ use Filament\Infolists\Components\KeyValueEntry;
 // class ArrayEntry extends Entry
 class ArrayEntry extends KeyValueEntry
 {
-    protected string $view = 'infolists.components.array-entry';
+    protected string $view = 'api-amigo::infolists.components.array-entry';
 }

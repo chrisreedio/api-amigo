@@ -5,6 +5,7 @@ namespace ChrisReedIO\APIAmigo\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Str;
 use Saloon\Http\Connectors\NullConnector;
 use Saloon\Http\PendingRequest;
@@ -46,6 +47,11 @@ class AmigoConnector extends Model
         return $this->hasMany(AmigoEndpoint::class, 'connector_id');
     }
 
+    public function requests(): HasManyThrough
+    {
+        return $this->hasManyThrough(AmigoRequest::class, AmigoEndpoint::class, 'connector_id', 'endpoint_id');
+    }
+
     public static function track(PendingRequest $pendingRequest): self
     {
         $saloonConnector = $pendingRequest->getConnector();
@@ -71,6 +77,8 @@ class AmigoConnector extends Model
         $integrationName = end($namespaceSegments);
         if ($integrationName === 'Requests') {
             $integrationName = $namespaceSegments[count($namespaceSegments) - 2];
+            // Solo Request - No connector but still within the integration
+            // $integrationName = 'Solo Requests';
         }
 
         $integration = AmigoIntegration::firstOrCreate([
@@ -78,7 +86,7 @@ class AmigoConnector extends Model
         ]);
 
         return self::firstOrCreate([
-            'name' => class_basename($saloonConnector),
+            'name' => (isset($parentClass) && $parentClass === SoloRequest::class) ? 'Solo Requests' : class_basename($saloonConnector),
             'integration_id' => $integration->id,
         ], [
             'base_url' => parse_url($pendingRequest->getUrl())['host'],

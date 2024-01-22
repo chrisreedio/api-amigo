@@ -10,6 +10,8 @@ class ListAmigoConnectors extends ListRecords
 {
     protected static string $resource = AmigoConnectorResource::class;
 
+    protected ?string $maxContentWidth = 'full';
+
     protected function getHeaderActions(): array
     {
         return [

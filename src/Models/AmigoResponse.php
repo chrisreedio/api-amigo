@@ -11,6 +11,21 @@ use function class_basename;
 use function config;
 use function dump;
 
+/**
+ * AmigoResponse
+ *
+ * Represents a response from an API request
+ *
+ * @property int $id
+ * @property int $endpoint_id
+ * @property int $request_id
+ * @property string $request_unique_id
+ * @property array $headers
+ * @property array $body
+ * @property HTTPStatus $status_code
+ * @property string $status_message
+ * @property float $duration
+ */
 class AmigoResponse extends AmigoModel
 {
     protected $fillable = [
@@ -97,12 +112,14 @@ class AmigoResponse extends AmigoModel
                 $recordBody = config('api-amigo.responses.capture_body_on_error') && $saloonResponse->failed();
             }
 
+            // dd("'" . $saloonResponse->body() . "'");
+
             return $endpoint->responses()->create([
                 'request_id' => $request?->id,
                 'status_code' => $saloonResponse->status(),
                 // 'status_message' => $response->status(),
                 'headers' => $saloonResponse->headers()->all(),
-                'body' => $recordBody ? $saloonResponse->body() : null,
+                'body' => $recordBody ? trim($saloonResponse->body()) : null,
                 'request_unique_id' => $amigoRequestId,
                 // 'rate_limit' => $rateLimit,
                 // 'rate_limit_remaining' => $rateLimitRemaining,

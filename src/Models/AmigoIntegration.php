@@ -21,6 +21,6 @@ class AmigoIntegration extends Model
 
     public function connectors(): HasMany
     {
-        return $this->hasMany(AmigoConnector::class);
+        return $this->hasMany(AmigoConnector::class, 'integration_id');
     }
 }

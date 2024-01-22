@@ -10,6 +10,20 @@ use Saloon\Http\PendingRequest;
 
 use function config;
 
+/**
+ * AmigoRequest
+ *
+ * Represents a request to an API
+ *
+ * @property int $id
+ * @property int $endpoint_id
+ * @property string $unique_id
+ * @property string $path
+ * @property int $user_id
+ * @property AmigoEndpoint $endpoint
+ * @property AmigoResponse $response
+ * @property AmigoRecording[] $recordings
+ */
 class AmigoRequest extends AmigoModel
 {
     protected $fillable = [

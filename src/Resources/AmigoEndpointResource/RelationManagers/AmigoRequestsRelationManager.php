@@ -1,6 +1,6 @@
 <?php
 
-namespace ChrisReedIO\APIAmigo\Resources\AmigoRecordingResource\RelationManagers;
+namespace ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\RelationManagers;
 
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource;
@@ -18,8 +18,7 @@ class AmigoRequestsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('endpoint.name')
-                    ->label('Endpoint')
+                Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -30,47 +29,58 @@ class AmigoRequestsRelationManager extends RelationManager
         return $table
             // ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('endpoint.connector.name')
-                    ->label('Connector'),
                 Tables\Columns\TextColumn::make('endpoint.name')
-                    ->label('Endpoint'),
-                Tables\Columns\TextColumn::make('endpoint.styled_path')
                     ->label('Endpoint')
+                    ->tooltip(fn (AmigoRequest $record) => $record->endpoint->path)
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('path')
+                    ->label('Path')
+                    ->getStateUsing(fn (AmigoRequest $record) => $record->path ?? $record->endpoint->styled_path)
                     ->html()
                     ->copyable()
                     ->searchable(),
+
+                Tables\Columns\TextColumn::make('response.status_code')
+                    ->label('Status')
+                    ->placeholder('No Response')
+                    ->formatStateUsing(fn (AmigoRequest $record) => $record->response->status_code->value . ' ' . $record->response->status_code->getLabel())
+                    ->badge()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('response.duration')
                     ->label('Duration')
                     ->badge()
+
+                    ->getStateUsing(fn (AmigoRequest $record) => $record->response ? ($record->response->duration * 1000) . 'ms' : null)
                     ->placeholder('No Response')
-                    ->getStateUsing(fn (AmigoRequest $record) => $record->response !== null ? ($record->response->duration * 1000) . 'ms' : null)
                     // ->suffix('s')
                     ->sortable(),
+
+                // Tables\Columns\TextColumn::make('requests_count')
+                //     ->label('Requests')
+                //     ->badge()
+                //     ->counts('requests')
+                //     ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Sent At')
                     ->sortable()
                     ->dateTime()
                     ->toggleable(isToggledHiddenByDefault: false),
-
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
-                Tables\Filters\SelectFilter::make('connector_id')
-                    ->relationship('endpoint.connector', 'name'),
-                Tables\Filters\SelectFilter::make('endpoint_id')
-                    ->relationship('endpoint', 'name')
-                    ->searchable()
-                    ->multiple()
-                    ->preload(),
+                //
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make()
-                    ->url(fn (AmigoRequest $record) => $record->response ? AmigoResponseResource::getUrl('view', ['record' => $record->response]) : null),
-                Tables\Actions\DeleteAction::make(),
+                // Tables\Actions\EditAction::make(),
+                // Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()->url(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

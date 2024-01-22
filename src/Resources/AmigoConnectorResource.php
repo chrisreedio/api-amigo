@@ -3,8 +3,8 @@
 namespace ChrisReedIO\APIAmigo\Resources;
 
 use ChrisReedIO\APIAmigo\Models\AmigoConnector;
-// use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\Pages;
+use ChrisReedIO\APIAmigo\Resources\AmigoConnectorResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -38,12 +38,17 @@ class AmigoConnectorResource extends Resource
                     ->readOnly()
                     ->maxLength(255),
 
+                Forms\Components\Select::make('integration_id')
+                    ->relationship('integration', 'name')
+                    ->required(),
+
                 Forms\Components\TextInput::make('display_name')
                     // ->required()
                     ->maxLength(255),
 
                 Forms\Components\ColorPicker::make('color')
                     ->required(),
+
                 // Forms\Components\TextInput::make('total_requests')
                 //     ->required()
                 //     ->numeric(),
@@ -82,6 +87,18 @@ class AmigoConnectorResource extends Resource
                     ->badge()
                     ->suffix('%')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('endpoints_count')
+                    ->label('Endpoints')
+                    ->badge()
+                    ->counts('endpoints')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('requests_count')
+                    ->label('Requests')
+                    ->badge()
+                    ->counts('requests')
+                    ->sortable(),
+
                 // Tables\Columns\TextColumn::make('deleted_at')
                 //     ->dateTime()
                 //     ->sortable()
@@ -99,7 +116,7 @@ class AmigoConnectorResource extends Resource
                 //
             ])
             ->actions([
-                // Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -112,7 +129,8 @@ class AmigoConnectorResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AmigoEndpointsRelationManager::class,
+            RelationManagers\AmigoRequestsRelationManager::class,
         ];
     }
 
@@ -120,9 +138,9 @@ class AmigoConnectorResource extends Resource
     {
         return [
             'index' => Pages\ListAmigoConnectors::route('/'),
-            'create' => Pages\CreateAmigoConnector::route('/create'),
+            // 'create' => Pages\CreateAmigoConnector::route('/create'),
             'view' => Pages\ViewAmigoConnector::route('/{record}'),
-            'edit' => Pages\EditAmigoConnector::route('/{record}/edit'),
+            // 'edit' => Pages\EditAmigoConnector::route('/{record}/edit'),
         ];
     }
 }

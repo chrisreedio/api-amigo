@@ -28,8 +28,10 @@ abstract class ProcessWebhookJob implements ShouldQueue
                 // Mark the webhook as successfully processed
                 $this->webhook->complete();
             } else {
-                // Mark the webhook as failed
-                $this->webhook->fail(500, 'An unknown error occurred.');
+                // Mark the webhook as failed with a generic error if not already marked as failed
+                if ($this->webhook->error === null) {
+                    $this->webhook->fail(500, 'An unknown error occurred.');
+                }
             }
         } catch (\Exception $exception) {
             // Log the exception and mark the webhook as failed

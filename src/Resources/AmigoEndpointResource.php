@@ -2,14 +2,13 @@
 
 namespace ChrisReedIO\APIAmigo\Resources;
 
-// use ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
+use ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 use function config;
 
@@ -35,19 +34,22 @@ class AmigoEndpointResource extends Resource
     {
         return $form
             ->schema([
+
+                Forms\Components\TextInput::make('name')
+                    ->maxLength(255),
                 Forms\Components\Select::make('connector_id')
                     ->relationship('connector', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('method')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('name')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('class')
-                    ->maxLength(255),
                 Forms\Components\TextInput::make('path')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('method')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('class')
+                    ->columnSpanFull()
+                    ->maxLength(255),
+
             ]);
     }
 
@@ -65,13 +67,9 @@ class AmigoEndpointResource extends Resource
                     ->searchable()
                     ->badge()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('path')
+                Tables\Columns\TextColumn::make('styled_path')
                     ->copyable()
-                    ->formatStateUsing(function ($state) {
-                        $replacedVars = preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $state);
-
-                        return new HtmlString("$replacedVars");
-                    })
+                    ->sortable()
                     ->html()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('responses_count')
@@ -103,7 +101,7 @@ class AmigoEndpointResource extends Resource
                     ->relationship('connector', 'name'),
             ])
             ->actions([
-                // Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -116,7 +114,7 @@ class AmigoEndpointResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AmigoRequestsRelationManager::class,
         ];
     }
 
@@ -125,7 +123,7 @@ class AmigoEndpointResource extends Resource
         return [
             'index' => \ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Pages\ListAmigoEndpoints::route('/'),
             // 'create' => \ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Pages\CreateAmigoEndpoint::route('/create'),
-            // 'view' => \ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Pages\ViewAmigoEndpoint::route('/{record}'),
+            'view' => \ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Pages\ViewAmigoEndpoint::route('/{record}'),
             // 'edit' => \ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Pages\EditAmigoEndpoint::route('/{record}/edit'),
         ];
     }

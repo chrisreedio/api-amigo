@@ -23,8 +23,10 @@ return new class extends Migration {
 
             $table->string('unique_id')->unique();
 
+            $table->string('sender')->nullable();
+
             $table->jsonb('headers')->nullable();
-            $table->text('body')->nullable();
+            $table->text('payload')->nullable();
 
             $table->integer('status_code')->nullable()->index();
             $table->string('status_message')->nullable();

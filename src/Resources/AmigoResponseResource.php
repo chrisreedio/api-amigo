@@ -5,17 +5,19 @@ namespace ChrisReedIO\APIAmigo\Resources;
 use const JSON_PRETTY_PRINT;
 
 use ChrisReedIO\APIAmigo\Filament\Infolists\Components\ArrayEntry;
+use ChrisReedIO\APIAmigo\Filament\Infolists\Components\ResponseBodyViewer;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\Pages;
-// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
+// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
+use Spatie\ShikiPhp\Shiki;
 
 use function collect;
 
@@ -40,10 +42,48 @@ class AmigoResponseResource extends Resource
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
+            ->columns(3)
             ->schema([
-                Infolists\Components\TextEntry::make('connector.integration.name')
+                Infolists\Components\TextEntry::make('endpoint.connector.integration.name')
                     ->label('Integration')
-                    ->icon('far-cloud'),
+                    ->url(fn (AmigoResponse $record) => AmigoIntegrationResource::getUrl('view', ['record' => $record->endpoint->connector->integration]))
+                    ->icon('far-integral'),
+
+                Infolists\Components\TextEntry::make('endpoint.connector.name')
+                    ->label('Connector')
+                    ->url(fn (AmigoResponse $record) => AmigoConnectorResource::getUrl('view', ['record' => $record->endpoint->connector]))
+                    // ->icon('far-outlet'),
+                    ->icon('far-plug'),
+
+                Infolists\Components\TextEntry::make('endpoint.name')
+                    ->label('Endpoint')
+                    ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
+                    ->icon('far-outlet'),
+
+                Infolists\Components\TextEntry::make('status_code')
+                    ->label('Status')
+                    ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
+                    ->badge(),
+
+                Infolists\Components\TextEntry::make('duration')
+                    ->label('Duration')
+                    ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
+                    // ->suffix('s')
+                    ->icon('far-stopwatch')
+                    ->badge(),
+
+                Infolists\Components\TextEntry::make('request.path')
+                    ->label('Request Path')
+                    ->copyable()
+                    // ->url(fn (AmigoResponse $record) => AmigoRequestResource::getUrl('view', ['record' => $record->request]))
+                    ->formatStateUsing(function ($state) {
+                        // $replacedVars = preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $state);
+                        $formatted = '<code>' . $state . '</code>';
+
+                        return new HtmlString($formatted);
+                    })
+                    ->icon('far-sign-post'),
+
                 // Infolists\Components\TextEntry::make('body')
                 //     ->columnSpanFull()
                 //     ->getStateUsing(fn(AmigoResponse $record) => json_encode($record->body, JSON_PRETTY_PRINT))
@@ -60,9 +100,40 @@ class AmigoResponseResource extends Resource
                 //     ->html()
                 //     ->grow(),
 
-                ArrayEntry::make('body')
-                    ->label('Body Contents')
-                    ->columnSpanFull(),
+                // ResponseBodyViewer::make('body')
+                //     ->columnSpanFull()
+                //     ->label('Response Body Contents')
+                //     ->getStateUsing(function (AmigoResponse $record) {
+                //         // return json_encode(json_decode($record->body, true), JSON_PRETTY_PRINT);
+                //         $responseBody = json_encode(json_decode($record->body, true), JSON_PRETTY_PRINT);
+                //         return Shiki::highlight(
+                //             code: $record->body,
+                //             language: 'json',
+                //             theme: 'github-light',
+                //             // theme: 'github-dark',
+                //         );
+                //     }),
+
+                Infolists\Components\TextEntry::make('body')
+                    ->columnSpanFull()
+                    ->label('Response Body Contents')
+                    ->getStateUsing(function (AmigoResponse $record) {
+                        return json_encode(json_decode($record->body, true), JSON_PRETTY_PRINT);
+                    })
+                    ->formatStateUsing(function ($state) {
+                        return '```json \n' . $state . '\n```';
+                    })
+                    // ->html(),
+                    ->copyable()
+                    ->maxWidth('2xl')
+                    ->markdown()
+                    ->grow(),
+
+                // ArrayEntry::make('body')
+                //     ->label('Body Contents')
+                //
+                //     ->columnSpanFull(),
+
                 // Infolists\Components\KeyValueEntry::make('body')
                 //     ->label('Connector'),
                 // ->icon('far-outlet')

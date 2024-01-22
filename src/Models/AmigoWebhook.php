@@ -8,11 +8,29 @@ use Illuminate\Support\Str;
 
 use function now;
 
+/**
+ * Class AmigoWebhook
+ *
+ * @property int $id
+ * @property int $listener_id
+ * @property string $unique_id
+ * @property string $url
+ * @property string $sender
+ * @property array $headers
+ * @property array $payload
+ * @property int $status
+ * @property string $status_message
+ * @property string $processed_at
+ * @property array $error
+ * @property AmigoListener $listener
+ */
 class AmigoWebhook extends AmigoModel
 {
     protected $fillable = [
+        'listener_id',
         'unique_id',
         'url',
+        'sender',
         'headers',
         'payload',
         'status',
