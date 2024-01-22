@@ -12,7 +12,6 @@ use Saloon\Http\PendingRequest;
 use Saloon\Http\SoloRequest;
 
 use function class_basename;
-use function defined;
 use function get_class;
 use function get_parent_class;
 

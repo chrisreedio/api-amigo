@@ -104,11 +104,11 @@ class AmigoResponse extends AmigoModel
             // Do we have an active recording that wants to capture the body?
             $recordBody = $request?->recordings()->active()->where('capture_body', true)->count() > 0;
             // Capture all bodies based on config
-            if (!$recordBody) {
+            if (! $recordBody) {
                 $recordBody = config('api-amigo.responses.capture_body');
             }
             // Capture Error bodies if enabled
-            if (!$recordBody) {
+            if (! $recordBody) {
                 $recordBody = config('api-amigo.responses.capture_body_on_error') && $saloonResponse->failed();
             }
 

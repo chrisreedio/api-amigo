@@ -34,6 +34,7 @@ class WebhookController extends Controller
         // If the listener does not have a handler, we can't do anything with it
         if ($listener->handler === null) {
             $webhook->fail(500, 'No handler configured');
+
             return response()->json(['error' => 'Invalid Configuration'], 500);
         }
 

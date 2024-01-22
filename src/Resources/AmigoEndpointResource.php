@@ -2,14 +2,13 @@
 
 namespace ChrisReedIO\APIAmigo\Resources;
 
-use ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
+use ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 use function config;
 
@@ -35,7 +34,6 @@ class AmigoEndpointResource extends Resource
     {
         return $form
             ->schema([
-
 
                 Forms\Components\TextInput::make('name')
                     ->maxLength(255),

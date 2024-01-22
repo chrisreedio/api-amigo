@@ -11,6 +11,7 @@ class ListAmigoListeners extends ListRecords
     protected static string $resource = AmigoListenerResource::class;
 
     protected ?string $maxContentWidth = 'full';
+
     protected function getHeaderActions(): array
     {
         return [

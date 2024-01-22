@@ -3,8 +3,8 @@
 namespace ChrisReedIO\APIAmigo\Resources;
 
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
-use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\Pages;
+use ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

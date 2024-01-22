@@ -7,10 +7,8 @@ use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class AmigoRequestsRelationManager extends RelationManager
 {

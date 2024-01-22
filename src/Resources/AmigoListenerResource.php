@@ -2,14 +2,14 @@
 
 namespace ChrisReedIO\APIAmigo\Resources;
 
-use ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Facades\APIAmigo;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use ChrisReedIO\APIAmigo\Requests\SimpleWebhook;
+use ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Infolists\Infolist;
 use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
