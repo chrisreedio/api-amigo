@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.16 - 2024-01-22
+
+### What's Changed
+
+* refactor: comment out AmigoRequest Endpoint column by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/17
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.15...v1.0.0-alpha.16
+
 ## v1.0.0-alpha.15 - 2024-01-22
 
 ### What's Changed
