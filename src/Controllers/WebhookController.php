@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Controllers;
 
+use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,15 +22,37 @@ class WebhookController extends Controller
         }
 
         $payload = json_decode($request->getContent(), true);
-        // Debug echo payload
-        return response()->json([
-            'listener' => $listener->toArray(),
+
+        // Start building our webhook object
+        $webhook = $listener->webhooks()->create([
+            // 'url' => $request->url(),
+            'sender' => $request->ip(),
+            'headers' => $request->headers->all(),
+            'payload' => $payload,
         ]);
+
+        // If the listener does not have a handler, we can't do anything with it
+        if ($listener->handler === null) {
+            $webhook->fail(500, 'No handler configured');
+            return response()->json(['error' => 'Invalid Configuration'], 500);
+        }
+
+        // Debug echo payload
+        // return response()->json([
+        //     'listener' => $listener->toArray(),
+        //     'webhook' => $webhook->toArray(),
+        // ]);
         // return response()->json($payload);
 
-        // TODO: Enqueue the handling of the job
+        // Get the listener's handler
+        /** @var ProcessWebhookJob $handler */
+        $handler = $listener->handler;
+        // Create a new instance of the handler and dispatch it
+        // $job = new $handler($webhook);
+        // $job->dispatchSync(); // TODO - Queue this job
+        $job = $handler::dispatchSync($webhook);
 
-        return response()->json(['success' => true]);
+        return response()->json(['webhook_unique_id' => $webhook->unique_id]);
     }
 
     private function validateSignature(Request $request, ?string $secret = null): bool
@@ -42,9 +65,14 @@ class WebhookController extends Controller
 
         $signature = $request->header($signatureHeaderKey);
         $payload = $request->getContent();
-        dd($payload);
+
+        // dump($signature);
+        // dump($payload);
+        // dump('secret', $secret);
 
         $hash = hash_hmac('sha256', $payload, $secret);
+
+        // dd($hash);
 
         return $hash === $signature;
     }

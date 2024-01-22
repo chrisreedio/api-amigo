@@ -38,7 +38,13 @@ class ViewAmigoListener extends ViewRecord
                     // $secret = $record->webhook_secret;
                     // $payload = $data['payload'];
 
+                    // dump("secret: '{$record->webhook_secret}'");
+                    // dump("payload: '{$data['payload']}'");
+                    // dump('payload: ', $data['payload']);
+
                     $hash = hash_hmac('sha256', $data['payload'], $record->webhook_secret);
+
+                    // dd("hash: '$hash'");
 
                     Notification::make()
                         ->title('Signature Generated')

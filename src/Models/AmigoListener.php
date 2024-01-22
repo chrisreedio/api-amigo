@@ -60,4 +60,20 @@ class AmigoListener extends AmigoModel
             ])
         );
     }
+
+    // public function validatePayload(string $payload, string $userSignature): bool
+    // {
+    //     $secret = $this->webhook_secret;
+    //     if ($secret === null) {
+    //         $secret = $this->integration->webhook_secret;
+    //     }
+    //     $generatedSignature = hash_hmac('sha256', $payload, $secret);
+    //
+    //     dump("User Signature: '$userSignature'");
+    //     dump("Generated Signature: '$generatedSignature'");
+    //
+    //     return $userSignature == $generatedSignature;
+    //
+    //     // return $userSignature == hash_hmac('sha256', $payload, $secret);
+    // }
 }
