@@ -29,11 +29,11 @@ class AmigoRequestsRelationManager extends RelationManager
         return $table
             // ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('endpoint.name')
-                    ->label('Endpoint')
-                    ->tooltip(fn (AmigoRequest $record) => $record->endpoint->path)
-                    ->searchable()
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('endpoint.name')
+                //     ->label('Endpoint')
+                //     ->tooltip(fn (AmigoRequest $record) => $record->endpoint->path)
+                //     ->searchable()
+                //     ->sortable(),
 
                 Tables\Columns\TextColumn::make('path')
                     ->label('Path')
