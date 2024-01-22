@@ -44,6 +44,8 @@ class AmigoWebhookResource extends Resource
             ->filters([
                 //
             ])
+            ->emptyStateHeading('No Webhooks')
+            ->emptyStateDescription('Setup a listener to start receiving webhooks.')
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

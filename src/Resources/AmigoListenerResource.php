@@ -2,12 +2,14 @@
 
 namespace ChrisReedIO\APIAmigo\Resources;
 
-// use ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\RelationManagers;
+use ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Facades\APIAmigo;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use ChrisReedIO\APIAmigo\Requests\SimpleWebhook;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
+use Filament\Infolists;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -34,6 +36,17 @@ class AmigoListenerResource extends Resource
     {
         return number_format(static::getModel()::count());
     }
+
+    // public static function infolist(Infolist $infolist): Infolist
+    // {
+    //     return $infolist
+    //         ->schema([
+    //             Infolists\Components\TextEntry::make('display_name'),
+    //
+    //             Infolists\Components\TextEntry::make('integration.name')
+    //                 ->label('Integration'),
+    //         ]);
+    // }
 
     public static function form(Form $form): Form
     {
@@ -63,27 +76,35 @@ class AmigoListenerResource extends Resource
                     ->options(fn () => collect(APIAmigo::getWebhookHandlers())->mapWithKeys(fn ($handler) => [$handler => $handler]))
                     ->required(),
 
-                Forms\Components\TextInput::make('url')
-                    // ->default(fn (AmigoListener $record) => $record->url)
-                    ->placeholder(fn (?AmigoListener $record) => 'default')
-                    ->readOnly()
-                    // ->hintAction(
-                    //     Forms\Components\Actions\Action::make('View Handlers')
-                    //         // ->icon('heroicon-s-clipboard')
-                    //         ->action(function ($livewire, $record) {
-                    //             $livewire->js(
-                    //                 'window.navigator.clipboard.writeText("' . $record->url . '");
-                    //             $tooltip("Copied to clipboard!", { timeout: 1500 });'
-                    //             );
-                    //         })
-                    // )
-                    ->columnSpan(2)
-                    ->default('Generated on save')
-                    ->label('Webhook URL'),
+                // Forms\Components\TextInput::make('url_preview')
+                //     ->visibleOn(['view'])
+                //     // ->columnSpan(2)
+                //     ->readOnly()
+                //     ->placeholder(fn (?AmigoListener $record) => $record->url)
+                //     // ->default('Generated on save')
+                //     ->label('URL Preview'),
 
-                Forms\Components\ColorPicker::make('color')
-                    ->columnSpan(2)
-                    ->helperText('Leave blank to use the integration color.'),
+                // Forms\Components\TextInput::make('url')
+                //     // ->default(fn (AmigoListener $record) => $record->url)
+                //     ->placeholder(fn (?AmigoListener $record) => 'default')
+                //     ->readOnly()
+                //     // ->hintAction(
+                //     //     Forms\Components\Actions\Action::make('View Handlers')
+                //     //         // ->icon('heroicon-s-clipboard')
+                //     //         ->action(function ($livewire, $record) {
+                //     //             $livewire->js(
+                //     //                 'window.navigator.clipboard.writeText("' . $record->url . '");
+                //     //             $tooltip("Copied to clipboard!", { timeout: 1500 });'
+                //     //             );
+                //     //         })
+                //     // )
+                //     ->columnSpan(2)
+                //     ->default('Generated on save')
+                //     ->label('Webhook URL'),
+
+                // Forms\Components\ColorPicker::make('color')
+                //     ->columnSpan(2)
+                //     ->helperText('Leave blank to use the integration color.'),
             ]);
     }
 
@@ -144,7 +165,7 @@ class AmigoListenerResource extends Resource
                 //         dd($response->json());
                 //
                 //     }),
-                // Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -157,7 +178,7 @@ class AmigoListenerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AmigoWebhooksRelationManager::class,
         ];
     }
 
@@ -166,7 +187,7 @@ class AmigoListenerResource extends Resource
         return [
             'index' => \ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\Pages\ListAmigoListeners::route('/'),
             // 'create' => \ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\Pages\CreateAmigoListener::route('/create'),
-            // 'view' => \ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\Pages\ViewAmigoListener::route('/{record}'),
+            'view' => \ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\Pages\ViewAmigoListener::route('/{record}'),
             // 'edit' => \ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\Pages\EditAmigoListener::route('/{record}/edit'),
         ];
     }
