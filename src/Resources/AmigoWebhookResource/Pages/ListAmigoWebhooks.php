@@ -10,6 +10,7 @@ class ListAmigoWebhooks extends ListRecords
 {
     protected static string $resource = AmigoWebhookResource::class;
 
+    protected ?string $maxContentWidth = 'full';
     protected function getHeaderActions(): array
     {
         return [
