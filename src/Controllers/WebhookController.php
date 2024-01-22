@@ -21,6 +21,11 @@ class WebhookController extends Controller
         }
 
         $payload = json_decode($request->getContent(), true);
+        // Debug echo payload
+        return response()->json([
+            'listener' => $listener->toArray(),
+        ]);
+        // return response()->json($payload);
 
         // TODO: Enqueue the handling of the job
 
@@ -37,6 +42,7 @@ class WebhookController extends Controller
 
         $signature = $request->header($signatureHeaderKey);
         $payload = $request->getContent();
+        dd($payload);
 
         $hash = hash_hmac('sha256', $payload, $secret);
 
