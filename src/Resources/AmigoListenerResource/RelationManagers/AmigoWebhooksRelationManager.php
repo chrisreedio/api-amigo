@@ -4,7 +4,6 @@ namespace ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\RelationManagers;
 
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
-use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Resources\AmigoWebhookResource;
 use Filament\Forms;
 use Filament\Forms\Form;

@@ -62,7 +62,7 @@ class AmigoWebhookResource extends Resource
                     ->label('Listener Path')
                     ->copyable()
                     ->columnSpan(2)
-                    ->formatStateUsing(fn($state) => new HtmlString('<code>' . $state . '</code>'))
+                    ->formatStateUsing(fn ($state) => new HtmlString('<code>' . $state . '</code>'))
                     ->icon('far-sign-post'),
 
                 Infolists\Components\TextEntry::make('listener.handler')
@@ -100,8 +100,7 @@ class AmigoWebhookResource extends Resource
                         0 => 'warning',
                         default => 'primary',
                     })
-                    ->icon(fn (AmigoWebhook $record) =>
-                    match ($record->processing_time) {
+                    ->icon(fn (AmigoWebhook $record) => match ($record->processing_time) {
                         null => 'far-hourglass-start',
                         0 => 'far-bolt-lightning',
                         default => 'far-stopwatch',
