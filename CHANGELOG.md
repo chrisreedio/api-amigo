@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.19 - 2024-01-23
+
+### What's Changed
+
+* feat: improve AmigoResponse formatting by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/21
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.18...v1.0.0-alpha.19
+
 ## v1.0.0-alpha.18 - 2024-01-23
 
 ### What's Changed
