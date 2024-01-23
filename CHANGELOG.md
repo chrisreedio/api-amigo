@@ -2,6 +2,15 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.18 - 2024-01-23
+
+### What's Changed
+
+* refactor: streamline webhook display logic by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/19
+* feat: improve webhook view and error handling by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/20
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.17...v1.0.0-alpha.18
+
 ## v1.0.0-alpha.17 - 2024-01-22
 
 ### What's Changed
