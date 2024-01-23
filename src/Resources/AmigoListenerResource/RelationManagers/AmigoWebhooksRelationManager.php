@@ -4,7 +4,7 @@ namespace ChrisReedIO\APIAmigo\Resources\AmigoListenerResource\RelationManagers;
 
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
-use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource;
+use ChrisReedIO\APIAmigo\Resources\AmigoWebhookResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -120,7 +120,7 @@ class AmigoWebhooksRelationManager extends RelationManager
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 // Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ViewAction::make()->url(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response])),
+                Tables\Actions\ViewAction::make()->url(fn (AmigoWebhook $record) => AmigoWebhookResource::getUrl('view', ['record' => $record])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
