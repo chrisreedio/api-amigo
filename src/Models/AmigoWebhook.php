@@ -52,6 +52,15 @@ class AmigoWebhook extends AmigoModel
         });
     }
 
+    public function getProcessingTimeAttribute(): ?int
+    {
+        if ($this->processed_at === null) {
+            return null;
+        }
+
+        return $this->created_at->diffInSeconds($this->processed_at);
+    }
+
     public function listener(): BelongsTo
     {
         return $this->belongsTo(AmigoListener::class, 'listener_id');
