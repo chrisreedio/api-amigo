@@ -38,10 +38,7 @@ class AmigoWebhooksRelationManager extends RelationManager
                     ->icon(fn (AmigoWebhook $record) => $record->processed_at ? 'far-circle-check' : 'far-hourglass-start')
                     ->default('Not Processed')
                     ->getStateUsing(fn (AmigoWebhook $record) => $record->processed_at ? Carbon::make($record->processed_at)->format('M j, Y H:i:s') : 'Not Processed')
-                    // ->formatStateUsing(fn (AmigoWebhook $record) => $record->processed_at != null ? $record->processed_at : 'Not Processed')
-                    // ->formatStateUsing(fn (AmigoWebhook $record) => $record->processed_at != null ? $record->processed_at : 'Not Processed')
                     ->color(fn (AmigoWebhook $record) => $record->processed_at ? 'success' : 'warning')
-                    // ->formatStateUsing(fn (AmigoRequest $record) => $record->response->status_code->value . ' ' . $record->response->status_code->getLabel())
                     ->badge()
                     ->sortable(),
 
@@ -66,6 +63,7 @@ class AmigoWebhooksRelationManager extends RelationManager
                     ->label('Sender')
                     // ->getStateUsing(fn (AmigoWebhook $record) => $record->sender)
                     // ->html()
+                    ->badge()
                     ->copyable()
                     ->searchable(),
 
@@ -105,7 +103,7 @@ class AmigoWebhooksRelationManager extends RelationManager
                 // //     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Sent At')
+                    ->label('Received At')
                     ->sortable()
                     ->dateTime()
                     ->toggleable(isToggledHiddenByDefault: false),
