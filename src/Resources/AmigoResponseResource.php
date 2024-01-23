@@ -2,7 +2,6 @@
 
 namespace ChrisReedIO\APIAmigo\Resources;
 
-use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use const JSON_PRETTY_PRINT;
 
 use ChrisReedIO\APIAmigo\Filament\Infolists\Components\ArrayEntry;
