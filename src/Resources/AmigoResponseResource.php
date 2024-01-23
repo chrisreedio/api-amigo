@@ -118,16 +118,39 @@ class AmigoResponseResource extends Resource
                     ->columnSpanFull()
                     ->label('Response Body Contents')
                     ->getStateUsing(function (AmigoResponse $record) {
+                        if (is_array($record->body)) {
+                            return json_encode($record->body, JSON_PRETTY_PRINT);
+                        }
+
                         return json_encode(json_decode($record->body, true), JSON_PRETTY_PRINT);
                     })
                     ->formatStateUsing(function ($state) {
-                        return '```json \n' . $state . '\n```';
+                        if (empty($state)) {
+                            return 'No Response Body';
+                        }
+
+                        // return '```json \n' . $state . '\n```';
+                        return new HtmlString('<pre>' . $state . '</pre>');
                     })
                     // ->html(),
                     ->copyable()
                     ->maxWidth('2xl')
                     ->markdown()
                     ->grow(),
+                // Infolists\Components\TextEntry::make('body')
+                //     ->columnSpanFull()
+                //     ->label('Response Body Contents')
+                //     ->getStateUsing(function (AmigoResponse $record) {
+                //         return json_encode(json_decode($record->body, true), JSON_PRETTY_PRINT);
+                //     })
+                //     ->formatStateUsing(function ($state) {
+                //         return '```json \n' . $state . '\n```';
+                //     })
+                //     // ->html(),
+                //     ->copyable()
+                //     ->maxWidth('2xl')
+                //     ->markdown()
+                //     ->grow(),
 
                 // ArrayEntry::make('body')
                 //     ->label('Body Contents')
