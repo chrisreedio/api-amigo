@@ -51,6 +51,7 @@ enum HTTPStatus: int implements HasColor, HasLabel
     case UNSUPPORTED_MEDIA_TYPE = 415;
     case REQUESTED_RANGE_NOT_SATISFIABLE = 416;
     case EXPECTATION_FAILED = 417;
+    case TOO_MANY_REQUESTS = 429;
     // 418-499 Unassigned
 
     // 500-599 Server Error
@@ -75,7 +76,7 @@ enum HTTPStatus: int implements HasColor, HasLabel
             self::UNSUPPORTED_MEDIA_TYPE, self::REQUESTED_RANGE_NOT_SATISFIABLE,
             self::EXPECTATION_FAILED => Color::Yellow,
             self::INTERNAL_SERVER_ERROR, self::NOT_IMPLEMENTED, self::BAD_GATEWAY,
-            self::SERVICE_UNAVAILABLE, self::GATEWAY_TIMEOUT, self::HTTP_VERSION_NOT_SUPPORTED => Color::Red,
+            self::SERVICE_UNAVAILABLE, self::GATEWAY_TIMEOUT, self::HTTP_VERSION_NOT_SUPPORTED, self::TOO_MANY_REQUESTS => Color::Red,
             default => Color::Gray,
         };
     }
@@ -124,6 +125,7 @@ enum HTTPStatus: int implements HasColor, HasLabel
             self::UNSUPPORTED_MEDIA_TYPE => 'Unsupported Media Type',
             self::REQUESTED_RANGE_NOT_SATISFIABLE => 'Requested Range Not Satisfiable',
             self::EXPECTATION_FAILED => 'Expectation Failed',
+            self::TOO_MANY_REQUESTS => 'Too Many Requests',
 
             // 500
             self::INTERNAL_SERVER_ERROR => 'Internal Server Error',
