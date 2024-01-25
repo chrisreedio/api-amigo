@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.20 - 2024-01-25
+
+### What's Changed
+
+* feat: add HTTP 429 response enum by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/22
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.19...v1.0.0-alpha.20
+
 ## v1.0.0-alpha.19 - 2024-01-23
 
 ### What's Changed
