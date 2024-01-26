@@ -227,6 +227,7 @@ class AmigoWebhookResource extends Resource
             ->filters([
                 //
             ])
+            ->defaultSort('created_at', 'desc')
             ->emptyStateHeading('No Webhooks')
             ->emptyStateDescription('Setup a listener to start receiving webhooks.')
             ->actions([
