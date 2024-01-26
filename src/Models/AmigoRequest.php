@@ -71,10 +71,18 @@ class AmigoRequest extends AmigoModel
 
         $user = auth()->user();
 
+        $pathParts = $pendingRequest->getUri();
+        $path = $pathParts->getPath();
+        $query = $pathParts->getQuery();
+        if ($query !== '') {
+            $path .= '?' . $query;
+        }
+
         $request = $endpoint->requests()->create([
             'unique_id' => $requestId,
             'user_id' => $user?->id,
-            'path' => $pendingRequest->getRequest()->resolveEndpoint(),
+            // 'path' => $pendingRequest->getRequest()->resolveEndpoint(),
+            'path' => $path,
         ]);
 
         // Check for any active global recordings
