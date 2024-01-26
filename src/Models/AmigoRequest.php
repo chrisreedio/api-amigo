@@ -84,6 +84,12 @@ class AmigoRequest extends AmigoModel
                 if (! $recording->global && (is_null($user) || $recording->user_id !== $user->id)) {
                     return;
                 }
+
+                // Now do a connector check to make sure it's not been filtered out
+                if ($recording->connector_id !== null && $recording->connector_id !== $request->endpoint->connector_id) {
+                    return;
+                }
+
                 // dd('Recording request', $recording, $request);
                 $recording->requests()->attach($request);
             });
