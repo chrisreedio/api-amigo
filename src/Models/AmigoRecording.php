@@ -9,6 +9,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 use function config;
 
+/**
+ * AmigoRecording
+ *
+ * Represents a recording of an API request
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $connector_id
+ * @property string $name
+ * @property string $description
+ * @property int $started_at
+ * @property int $ended_at
+ * @property bool $global
+ * @property bool $capture_body
+ * @property AmigoConnector $connector
+ * @property AmigoRequest[] $requests
+ */
 class AmigoRecording extends Model
 {
     protected $fillable = [

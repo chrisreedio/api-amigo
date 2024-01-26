@@ -18,6 +18,22 @@ use function dd;
 use function get_class;
 use function is_scalar;
 
+/**
+ * AmigoEndpoint
+ *
+ * Represents an endpoint on an API
+ *
+ * @property int $id
+ * @property int $connector_id
+ * @property Method $method
+ * @property string $name
+ * @property string $class
+ * @property string $path
+ * @property string $styled_path
+ * @property AmigoConnector $connector
+ * @property AmigoRequest[] $requests
+ * @property AmigoResponse[] $responses
+ */
 class AmigoEndpoint extends AmigoModel
 {
     protected $fillable = [
