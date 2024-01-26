@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.22 - 2024-01-26
+
+### What's Changed
+
+* feat: default sort for AmigoWebhooks by creation date by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/25
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.21...v1.0.0-alpha.22
+
 ## v1.0.0-alpha.21 - 2024-01-26
 
 ### What's Changed
