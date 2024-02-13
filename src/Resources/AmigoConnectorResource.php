@@ -93,6 +93,7 @@ class AmigoConnectorResource extends Resource
                         if ($record->rate_usage_percentage > 70) {
                             return Color::Yellow;
                         }
+
                         return Color::Green;
                     })
                     ->suffix('%')
