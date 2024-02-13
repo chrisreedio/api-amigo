@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.23 - 2024-02-13
+
+### What's Changed
+
+* feat: Added badge colors and more advanced filtering by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/26
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.22...v1.0.0-alpha.23
+
 ## v1.0.0-alpha.22 - 2024-01-26
 
 ### What's Changed
