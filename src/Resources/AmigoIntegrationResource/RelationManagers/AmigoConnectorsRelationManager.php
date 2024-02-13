@@ -5,6 +5,7 @@ namespace ChrisReedIO\APIAmigo\Resources\AmigoIntegrationResource\RelationManage
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -50,6 +51,16 @@ class AmigoConnectorsRelationManager extends RelationManager
                     ->numeric()
                     ->label('Usage Percent')
                     ->badge()
+                    ->color(function ($record) {
+                        if ($record->rate_usage_percentage > 90) {
+                            return Color::Red;
+                        }
+                        if ($record->rate_usage_percentage > 70) {
+                            return Color::Yellow;
+                        }
+
+                        return Color::Green;
+                    })
                     ->suffix('%')
                     ->sortable(),
                 // Tables\Columns\TextColumn::make('endpoints_count')

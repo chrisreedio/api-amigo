@@ -12,14 +12,16 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
-// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
+// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use Spatie\ShikiPhp\Shiki;
 
 use function collect;
+use function config;
 
 class AmigoResponseResource extends Resource
 {
@@ -69,6 +71,15 @@ class AmigoResponseResource extends Resource
                     ->label('Duration')
                     ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
                     // ->suffix('s')
+                    ->color(function ($state) {
+                        if ($state >= config('api-amigo.thresholds.duration.error')) {
+                            return Color::Red;
+                        } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
+                            return Color::Yellow;
+                        } else {
+                            return Color::Green;
+                        }
+                    })
                     ->icon('far-stopwatch')
                     ->badge(),
 
@@ -268,6 +279,16 @@ class AmigoResponseResource extends Resource
                 Tables\Columns\TextColumn::make('duration')
                     ->label('Duration')
                     ->badge()
+                    ->color(function ($record) {
+                        $duration = $record->duration;
+                        if ($duration >= config('api-amigo.thresholds.duration.error')) {
+                            return Color::Red;
+                        } elseif ($duration >= config('api-amigo.thresholds.duration.warning')) {
+                            return Color::Yellow;
+                        } else {
+                            return Color::Green;
+                        }
+                    })
                     ->getStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
                     // ->suffix('s')
                     ->sortable(),

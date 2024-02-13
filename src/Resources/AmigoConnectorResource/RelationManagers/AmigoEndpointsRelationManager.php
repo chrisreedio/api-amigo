@@ -7,6 +7,7 @@ use ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -50,6 +51,15 @@ class AmigoEndpointsRelationManager extends RelationManager
                     ->avg('responses', 'duration')
                     ->badge()
                     ->formatStateUsing(fn ($state) => round($state * 1000) . 'ms')
+                    ->color(function ($state) {
+                        if ($state >= config('api-amigo.thresholds.duration.error')) {
+                            return Color::Red;
+                        } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
+                            return Color::Yellow;
+                        } else {
+                            return Color::Green;
+                        }
+                    })
                     ->label('Avg. Duration')
                     // ->numeric()
                     ->sortable(),

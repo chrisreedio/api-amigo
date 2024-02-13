@@ -7,8 +7,11 @@ use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
+
+use function config;
 
 class AmigoRequestsRelationManager extends RelationManager
 {
@@ -43,6 +46,16 @@ class AmigoRequestsRelationManager extends RelationManager
                     ->label('Duration')
                     ->badge()
                     ->placeholder('No Response')
+                    ->color(function ($record) {
+                        $duration = $record->response !== null ? $record->response->duration : 99999;
+                        if ($duration >= config('api-amigo.thresholds.duration.error')) {
+                            return Color::Red;
+                        } elseif ($duration >= config('api-amigo.thresholds.duration.warning')) {
+                            return Color::Yellow;
+                        } else {
+                            return Color::Green;
+                        }
+                    })
                     ->getStateUsing(fn (AmigoRequest $record) => $record->response !== null ? ($record->response->duration * 1000) . 'ms' : null)
                     // ->suffix('s')
                     ->sortable(),
