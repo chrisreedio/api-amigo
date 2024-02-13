@@ -42,4 +42,13 @@ return [
     'models' => [
         'user' => "App\Models\User",
     ],
+
+    // WIP - Duration Thresholds
+    // This is likely to change (or be removed) in a future update
+    'thresholds' => [
+        'duration' => [
+            'warning' => 60 / 1000,
+            'error' => 100 / 1000,
+        ],
+    ],
 ];

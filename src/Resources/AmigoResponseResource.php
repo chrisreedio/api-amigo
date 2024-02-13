@@ -4,6 +4,7 @@ namespace ChrisReedIO\APIAmigo\Resources;
 
 use const JSON_PRETTY_PRINT;
 
+use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
 use ChrisReedIO\APIAmigo\Filament\Infolists\Components\ArrayEntry;
 use ChrisReedIO\APIAmigo\Filament\Infolists\Components\ResponseBodyViewer;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
@@ -12,14 +13,17 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
-// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use Spatie\ShikiPhp\Shiki;
 
 use function collect;
+use function config;
 
 class AmigoResponseResource extends Resource
 {
@@ -69,6 +73,15 @@ class AmigoResponseResource extends Resource
                     ->label('Duration')
                     ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
                     // ->suffix('s')
+                    ->color(function ($state) {
+                        if ($state >= config('api-amigo.thresholds.duration.error')) {
+                            return Color::Red;
+                        } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
+                            return Color::Yellow;
+                        } else {
+                            return Color::Green;
+                        }
+                    })
                     ->icon('far-stopwatch')
                     ->badge(),
 
@@ -268,6 +281,16 @@ class AmigoResponseResource extends Resource
                 Tables\Columns\TextColumn::make('duration')
                     ->label('Duration')
                     ->badge()
+                    ->color(function ($record) {
+                        $duration = $record->duration;
+                        if ($duration >= config('api-amigo.thresholds.duration.error')) {
+                            return Color::Red;
+                        } elseif ($duration >= config('api-amigo.thresholds.duration.warning')) {
+                            return Color::Yellow;
+                        } else {
+                            return Color::Green;
+                        }
+                    })
                     ->getStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
                     // ->suffix('s')
                     ->sortable(),
@@ -286,7 +309,35 @@ class AmigoResponseResource extends Resource
                 Tables\Filters\SelectFilter::make('connector_id')
                     ->label('Connector')
                     ->relationship('endpoint.connector', 'name'),
+                Tables\Filters\SelectFilter::make('status_code')
+                    ->getOptionLabelUsing(fn ($value) => $value->value . ' - ' . $value->getLabel())
+                    ->searchable()
+                    ->preload()
+                    ->multiple()
+                    ->options(function () {
+                        return collect(HTTPStatus::cases())
+                            ->mapWithKeys(fn (HTTPStatus $code) => [$code->value => $code->value . ' - ' . $code->getLabel()]);
+                    }),
+                Tables\Filters\TernaryFilter::make('success')
+                    ->label('Fail or Success')
+                    ->attribute('status_code')
+                    ->boolean()
+                    ->falseLabel('Failed')
+                    ->trueLabel('Success')
+                    ->queries(
+                        true: fn ($query, $value) => $query->where('status_code', 'like', '2%'),
+                        false: fn ($query, $value) => $query->where('status_code', 'not like', '2%'),
+                        blank: fn ($query, $value) => $query,
+                    ),
+                // ->getOptionLabelUsing(fn ($value) => 'hi'), //$value->value . ' - ' . $value->getLabel()),
+                // ->getOptionLabelsUsing(fn ($values) => $values->map(fn ($value) => $value->value . ' - ' . $value->getLabel())),
+                Tables\Filters\QueryBuilder::make()
+                    ->constraints([
+                        DateConstraint::make('created_at'),
+                    ]),
             ])
+            ->persistFiltersInSession()
+            ->filtersFormWidth('xl')
             ->defaultSort('created_at', 'desc')
             ->actions([
                 Tables\Actions\ViewAction::make(),
