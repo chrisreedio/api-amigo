@@ -39,6 +39,20 @@ php artisan vendor:publish --tag="api-amigo-migrations"
 php artisan migrate
 ```
 
+Install the plugin into your panel by adding the following to your `AdminPanelProvider.php` (or other panel) file:
+
+```php
+    ->plugins([
+        // ... Other plugins
+        \ChrisReedIO\APIAmigo\APIAmigoPlugin::make(),
+    ])
+```
+
+Be sure to enable API Amigo tracking globally via your `.env`:
+```dotenv
+AMIGO_ENABLED=true
+```
+
 You can publish the config file with:
 
 ```bash
