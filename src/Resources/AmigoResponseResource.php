@@ -4,6 +4,7 @@ namespace ChrisReedIO\APIAmigo\Resources;
 
 use const JSON_PRETTY_PRINT;
 
+use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
 use ChrisReedIO\APIAmigo\Filament\Infolists\Components\ArrayEntry;
 use ChrisReedIO\APIAmigo\Filament\Infolists\Components\ResponseBodyViewer;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
@@ -14,8 +15,9 @@ use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
-// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use Filament\Tables;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use Spatie\ShikiPhp\Shiki;
@@ -307,7 +309,35 @@ class AmigoResponseResource extends Resource
                 Tables\Filters\SelectFilter::make('connector_id')
                     ->label('Connector')
                     ->relationship('endpoint.connector', 'name'),
+                Tables\Filters\SelectFilter::make('status_code')
+                    ->getOptionLabelUsing(fn ($value) => $value->value . ' - ' . $value->getLabel())
+                    ->searchable()
+                    ->preload()
+                    ->multiple()
+                    ->options(function () {
+                        return collect(HTTPStatus::cases())
+                            ->mapWithKeys(fn (HTTPStatus $code) => [$code->value => $code->value . ' - ' . $code->getLabel()]);
+                    }),
+                Tables\Filters\TernaryFilter::make('success')
+                    ->label('Fail or Success')
+                    ->attribute('status_code')
+                    ->boolean()
+                    ->falseLabel('Failed')
+                    ->trueLabel('Success')
+                    ->queries(
+                        true: fn ($query, $value) => $query->where('status_code', 'like', '2%'),
+                        false: fn ($query, $value) => $query->where('status_code', 'not like', '2%'),
+                        blank: fn ($query, $value) => $query,
+                    ),
+                // ->getOptionLabelUsing(fn ($value) => 'hi'), //$value->value . ' - ' . $value->getLabel()),
+                // ->getOptionLabelsUsing(fn ($values) => $values->map(fn ($value) => $value->value . ' - ' . $value->getLabel())),
+                Tables\Filters\QueryBuilder::make()
+                    ->constraints([
+                        DateConstraint::make('created_at'),
+                    ]),
             ])
+            ->persistFiltersInSession()
+            ->filtersFormWidth('xl')
             ->defaultSort('created_at', 'desc')
             ->actions([
                 Tables\Actions\ViewAction::make(),

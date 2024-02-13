@@ -107,6 +107,11 @@ class AmigoRecordingResource extends Resource
                 Tables\Filters\SelectFilter::make('connector_id')
                     ->relationship('connector', 'name')
                     ->placeholder('All Connectors'),
+                Tables\Filters\QueryBuilder::make()
+                    ->constraints([
+                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at'),
+                    ]),
+
             ])
             ->actions([
                 Tables\Actions\Action::make('start')
