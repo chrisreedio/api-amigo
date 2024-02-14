@@ -32,14 +32,14 @@ class ViewAmigoResponse extends ViewRecord
     {
         return [
             // Actions\EditAction::make(),
-            Actions\Action::make('test')
-                ->label('Test')
-                ->action(function (AmigoResponse $record) {
-                    // dd($record->body);
-                    $testString = "Hello\nWorld!";
-                    dd($testString);
-                    // dd(json_encode($record->body));
-                }),
+            // Actions\Action::make('test')
+            //     ->label('Test')
+            //     ->action(function (AmigoResponse $record) {
+            //         // dd($record->body);
+            //         $testString = "Hello\nWorld!";
+            //         dd($testString);
+            //         // dd(json_encode($record->body));
+            //     }),
         ];
     }
 }
