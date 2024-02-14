@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.24 - 2024-02-14
+
+### What's Changed
+
+* feat: enhance response body display and dependencies by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/27
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.23...v1.0.0-alpha.24
+
 ## v1.0.0-alpha.23 - 2024-02-13
 
 ### What's Changed
