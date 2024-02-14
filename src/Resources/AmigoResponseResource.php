@@ -5,8 +5,6 @@ namespace ChrisReedIO\APIAmigo\Resources;
 use const JSON_PRETTY_PRINT;
 
 use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
-use ChrisReedIO\APIAmigo\Filament\Infolists\Components\ArrayEntry;
-use ChrisReedIO\APIAmigo\Filament\Infolists\Components\ResponseBodyViewer;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\Pages;
 use Filament\Forms;
@@ -17,13 +15,15 @@ use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
-// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
-use Spatie\ShikiPhp\Shiki;
+use Parallax\FilamentSyntaxEntry\SyntaxEntry;
 
+// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use function collect;
 use function config;
+use function dd;
+use function str_replace;
 
 class AmigoResponseResource extends Resource
 {
@@ -64,123 +64,63 @@ class AmigoResponseResource extends Resource
                     ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
                     ->icon('far-outlet'),
 
-                Infolists\Components\TextEntry::make('status_code')
-                    ->label('Status')
-                    ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
-                    ->badge(),
+                Infolists\Components\Grid::make(6)
+                    ->schema([
+                        Infolists\Components\TextEntry::make('status_code')
+                            ->label('Status')
+                            ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
+                            ->badge(),
 
-                Infolists\Components\TextEntry::make('duration')
-                    ->label('Duration')
-                    ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
-                    // ->suffix('s')
-                    ->color(function ($state) {
-                        if ($state >= config('api-amigo.thresholds.duration.error')) {
-                            return Color::Red;
-                        } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
-                            return Color::Yellow;
-                        } else {
-                            return Color::Green;
-                        }
-                    })
-                    ->icon('far-stopwatch')
-                    ->badge(),
+                        Infolists\Components\TextEntry::make('duration')
+                            ->label('Duration')
+                            ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
+                            // ->suffix('s')
+                            ->color(function ($state) {
+                                if ($state >= config('api-amigo.thresholds.duration.error')) {
+                                    return Color::Red;
+                                } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
+                                    return Color::Yellow;
+                                } else {
+                                    return Color::Green;
+                                }
+                            })
+                            ->icon('far-stopwatch')
+                            ->badge(),
 
-                Infolists\Components\TextEntry::make('request.path')
-                    ->label('Request Path')
-                    ->copyable()
-                    // ->url(fn (AmigoResponse $record) => AmigoRequestResource::getUrl('view', ['record' => $record->request]))
-                    ->formatStateUsing(function ($state) {
-                        // $replacedVars = preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $state);
-                        $formatted = '<code>' . $state . '</code>';
+                        Infolists\Components\TextEntry::make('request.path')
+                            ->label('Request Path')
+                            ->copyable()
+                            ->columnSpan(4)
+                            // ->url(fn (AmigoResponse $record) => AmigoRequestResource::getUrl('view', ['record' => $record->request]))
+                            ->formatStateUsing(function ($state) {
+                                // $replacedVars = preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $state);
+                                $formatted = '<code>' . $state . '</code>';
 
-                        return new HtmlString($formatted);
-                    })
-                    ->icon('far-sign-post'),
+                                return new HtmlString($formatted);
+                            })
+                            ->icon('far-sign-post'),
+                    ]),
 
-                // Infolists\Components\TextEntry::make('body')
-                //     ->columnSpanFull()
-                //     ->getStateUsing(fn(AmigoResponse $record) => json_encode($record->body, JSON_PRETTY_PRINT))
-                //     ->formatStateUsing(function ($state) {
-                //         $prettyData = collect($state)
-                //             ->mapWithKeys(function ($value, $key) {
-                //                 return [
-                //                     $key => json_encode($value, JSON_PRETTY_PRINT),
-                //                     // $key => json_encode($value),
-                //                 ];
-                //             })->toArray();
-                //         return new HtmlString('<pre>' . json_encode($prettyData, JSON_PRETTY_PRINT) . '</pre>');
-                //     })
-                //     ->html()
-                //     ->grow(),
-
-                // ResponseBodyViewer::make('body')
-                //     ->columnSpanFull()
-                //     ->label('Response Body Contents')
-                //     ->getStateUsing(function (AmigoResponse $record) {
-                //         // return json_encode(json_decode($record->body, true), JSON_PRETTY_PRINT);
-                //         $responseBody = json_encode(json_decode($record->body, true), JSON_PRETTY_PRINT);
-                //         return Shiki::highlight(
-                //             code: $record->body,
-                //             language: 'json',
-                //             theme: 'github-light',
-                //             // theme: 'github-dark',
-                //         );
-                //     }),
-
-                Infolists\Components\TextEntry::make('body')
-                    ->columnSpanFull()
+                SyntaxEntry::make('body')
                     ->label('Response Body Contents')
+                    ->columnSpanFull()
                     ->getStateUsing(function (AmigoResponse $record) {
                         if (is_array($record->body)) {
-                            return json_encode($record->body, JSON_PRETTY_PRINT);
+                            $data = json_encode($record->body, JSON_PRETTY_PRINT);
+                            // dd($data);
+                            // $data = str_replace('\/', '/', $data);
+
+                            return $data;
                         }
+                        // dd('oh no');
+                        $parsed = json_decode($record->body, true);
+                        $json = json_encode($parsed, JSON_PRETTY_PRINT);
+                        $data = str_replace('\/', '/', $json);
 
-                        return json_encode(json_decode($record->body, true), JSON_PRETTY_PRINT);
-                    })
-                    ->formatStateUsing(function ($state) {
-                        if (empty($state)) {
-                            return 'No Response Body';
-                        }
+                        // return json_encode($data, JSON_PRETTY_PRINT);
+                        return $data;
+                    }),
 
-                        // return '```json \n' . $state . '\n```';
-                        return new HtmlString('<pre>' . $state . '</pre>');
-                    })
-                    // ->html(),
-                    ->copyable()
-                    ->maxWidth('2xl')
-                    ->markdown()
-                    ->grow(),
-                // Infolists\Components\TextEntry::make('body')
-                //     ->columnSpanFull()
-                //     ->label('Response Body Contents')
-                //     ->getStateUsing(function (AmigoResponse $record) {
-                //         return json_encode(json_decode($record->body, true), JSON_PRETTY_PRINT);
-                //     })
-                //     ->formatStateUsing(function ($state) {
-                //         return '```json \n' . $state . '\n```';
-                //     })
-                //     // ->html(),
-                //     ->copyable()
-                //     ->maxWidth('2xl')
-                //     ->markdown()
-                //     ->grow(),
-
-                // ArrayEntry::make('body')
-                //     ->label('Body Contents')
-                //
-                //     ->columnSpanFull(),
-
-                // Infolists\Components\KeyValueEntry::make('body')
-                //     ->label('Connector'),
-                // ->icon('far-outlet')
-                // ->formatStateUsing(function ($state) {
-                //     return collect($state)->mapWithKeys(function ($value, $key) {
-                //         return [
-                //             $key => json_encode($value, JSON_PRETTY_PRINT),
-                //         ];
-                //     })->toArray();
-                // }),
-                // ->url(fn (AmigoResponse $record) => $record->endpoint->connector->base_url),
             ]);
     }
 
@@ -197,49 +137,6 @@ class AmigoResponseResource extends Resource
                     // ->required()
                     ->maxLength(255),
 
-                // Forms\Components\Textarea::make('body')
-                //     ->readOnly()
-                //     ->formatStateUsing(function ($state) {
-                //         $prettyData = collect($state)
-                //             ->mapWithKeys(function ($value, $key) {
-                //                 return [
-                //                     $key => json_encode($value, JSON_PRETTY_PRINT),
-                //                     // $key => json_encode($value),
-                //                 ];
-                //             })->toArray();
-                //         return new HtmlString('<pre>' . json_encode($prettyData, JSON_PRETTY_PRINT) . '</pre>');
-                //     })
-                //     ->grow(),
-
-                // Forms\Components\KeyValue::make('body')
-                //     ->columnSpanFull()
-                //     ->formatStateUsing(function ($state) {
-                //         // dd($state);
-                //         return collect($state)->mapWithKeys(function ($value, $key) {
-                //             return [
-                //                 $key => json_encode($value, JSON_PRETTY_PRINT),
-                //             ];
-                //         })->toArray();
-                //
-                //         return [
-                //             'key' => json_encode([
-                //                 'value' => 'more data',
-                //                 'placeholder' => 'Key',
-                //             ]),
-                //         ];
-                //         // $replacedVars = preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $state);
-                //         //
-                //         // return new HtmlString("$replacedVars");
-                //     }),
-                // ->required()
-                // ->readOnly()
-                // ->maxLength(255),
-                // Forms\Components\TextInput::make('total_requests')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('total_errors')
-                //     ->required()
-                //     ->numeric(),
             ]);
     }
 
