@@ -111,7 +111,14 @@ class AmigoWebhookResource extends Resource
                 SyntaxEntry::make('headers')
                     ->label('Webhook Headers')
                     ->columnSpanFull()
-                    ->getStateUsing(fn (AmigoResponse $record) => json_encode($record->body, JSON_PRETTY_PRINT)),
+                    // ->getStateUsing(function (AmigoWebhook $record) {
+                    //     if (is_array($record->headers)) {
+                    //         return json_encode($record->headers, JSON_PRETTY_PRINT);
+                    //     }
+                    //
+                    //     return json_encode(json_decode($record->headers, true), JSON_PRETTY_PRINT);
+                    // }),
+                    ->getStateUsing(fn (AmigoWebhook $record) => json_encode($record->headers, JSON_PRETTY_PRINT)),
 
                 // Infolists\Components\TextEntry::make('headers')
                 //     ->columnSpanFull()
@@ -140,7 +147,7 @@ class AmigoWebhookResource extends Resource
                 SyntaxEntry::make('payload')
                     ->label('Webhook Payload')
                     ->columnSpanFull()
-                    ->getStateUsing(fn (AmigoResponse $record) => json_encode($record->body, JSON_PRETTY_PRINT)),
+                    ->getStateUsing(fn (AmigoWebhook $record) => json_encode($record->payload, JSON_PRETTY_PRINT)),
 
                 // Infolists\Components\TextEntry::make('payload')
                 //     ->columnSpanFull()
