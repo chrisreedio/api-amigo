@@ -22,8 +22,6 @@ use Parallax\FilamentSyntaxEntry\SyntaxEntry;
 // use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use function collect;
 use function config;
-use function dd;
-use function str_replace;
 
 class AmigoResponseResource extends Resource
 {
@@ -104,23 +102,7 @@ class AmigoResponseResource extends Resource
                 SyntaxEntry::make('body')
                     ->label('Response Body Contents')
                     ->columnSpanFull()
-                    ->getStateUsing(function (AmigoResponse $record) {
-                        if (is_array($record->body)) {
-                            $data = json_encode($record->body, JSON_PRETTY_PRINT);
-                            // dd($data);
-                            // $data = str_replace('\/', '/', $data);
-
-                            return $data;
-                        }
-                        // dd('oh no');
-                        $parsed = json_decode($record->body, true);
-                        $json = json_encode($parsed, JSON_PRETTY_PRINT);
-                        $data = str_replace('\/', '/', $json);
-
-                        // return json_encode($data, JSON_PRETTY_PRINT);
-                        return $data;
-                    }),
-
+                    ->getStateUsing(fn (AmigoResponse $record) => json_encode($record->body, JSON_PRETTY_PRINT)),
             ]);
     }
 
