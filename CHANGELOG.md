@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.25 - 2024-02-15
+
+### What's Changed
+
+* Added new syntax view to webhooks by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/28
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.24...v1.0.0-alpha.25
+
 ## v1.0.0-alpha.24 - 2024-02-14
 
 ### What's Changed
