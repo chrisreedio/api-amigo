@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 use function config;
+use function json_validate;
 
 class WebhookController extends Controller
 {
@@ -21,12 +22,18 @@ class WebhookController extends Controller
             }
         }
 
-        $payload = json_decode($request->getContent(), true);
+        $requestBody = $request->getContent();
+        $payload = json_validate($requestBody) ? json_decode($requestBody, true) : $request->getPayload()->all();
+        // $payload = json_decode($request->getContent(), true);
+        // dd($payload);
+        // dump($request->getPayload());
+        // dd($request->getContent());
 
         // Start building our webhook object
         $webhook = $listener->webhooks()->create([
             'sender' => $request->ip(),
             'headers' => $request->headers->all(),
+            // 'payload' => $request->getContent(),
             'payload' => $payload,
         ]);
 
