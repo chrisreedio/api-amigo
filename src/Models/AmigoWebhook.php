@@ -69,6 +69,7 @@ class AmigoWebhook extends AmigoModel
     public function complete(): void
     {
         $this->processed_at = now();
+        $this->error = null;
         $this->save();
     }
 
