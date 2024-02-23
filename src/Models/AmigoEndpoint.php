@@ -80,6 +80,11 @@ class AmigoEndpoint extends AmigoModel
         return $this->hasMany(AmigoResponse::class, 'endpoint_id');
     }
 
+    public function aggregates(): HasMany
+    {
+        return $this->hasMany(AmigoEndpointAggregate::class, 'endpoint_id');
+    }
+
     public static function track(PendingRequest $pendingRequest): self
     {
         $connector = AmigoConnector::track($pendingRequest);

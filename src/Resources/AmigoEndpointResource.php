@@ -125,6 +125,7 @@ class AmigoEndpointResource extends Resource
     {
         return [
             RelationManagers\AmigoRequestsRelationManager::class,
+            RelationManagers\AmigoEndpointAggregatesRelationManager::class,
         ];
     }
 

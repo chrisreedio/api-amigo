@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo;
 
 use ChrisReedIO\APIAmigo\Commands\APIAmigoCommand;
+use ChrisReedIO\APIAmigo\Commands\ResponsesAggregationCommand;
 use ChrisReedIO\APIAmigo\Controllers\WebhookController;
 use ChrisReedIO\APIAmigo\Middleware\Saloon\Request\TrackRequest;
 use ChrisReedIO\APIAmigo\Middleware\Saloon\Response\LogResponse;
@@ -140,6 +141,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
     {
         return [
             APIAmigoCommand::class,
+            ResponsesAggregationCommand::class,
         ];
     }
 
@@ -183,6 +185,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             'create_amigo_webhooks_table',
             'create_amigo_recordings_table',
             'create_amigo_recording_amigo_request_table',
+            'alter_amigo_responses_add_endpoint_id_index',
         ];
     }
 }

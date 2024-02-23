@@ -22,6 +22,7 @@
     "require": {
         "php": "^8.1",
         "filament/filament": "^3.0",
+        "flowframe/laravel-trend": "^0.1.5",
         "illuminate/contracts": "^10.0",
         "parallax/filament-syntax-entry": "^1.0",
         "rawilk/filament-password-input": "^1.1",
