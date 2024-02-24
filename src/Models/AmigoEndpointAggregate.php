@@ -11,11 +11,18 @@ class AmigoEndpointAggregate extends Model
         'integration_id',
         'endpoint_id',
         'window_start',
-        'duration',
+        'interval',
         'total_requests',
         'successful_requests',
         'failed_requests',
-        'average_duration',
+        'max_requests_per_minute',
+        'min_duration',
+        'max_duration',
+        'p50_duration',
+        'p75_duration',
+        'p95_duration',
+        'p99_duration',
+        'duration_histogram',
     ];
 
     public function integration(): BelongsTo

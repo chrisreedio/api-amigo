@@ -14,8 +14,10 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
+use Illuminate\Database\Schema\Grammars\Grammar;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Fluent;
 use Livewire\Features\SupportTesting\Testable;
 use Saloon\Enums\PipeOrder;
 use Saloon\Exceptions\DuplicatePipeNameException;
@@ -72,6 +74,10 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             Route::post("/$prefix/{listener:unique_id}", WebhookController::class)
                 ->withoutMiddleware(['csrf', 'auth'])
                 ->name('webhooks.handler');
+        });
+
+        Grammar::macro('typeTdigest', function (Fluent $column) {
+            return 'tdigest';
         });
     }
 
@@ -186,6 +192,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             'create_amigo_recordings_table',
             'create_amigo_recording_amigo_request_table',
             'alter_amigo_responses_add_endpoint_id_index',
+            'alter_amigo_endpoint_aggregates_restructure_table',
         ];
     }
 }
