@@ -11,11 +11,14 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 use function collect;
 use function dd;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\intro;
+use function Laravel\Prompts\outro;
+use function Laravel\Prompts\progress;
 use function Laravel\Prompts\spin;
 use function Laravel\Prompts\table;
 use function Laravel\Prompts\warning;
@@ -28,7 +31,7 @@ class ResponsesAggregationCommand extends Command
 
     protected $description = 'Aggregate responses for reporting purposes.';
 
-    const INTERVAL = 30;
+    const INTERVAL = 5;
 
     const INTERVAL_UNITS = 'minute';
 
@@ -37,14 +40,36 @@ class ResponsesAggregationCommand extends Command
         $period = $this->calculatePeriod();
 
         $start = microtime(true);
-        $stats = collect($period)
-            // ->map(fn (Carbon $date) => $this->processDay($date));
-            // ->map(fn (Carbon $date) => $this->processWindow($date, $date->endOfDay()));
-            ->mapWithKeys(function (Carbon $date) {
-                $end = $date->copy()->addMinutes(self::INTERVAL);
+        // ->map(fn (Carbon $date) => $this->processDay($date));
+        // ->map(fn (Carbon $date) => $this->processWindow($date, $date->endOfDay()));
 
-                return [$date->toDateTimeString() => $this->processWindow($date, $end)];
-            });
+        // $stats = collect($period)
+        //     ->mapWithKeys(function (Carbon $date) {
+        //         $end = $date->copy()->addMinutes(self::INTERVAL);
+        //
+        //         return [$date->toDateTimeString() => $this->processWindow($date, $end)];
+        //     });
+
+        $stats = progress(
+            label: 'Calculating intervals...',
+            steps: $period,
+            callback: function ($date, $progress) {
+                $end = $date->copy()->addMinutes(self::INTERVAL);
+                $progress
+                    // ->label("Calculating intervals for {$date->toFormattedDateString()} to {$end->toFormattedDateString()}")
+                    ->label("Calculating intervals for {$date->toFormattedDateString()}")
+                    ->hint("Processing window from {$date->format('H:i')} to {$end->format('H:i')}...");
+
+                $window = $this->processWindow($date, $end);
+                // dd($window->toArray());
+
+                return $window->toArray();
+            },
+            hint: 'This may take some time.',
+        );
+
+        $stats = collect($stats);
+
         $processingTime = number_format(microtime(true) - $start, 2);
         $this->info("Calculated {$stats->count()} intervals in {$processingTime} seconds.");
 
@@ -58,13 +83,22 @@ class ResponsesAggregationCommand extends Command
         //     ->count();
         // dd($trend);
 
-        $stats = $stats->flatten();
-
+        // $stats = $stats->flatten();
+        // dd($stats->each(fn ($stat) => dump($stat)));
         // Insert all of these stats into the aggregates table
+        $total = 0;
         $startTime = microtime(true);
-        AmigoEndpointAggregate::insertOrIgnore($stats->toArray());
+        $stats->each(function ($day) use (&$total) {
+            $total += AmigoEndpointAggregate::insertOrIgnore($day);
+        });
+        // dd('done');
+        // AmigoEndpointAggregate::insertOrIgnore($stats->toArray());
         $processingTime = number_format(microtime(true) - $startTime, 2);
-        $this->info('Inserted ' . $stats->count() . ' records in ' . $processingTime . ' seconds.');
+        if ($total === 0) {
+            warning('No new endpoint response aggregations were inserted.');
+        } else {
+            outro("Inserted {$total} endpoint response " . Str::plural('aggregation', $total) . " in {$processingTime} seconds.");
+        }
 
         // $stats->each(fn ($stat) => $this->info($stat->window_start . ' - ' . $stat->name . ' - ' . $stat->total_requests));
         // dd($stats->toArray());
@@ -78,7 +112,7 @@ class ResponsesAggregationCommand extends Command
     {
         // $startTime = (float) microtime(true);
         // $end = $start->copy()->addMinutes(self::INTERVAL);
-        $this->info('Processing window from ' . $start->toDateTimeString() . ' to ' . $end->toDateTimeString() . '.');
+        // $this->info('Processing window from ' . $start->toDateTimeString() . ' to ' . $end->toDateTimeString() . '.');
         $maxRequestsPerMinute = $this->getRequestsPerMinute($start);
         $responses = AmigoResponse::query()
             ->selectRaw(implode(', ', [
@@ -165,21 +199,21 @@ class ResponsesAggregationCommand extends Command
             // $carbonEnd = Carbon::parse($endDate);
             intro("Aggregating responses from {$carbonStart->toFormattedDayDateString()} to {$carbonEnd->toFormattedDayDateString()}.");
 
-            return $carbonStart->toPeriod($carbonEnd->endOfDay());
+            return $carbonStart->toPeriod($carbonEnd->endOfDay(), self::INTERVAL, self::INTERVAL_UNITS);
         } elseif ($start) {
             intro("Aggregating responses from {$carbonStart->toFormattedDayDateString()}.");
 
             // $period = $carbonStart->toPeriod($carbonStart->endOfDay());
             // $period = $carbonStart->toPeriod($carbonStart);
-            return $carbonStart->toPeriod($carbonStart->copy()->endOfDay(), self::INTERVAL, self::INTERVAL_UNITS);
+            // return $carbonStart->toPeriod($carbonStart->copy()->endOfDay(), self::INTERVAL, self::INTERVAL_UNITS);
             // TODO - Go back to the line above this
             // $period = $carbonStart->toPeriod($carbonStart->copy()->addHour()->subSecond(), $interval, $intervalUnits);
 
-            // $fakeEnd = $carbonStart->copy()->addHours(14)->subSecond();
+            $fakeEnd = $carbonStart->copy()->addHours(14)->subSecond();
 
-            // return $carbonStart
-            //     ->addHours(12)
-            //     ->toPeriod($fakeEnd, self::INTERVAL, self::INTERVAL_UNITS);
+            return $carbonStart
+                ->addHours(12)
+                ->toPeriod($fakeEnd, self::INTERVAL, self::INTERVAL_UNITS);
         } else {
             // $this->info('Aggregating all responses.');
             $this->error('You must specify a start date.');
