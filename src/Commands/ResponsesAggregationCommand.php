@@ -182,7 +182,7 @@ class ResponsesAggregationCommand extends Command
         $end = $this->argument('endDate');
 
         $carbonStart = Carbon::parse($start)->startOfDay();
-        $this->info('Carbon Start: ' . $carbonStart->toDateTimeString());
+        // $this->info('Carbon Start: ' . $carbonStart->toDateTimeString());
         if ($end === null) {
             $carbonEnd = $carbonStart->copy()->endOfDay();
         } else {
@@ -205,15 +205,15 @@ class ResponsesAggregationCommand extends Command
 
             // $period = $carbonStart->toPeriod($carbonStart->endOfDay());
             // $period = $carbonStart->toPeriod($carbonStart);
-            // return $carbonStart->toPeriod($carbonStart->copy()->endOfDay(), self::INTERVAL, self::INTERVAL_UNITS);
+            return $carbonStart->toPeriod($carbonStart->copy()->endOfDay(), self::INTERVAL, self::INTERVAL_UNITS);
             // TODO - Go back to the line above this
             // $period = $carbonStart->toPeriod($carbonStart->copy()->addHour()->subSecond(), $interval, $intervalUnits);
 
-            $fakeEnd = $carbonStart->copy()->addHours(14)->subSecond();
+            // $fakeEnd = $carbonStart->copy()->addHours(14)->subSecond();
 
-            return $carbonStart
-                ->addHours(12)
-                ->toPeriod($fakeEnd, self::INTERVAL, self::INTERVAL_UNITS);
+            // return $carbonStart
+            //     ->addHours(12)
+            //     ->toPeriod($fakeEnd, self::INTERVAL, self::INTERVAL_UNITS);
         } else {
             // $this->info('Aggregating all responses.');
             $this->error('You must specify a start date.');
