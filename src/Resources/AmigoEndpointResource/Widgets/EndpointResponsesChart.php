@@ -8,7 +8,6 @@ use ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
-use Illuminate\Support\Carbon;
 
 class EndpointResponsesChart extends ChartWidget
 {
@@ -23,7 +22,7 @@ class EndpointResponsesChart extends ChartWidget
     protected function getData(): array
     {
         $activeFilter = $this->filter;
-        if (!$activeFilter) {
+        if (! $activeFilter) {
             $curFilter = ChartFilters::Today;
         } else {
             $curFilter = ChartFilters::from($activeFilter);
@@ -58,13 +57,12 @@ class EndpointResponsesChart extends ChartWidget
         $failures = [
             'label' => 'Failures',
             'data' => $failuresTrend->pluck('aggregate'),
-            'borderColor' => 'rgb('. Color::Rose[500] .')',
+            'borderColor' => 'rgb(' . Color::Rose[500] . ')',
         ];
 
         $labels = $totalsTrend->pluck('date')->toArray();
 
         // dd($trend);
-
 
         return [
             'datasets' => [

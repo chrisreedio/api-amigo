@@ -27,7 +27,7 @@ class EndpointListOverview extends BaseWidget
 
         return [
             Stat::make('Slowest Endpoint', $slowestEndpoint->name),
-                // ->description('Average response time')
+            // ->description('Average response time')
             Stat::make('Fastest Endpoint', $fastestEndpoint->name),
             Stat::make('Most Calls', $mostActiveEndpoint->name),
         ];

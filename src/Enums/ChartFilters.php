@@ -4,6 +4,7 @@ namespace ChrisReedIO\APIAmigo\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 use Illuminate\Support\Carbon;
+
 use function now;
 
 enum ChartFilters: string implements HasLabel
@@ -15,7 +16,6 @@ enum ChartFilters: string implements HasLabel
     case ThreeMonths = 'three_months';
     case SixMonths = 'six_months';
     case Year = 'year';
-
 
     public function getLabel(): ?string
     {

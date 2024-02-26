@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 class AmigoEndpointAggregatesRelationManager extends RelationManager
 {
     protected static string $relationship = 'aggregates';
+
     protected static ?string $icon = 'far-chart-bar';
 
     // protected static string $relationship = 'aggregates';
@@ -68,10 +69,10 @@ class AmigoEndpointAggregatesRelationManager extends RelationManager
                 // Tables\Actions\DeleteAction::make(),
                 // Tables\Actions\ViewAction::make()->url(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response])),
             ]);
-            // ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
-                // ]),
-            // ]);
+        // ->bulkActions([
+        // Tables\Actions\BulkActionGroup::make([
+        //     Tables\Actions\DeleteBulkAction::make(),
+        // ]),
+        // ]);
     }
 }
