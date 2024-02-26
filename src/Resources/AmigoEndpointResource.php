@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
+use LaraZeus\InlineChart\Tables\Columns\InlineChart;
 
 use function config;
 
@@ -95,26 +96,35 @@ class AmigoEndpointResource extends Resource
                 Tables\Columns\TextColumn::make('responses_count')
                     ->label('Responses')
                     ->badge()
+                    ->formatStateUsing(fn ($state) => number_format($state))
                     ->counts('responses')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('aggregates_avg_duration')
-                    // ->avg('responses', 'duration')
-                    ->avg('aggregates', 'avg_duration')
-                    ->badge()
-                    // ->formatStateUsing(fn ($state) => round($state * 1000) . 'ms')
-                    // ->color(function ($state) {
-                    //     if ($state >= config('api-amigo.thresholds.duration.error')) {
-                    //         return Color::Red;
-                    //     } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
-                    //         return Color::Yellow;
-                    //     } else {
-                    //         return Color::Green;
-                    //     }
-                    // })
-                    ->label('Avg. Duration')
-                    // ->numeric()
-                    ->sortable(),
+                InlineChart::make('Request / Response Chart')
+                    ->chart(Widgets\EndpointResponsesTableChart::class)
+                    ->maxWidth(350)// int, default 200
+                    ->maxHeight(90)// int, default 50
+                    // ->description('description')
+                    ->toggleable(),
+
+                // Tables\Columns\TextColumn::make('aggregates_avg_duration')
+                //     // ->avg('responses', 'duration')
+                //     ->avg('aggregates', 'avg_duration')
+                //     ->badge()
+                // ->formatStateUsing(fn ($state) => round($state * 1000) . 'ms')
+                // ->color(function ($state) {
+                //     if ($state >= config('api-amigo.thresholds.duration.error')) {
+                //         return Color::Red;
+                //     } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
+                //         return Color::Yellow;
+                //     } else {
+                //         return Color::Green;
+                //     }
+                // })
+                // ->label('Avg. Duration')
+                // ->numeric()
+                // ->sortable(),
                 // ->searchable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -165,6 +175,7 @@ class AmigoEndpointResource extends Resource
         return [
             Widgets\EndpointStatsOverview::class,
             Widgets\EndpointResponsesChart::class,
+            Widgets\EndpointResponsesTableChart::class,
 
             Widgets\EndpointListOverview::class,
         ];

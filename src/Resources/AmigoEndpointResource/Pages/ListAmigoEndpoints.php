@@ -23,7 +23,7 @@ class ListAmigoEndpoints extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            Widgets\EndpointListOverview::class,
+            // Widgets\EndpointListOverview::class,
         ];
     }
 }
