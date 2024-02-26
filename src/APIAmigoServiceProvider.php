@@ -12,8 +12,10 @@ use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
+use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Schema\Grammars\Grammar;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +26,8 @@ use Saloon\Exceptions\DuplicatePipeNameException;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+
+use function number_format;
 
 class APIAmigoServiceProvider extends PackageServiceProvider
 {
@@ -78,6 +82,24 @@ class APIAmigoServiceProvider extends PackageServiceProvider
 
         Grammar::macro('typeTdigest', function (Fluent $column) {
             return 'tdigest';
+        });
+
+        TextColumn::macro('floatDuration', function () {
+            return $this
+                ->sortable()
+                ->badge()
+                ->color(function ($state) {
+                    if ($state >= config('api-amigo.thresholds.duration.error')) {
+                        return Color::Red;
+                    } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
+                        return Color::Yellow;
+                    } else {
+                        return Color::Green;
+                    }
+                })
+                ->formatStateUsing(function ($state) {
+                    return number_format($state * 1000) . 'ms';
+                });
         });
     }
 

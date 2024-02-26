@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 class AmigoRequestsRelationManager extends RelationManager
 {
     protected static string $relationship = 'requests';
+    protected static ?string $icon = 'far-inbox-out';
 
     public function form(Form $form): Form
     {
