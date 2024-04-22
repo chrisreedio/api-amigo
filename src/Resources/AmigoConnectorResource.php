@@ -104,11 +104,19 @@ class AmigoConnectorResource extends Resource
                     ->counts('endpoints')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('requests_count')
+                Tables\Columns\TextColumn::make('aggregates_sum_total_requests')
                     ->label('Requests')
                     ->badge()
-                    ->counts('requests')
+                    ->sum('aggregates', 'total_requests')
+                    ->placeholder('No Data')
+                    ->numeric()
                     ->sortable(),
+
+                // Tables\Columns\TextColumn::make('requests_count')
+                //     ->label('Requests')
+                //     ->badge()
+                //     ->counts('requests')
+                //     ->sortable(),
 
                 // Tables\Columns\TextColumn::make('deleted_at')
                 //     ->dateTime()

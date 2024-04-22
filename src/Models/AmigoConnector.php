@@ -52,6 +52,11 @@ class AmigoConnector extends Model
         return $this->hasManyThrough(AmigoRequest::class, AmigoEndpoint::class, 'connector_id', 'endpoint_id');
     }
 
+    public function aggregates(): HasManyThrough
+    {
+        return $this->hasManyThrough(AmigoEndpointAggregate::class, AmigoEndpoint::class, 'connector_id', 'endpoint_id');
+    }
+
     public static function track(PendingRequest $pendingRequest): self
     {
         $saloonConnector = $pendingRequest->getConnector();
@@ -118,4 +123,6 @@ class AmigoConnector extends Model
 
         return round(($this->rate_usage / $this->rate_limit) * 100, 2);
     }
+
+
 }

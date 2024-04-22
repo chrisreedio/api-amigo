@@ -21,10 +21,12 @@ return new class extends Migration {
             //     ->cascadeOnDelete();
             $table->foreignId('request_id')
                 ->nullable()
+                ->index()
                 ->constrained($tablePrefix . 'requests')
                 ->cascadeOnDelete();
 
             $table->foreignId('endpoint_id')
+                ->index()
                 ->constrained($tablePrefix . 'endpoints')
                 ->cascadeOnDelete();
 
