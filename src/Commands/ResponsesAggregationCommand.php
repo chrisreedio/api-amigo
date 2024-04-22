@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
+use function array_filter;
 use function collect;
 use function dd;
 use function Laravel\Prompts\info;
@@ -115,7 +116,7 @@ class ResponsesAggregationCommand extends Command
         // $this->info('Processing window from ' . $start->toDateTimeString() . ' to ' . $end->toDateTimeString() . '.');
         $maxRequestsPerMinute = $this->getRequestsPerMinute($start);
         $responses = AmigoResponse::query()
-            ->selectRaw(implode(', ', [
+            ->selectRaw(implode(', ', array_filter([
                 'endpoint_id',
                 'amigo_connectors.integration_id',
                 // 'amigo_endpoints.name',
@@ -129,8 +130,8 @@ class ResponsesAggregationCommand extends Command
                 'PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY duration) as p75_duration',
                 'PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration) as p95_duration',
                 'PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY duration) as p99_duration',
-                'tdigest(duration, 100) AS duration_histogram',
-            ]))
+                config('api-amigo.tdigest.enabled', false) ? 'tdigest(duration, 100) AS duration_histogram' : null,
+            ])))
             // ->whereBetween('amigo_responses.created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
             ->whereBetween('amigo_responses.created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
             ->join('amigo_endpoints', 'amigo_endpoints.id', '=', 'amigo_responses.endpoint_id')
