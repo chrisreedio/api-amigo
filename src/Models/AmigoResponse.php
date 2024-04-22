@@ -126,7 +126,6 @@ class AmigoResponse extends AmigoModel
                 'duration' => $responseTimeDelta,
             ]);
         } catch (\Exception $e) {
-            dd($e);
             Log::error('API Amigo failed to track response: ' . $e->getMessage(), [
                 'exception' => $e,
                 'response' => $saloonResponse,
