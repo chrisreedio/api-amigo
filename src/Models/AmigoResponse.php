@@ -56,7 +56,7 @@ class AmigoResponse extends AmigoModel
         return $this->belongsTo(AmigoRequest::class, 'request_id');
     }
 
-    public static function track(Response $saloonResponse): self
+    public static function track(Response $saloonResponse): ?self
     {
         // dd('hi', $saloonResponse);
         // $responseIdKey = config('api-amigo.responses.headers.keys.request_id');
@@ -130,6 +130,8 @@ class AmigoResponse extends AmigoModel
                 'exception' => $e,
                 'response' => $saloonResponse,
             ]);
+
+            return null;
             // dump($e->getMessage());
             // dd($e->getTraceAsString());
         }
