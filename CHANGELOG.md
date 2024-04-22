@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.27 - 2024-04-22
+
+### What's Changed
+
+* 🐛 fix(models): made `track` method nullable in `AmigoResponse` by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/34
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.26...v1.0.0-alpha.27
+
 ## v1.0.0-alpha.26 - 2024-04-22
 
 ### What's Changed
