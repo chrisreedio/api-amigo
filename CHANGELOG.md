@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.28 - 2024-04-22
+
+### What's Changed
+
+* Response Aggregation by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/35
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.27...v1.0.0-alpha.28
+
 ## v1.0.0-alpha.27 - 2024-04-22
 
 ### What's Changed
