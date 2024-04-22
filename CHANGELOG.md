@@ -2,6 +2,16 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.26 - 2024-04-22
+
+### What's Changed
+
+* feat: add webhook payload validation and reprocess action by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/29
+* chore(deps): bump aglipanci/laravel-pint-action from 2.3.1 to 2.4 by @dependabot in https://github.com/chrisreedio/api-amigo/pull/32
+* 🐛 fix: Removed debug code in `AmigoResponse` model by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/33
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.25...v1.0.0-alpha.26
+
 ## v1.0.0-alpha.25 - 2024-02-15
 
 ### What's Changed
