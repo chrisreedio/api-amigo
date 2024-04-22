@@ -51,4 +51,8 @@ return [
             'error' => 100 / 1000,
         ],
     ],
+
+    'tdigest' => [
+        'enabled' => env('AMIGO_TDIGEST_ENABLED', false),
+    ],
 ];

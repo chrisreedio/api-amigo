@@ -4,17 +4,24 @@ namespace ChrisReedIO\APIAmigo\Resources;
 
 use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\RelationManagers;
+use ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Widgets;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
+use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
+use LaraZeus\InlineChart\Tables\Columns\InlineChart;
 
 use function config;
 
 class AmigoEndpointResource extends Resource
 {
+    use ExposesTableToWidgets;
+
     protected static ?string $model = AmigoEndpoint::class;
 
     protected static ?string $navigationIcon = 'far-outlet';
@@ -29,6 +36,19 @@ class AmigoEndpointResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return number_format(static::getModel()::count());
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->columns(3)
+            ->schema([
+                Infolists\Components\TextEntry::make('name'),
+                Infolists\Components\TextEntry::make('connector.name'),
+                Infolists\Components\TextEntry::make('method')->badge(),
+                Infolists\Components\TextEntry::make('styled_path')->label('Path')->html(),
+                Infolists\Components\TextEntry::make('class')->columnSpan(2),
+            ]);
     }
 
     public static function form(Form $form): Form
@@ -76,25 +96,35 @@ class AmigoEndpointResource extends Resource
                 Tables\Columns\TextColumn::make('responses_count')
                     ->label('Responses')
                     ->badge()
+                    ->formatStateUsing(fn ($state) => number_format($state))
                     ->counts('responses')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('responses_avg_duration')
-                    ->avg('responses', 'duration')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => round($state * 1000) . 'ms')
-                    ->color(function ($state) {
-                        if ($state >= config('api-amigo.thresholds.duration.error')) {
-                            return Color::Red;
-                        } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
-                            return Color::Yellow;
-                        } else {
-                            return Color::Green;
-                        }
-                    })
-                    ->label('Avg. Duration')
-                    // ->numeric()
-                    ->sortable(),
+                InlineChart::make('Request / Response Chart')
+                    ->chart(Widgets\EndpointResponsesTableChart::class)
+                    ->maxWidth(350)// int, default 200
+                    ->maxHeight(90)// int, default 50
+                    // ->description('description')
+                    ->toggleable(),
+
+                // Tables\Columns\TextColumn::make('aggregates_avg_duration')
+                //     // ->avg('responses', 'duration')
+                //     ->avg('aggregates', 'avg_duration')
+                //     ->badge()
+                // ->formatStateUsing(fn ($state) => round($state * 1000) . 'ms')
+                // ->color(function ($state) {
+                //     if ($state >= config('api-amigo.thresholds.duration.error')) {
+                //         return Color::Red;
+                //     } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
+                //         return Color::Yellow;
+                //     } else {
+                //         return Color::Green;
+                //     }
+                // })
+                // ->label('Avg. Duration')
+                // ->numeric()
+                // ->sortable(),
                 // ->searchable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -124,7 +154,8 @@ class AmigoEndpointResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\AmigoRequestsRelationManager::class,
+            // RelationManagers\AmigoRequestsRelationManager::class,
+            // RelationManagers\AmigoEndpointAggregatesRelationManager::class,
         ];
     }
 
@@ -135,6 +166,18 @@ class AmigoEndpointResource extends Resource
             // 'create' => \ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Pages\CreateAmigoEndpoint::route('/create'),
             'view' => \ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Pages\ViewAmigoEndpoint::route('/{record}'),
             // 'edit' => \ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Pages\EditAmigoEndpoint::route('/{record}/edit'),
+            'stats' => \ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Pages\ViewEndpointAggregates::route('/{record}/stats'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            Widgets\EndpointStatsOverview::class,
+            Widgets\EndpointResponsesChart::class,
+            Widgets\EndpointResponsesTableChart::class,
+
+            Widgets\EndpointListOverview::class,
         ];
     }
 }

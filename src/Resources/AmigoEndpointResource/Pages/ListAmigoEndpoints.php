@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Pages;
 
 use ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource;
+use ChrisReedIO\APIAmigo\Resources\AmigoEndpointResource\Widgets;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -16,6 +17,13 @@ class ListAmigoEndpoints extends ListRecords
     {
         return [
             // Actions\CreateAction::make(),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            // Widgets\EndpointListOverview::class,
         ];
     }
 }

@@ -148,6 +148,7 @@ class AmigoResponseResource extends Resource
                 Tables\Columns\TextColumn::make('endpoint.name')
                     ->label('Endpoint')
                     ->tooltip(fn (AmigoResponse $record) => $record->endpoint->path)
+                    ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
                     ->searchable()
                     ->sortable(),
 
