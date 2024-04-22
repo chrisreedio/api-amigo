@@ -123,6 +123,4 @@ class AmigoConnector extends Model
 
         return round(($this->rate_usage / $this->rate_limit) * 100, 2);
     }
-
-
 }

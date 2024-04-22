@@ -182,7 +182,7 @@ class ResponsesAggregationCommand extends Command
         $start = $this->argument('startDate');
         $end = $this->argument('endDate');
 
-        if (!$start) {
+        if (! $start) {
             // Set start to Jan 1st 2024
             $start = '2024-01-01';
         }
