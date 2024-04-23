@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.29 - 2024-04-23
+
+### What's Changed
+
+* Large response bodies handling + response body download by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/36
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.28...v1.0.0-alpha.29
+
 ## v1.0.0-alpha.28 - 2024-04-22
 
 ### What's Changed
