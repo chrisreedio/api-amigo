@@ -40,10 +40,10 @@ class ViewAmigoResponse extends ViewRecord
                 ->hidden(fn (AmigoResponse $record) => $record->body === null || $record->body === [])
                 ->action(function (AmigoResponse $record) {
                     // Stream the $record->body field as a JSON file to the browser for download
-                    $filename = 'amigo-response-'.$record->id.'.json';
+                    $filename = 'amigo-response-' . $record->id . '.json';
                     $headers = [
                         'Content-Type' => 'application/json',
-                        'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+                        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
                     ];
                     $body = $record->encoded_body;
 

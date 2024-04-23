@@ -2,6 +2,8 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use const JSON_PRETTY_PRINT;
+
 use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
@@ -11,8 +13,6 @@ use function class_basename;
 use function config;
 use function dump;
 use function gettype;
-use function typeOf;
-use const JSON_PRETTY_PRINT;
 
 /**
  * AmigoResponse
@@ -129,7 +129,7 @@ class AmigoResponse extends AmigoModel
                 'duration' => $responseTimeDelta,
             ]);
         } catch (\Exception $e) {
-            Log::error('API Amigo failed to track response: '.$e->getMessage(), [
+            Log::error('API Amigo failed to track response: ' . $e->getMessage(), [
                 'exception' => $e,
                 'response' => $saloonResponse,
             ]);
@@ -145,7 +145,7 @@ class AmigoResponse extends AmigoModel
         return json_decode(json_decode($this->attributes['body'], true), true);
     }
 
-    public function getEncodedBodyAttribute() : string
+    public function getEncodedBodyAttribute(): string
     {
         // $json = $this->body;
         // dump(gettype($this->getOriginal('body')));
