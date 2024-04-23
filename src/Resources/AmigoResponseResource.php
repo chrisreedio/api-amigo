@@ -97,7 +97,6 @@ class AmigoResponseResource extends Resource
                         Infolists\Components\TextEntry::make('duration')
                             ->label('Duration')
                             ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000).'ms')
-                            // ->suffix('s')
                             ->color(function ($state) {
                                 if ($state >= config('api-amigo.thresholds.duration.error')) {
                                     return Color::Red;
