@@ -50,6 +50,10 @@ return [
             'warning' => 60 / 1000,
             'error' => 100 / 1000,
         ],
+        'response_size' => [
+            'warning' => 1000,
+            'error' => 2000,
+        ],
     ],
 
     'tdigest' => [

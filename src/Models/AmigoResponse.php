@@ -2,6 +2,8 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use const JSON_PRETTY_PRINT;
+
 use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
@@ -10,6 +12,7 @@ use Saloon\Http\Response;
 use function class_basename;
 use function config;
 use function dump;
+use function gettype;
 
 /**
  * AmigoResponse
@@ -135,5 +138,25 @@ class AmigoResponse extends AmigoModel
             // dump($e->getMessage());
             // dd($e->getTraceAsString());
         }
+    }
+
+    public function getBodyAttribute()
+    {
+        return json_decode(json_decode($this->attributes['body'], true), true);
+    }
+
+    public function getEncodedBodyAttribute(): string
+    {
+        // $json = $this->body;
+        // dump(gettype($this->getOriginal('body')));
+        // dd(gettype($json));
+        return json_encode($this->body, JSON_PRETTY_PRINT);
+        // return json_decode($this->attributes['body'], true, JSON_PRETTY_PRINT);
+        // return $this->body;
+    }
+
+    public function getBodySizeAttribute(): float
+    {
+        return (float) strlen($this->attributes['body']);
     }
 }
