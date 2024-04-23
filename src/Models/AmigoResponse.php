@@ -10,6 +10,9 @@ use Saloon\Http\Response;
 use function class_basename;
 use function config;
 use function dump;
+use function gettype;
+use function typeOf;
+use const JSON_PRETTY_PRINT;
 
 /**
  * AmigoResponse
@@ -139,7 +142,17 @@ class AmigoResponse extends AmigoModel
 
     public function getBodyAttribute()
     {
-        return json_decode($this->attributes['body'], true);
+        return json_decode(json_decode($this->attributes['body'], true), true);
+    }
+
+    public function getEncodedBodyAttribute() : string
+    {
+        // $json = $this->body;
+        // dump(gettype($this->getOriginal('body')));
+        // dd(gettype($json));
+        return json_encode($this->body, JSON_PRETTY_PRINT);
+        // return json_decode($this->attributes['body'], true, JSON_PRETTY_PRINT);
+        // return $this->body;
     }
 
     public function getBodySizeAttribute(): float
