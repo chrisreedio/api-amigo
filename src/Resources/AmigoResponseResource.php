@@ -17,11 +17,13 @@ use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Number;
 use Parallax\FilamentSyntaxEntry\SyntaxEntry;
 
-// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use function collect;
+// use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\RelationManagers;
 use function config;
+use function number_format;
 
 class AmigoResponseResource extends Resource
 {
@@ -44,7 +46,7 @@ class AmigoResponseResource extends Resource
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
-            ->columns(3)
+            ->columns(4)
             ->schema([
                 Infolists\Components\TextEntry::make('endpoint.connector.integration.name')
                     ->label('Integration')
@@ -62,16 +64,39 @@ class AmigoResponseResource extends Resource
                     ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
                     ->icon('far-outlet'),
 
+                Infolists\Components\TextEntry::make('response_size')
+                    ->label('Response Size')
+                    ->numeric()
+                    // ->getStateUsing(fn (AmigoResponse $record) => number_format($record->body_size / 1024.0, 1))
+                    ->getStateUsing(function (AmigoResponse $record) {
+                        $size = $record->body_size;
+                        // $size = 1024 * 1024;
+
+                        return Number::fileSize($size, 2);
+                    })
+                    ->color(function (AmigoResponse $record) {
+                        $size = $record->body_size;
+                        // $size = 1024 * 1024;
+                        if ($size >= config('api-amigo.thresholds.response_size.error')) {
+                            return Color::Red;
+                        } elseif ($size >= config('api-amigo.thresholds.response_size.warning')) {
+                            return Color::Yellow;
+                        } else {
+                            return Color::Green;
+                        }
+                    })
+                    ->icon('far-hard-drive'),
+
                 Infolists\Components\Grid::make(6)
                     ->schema([
                         Infolists\Components\TextEntry::make('status_code')
                             ->label('Status')
-                            ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
+                            ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value.' '.$record->status_code->getLabel())
                             ->badge(),
 
                         Infolists\Components\TextEntry::make('duration')
                             ->label('Duration')
-                            ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
+                            ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000).'ms')
                             // ->suffix('s')
                             ->color(function ($state) {
                                 if ($state >= config('api-amigo.thresholds.duration.error')) {
@@ -92,7 +117,7 @@ class AmigoResponseResource extends Resource
                             // ->url(fn (AmigoResponse $record) => AmigoRequestResource::getUrl('view', ['record' => $record->request]))
                             ->formatStateUsing(function ($state) {
                                 // $replacedVars = preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $state);
-                                $formatted = '<code>' . $state . '</code>';
+                                $formatted = '<code>'.$state.'</code>';
 
                                 return new HtmlString($formatted);
                             })
@@ -101,8 +126,9 @@ class AmigoResponseResource extends Resource
 
                 SyntaxEntry::make('body')
                     ->label('Response Body Contents')
-                    ->columnSpanFull()
-                    ->getStateUsing(fn (AmigoResponse $record) => json_encode($record->body, JSON_PRETTY_PRINT)),
+                    // ->getStateUsing(fn (AmigoResponse $record) => json_encode($record->body, JSON_PRETTY_PRINT))
+                    ->columnSpanFull(),
+
             ]);
     }
 
@@ -154,7 +180,7 @@ class AmigoResponseResource extends Resource
 
                 Tables\Columns\TextColumn::make('status_code')
                     ->label('Status')
-                    ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
+                    ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value.' '.$record->status_code->getLabel())
                     ->badge()
                     ->sortable(),
 
@@ -171,7 +197,7 @@ class AmigoResponseResource extends Resource
                             return Color::Green;
                         }
                     })
-                    ->getStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
+                    ->getStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000).'ms')
                     // ->suffix('s')
                     ->sortable(),
 
@@ -190,13 +216,13 @@ class AmigoResponseResource extends Resource
                     ->label('Connector')
                     ->relationship('endpoint.connector', 'name'),
                 Tables\Filters\SelectFilter::make('status_code')
-                    ->getOptionLabelUsing(fn ($value) => $value->value . ' - ' . $value->getLabel())
+                    ->getOptionLabelUsing(fn ($value) => $value->value.' - '.$value->getLabel())
                     ->searchable()
                     ->preload()
                     ->multiple()
                     ->options(function () {
                         return collect(HTTPStatus::cases())
-                            ->mapWithKeys(fn (HTTPStatus $code) => [$code->value => $code->value . ' - ' . $code->getLabel()]);
+                            ->mapWithKeys(fn (HTTPStatus $code) => [$code->value => $code->value.' - '.$code->getLabel()]);
                     }),
                 Tables\Filters\TernaryFilter::make('success')
                     ->label('Fail or Success')

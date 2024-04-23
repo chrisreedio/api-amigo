@@ -126,7 +126,7 @@ class AmigoResponse extends AmigoModel
                 'duration' => $responseTimeDelta,
             ]);
         } catch (\Exception $e) {
-            Log::error('API Amigo failed to track response: ' . $e->getMessage(), [
+            Log::error('API Amigo failed to track response: '.$e->getMessage(), [
                 'exception' => $e,
                 'response' => $saloonResponse,
             ]);
@@ -135,5 +135,15 @@ class AmigoResponse extends AmigoModel
             // dump($e->getMessage());
             // dd($e->getTraceAsString());
         }
+    }
+
+    public function getBodyAttribute()
+    {
+        return json_decode($this->attributes['body'], true);
+    }
+
+    public function getBodySizeAttribute(): float
+    {
+        return (float) strlen($this->attributes['body']);
     }
 }
