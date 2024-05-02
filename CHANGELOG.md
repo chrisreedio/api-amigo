@@ -2,6 +2,16 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.30 - 2024-05-02
+
+### What's Changed
+
+* chore(deps): bump ramsey/composer-install from 2 to 3 by @dependabot in https://github.com/chrisreedio/api-amigo/pull/30
+* chore(deps): bump dependabot/fetch-metadata from 1.6.0 to 2.1.0 by @dependabot in https://github.com/chrisreedio/api-amigo/pull/37
+* ✨ feat(`AmigoResponseResource`): Added caching for response counts by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/38
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.29...v1.0.0-alpha.30
+
 ## v1.0.0-alpha.29 - 2024-04-23
 
 ### What's Changed
