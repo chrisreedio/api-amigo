@@ -40,7 +40,7 @@ class AmigoResponseResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return Cache::remember('amigo_response_count', 60 * 5, fn() => number_format(static::getModel()::count()));
+        return Cache::remember('amigo_response_count', 60 * 5, fn () => number_format(static::getModel()::count()));
         // TODO: This should be used once we have hourly aggregation going
         // return number_format(AmigoEndpointAggregate::query()->sum('total_requests'));
     }
