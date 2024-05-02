@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Resources;
 
 use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
+use ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use ChrisReedIO\APIAmigo\Resources\AmigoResponseResource\Pages;
 use Filament\Forms;
@@ -14,6 +15,7 @@ use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Number;
 use Parallax\FilamentSyntaxEntry\SyntaxEntry;
@@ -38,7 +40,9 @@ class AmigoResponseResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return number_format(static::getModel()::count());
+        return Cache::remember('amigo_response_count', 60 * 5, fn() => number_format(static::getModel()::count()));
+        // TODO: This should be used once we have hourly aggregation going
+        // return number_format(AmigoEndpointAggregate::query()->sum('total_requests'));
     }
 
     public static function infolist(Infolist $infolist): Infolist
