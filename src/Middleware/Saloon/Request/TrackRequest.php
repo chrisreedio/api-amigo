@@ -8,8 +8,6 @@ use Saloon\Http\PendingRequest;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 
-use function dump;
-
 class TrackRequest implements RequestMiddleware
 {
     public function __invoke(PendingRequest $pendingRequest): void

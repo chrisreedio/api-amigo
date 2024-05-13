@@ -15,7 +15,6 @@ use Illuminate\Support\Str;
 
 use function array_filter;
 use function collect;
-use function dd;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\outro;

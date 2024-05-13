@@ -14,7 +14,6 @@ use Saloon\Http\Request;
 
 use function class_basename;
 use function collect;
-use function dd;
 use function get_class;
 use function is_scalar;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Exports;
+namespace ChrisReedIO\APIAmigo\Exports;
 
 use ChrisReedIO\APIAmigo\Models\AmigoRecording;
 use Filament\Actions\Exports\Exporter;
