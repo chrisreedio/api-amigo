@@ -67,8 +67,14 @@ class AmigoListenerResource extends Resource
                     ->helperText('Leave blank to disable signature verification, not recommended.')
                     ->copyable()
                     ->hidePasswordManagerIcons()
-                    ->regeneratePassword()
-                    ->generatePasswordUsing(fn () => Str::password(symbols: false))
+                    // ->regeneratePassword()
+                    // ->generatePasswordUsing(fn () => Str::password(symbols: false))
+                    ->regeneratePassword(
+                        condition: true,
+                        color: 'primary',
+                        using: fn () => Str::password(symbols: false),
+                        notify: true,
+                    )
                     ->maxLength(255),
 
                 Forms\Components\Select::make('handler')
