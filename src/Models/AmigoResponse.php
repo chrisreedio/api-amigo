@@ -11,7 +11,6 @@ use Saloon\Http\Response;
 
 use function class_basename;
 use function config;
-use function dump;
 use function gettype;
 
 /**
