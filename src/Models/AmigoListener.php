@@ -4,6 +4,7 @@ namespace ChrisReedIO\APIAmigo\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 
 /**
@@ -41,6 +42,11 @@ class AmigoListener extends AmigoModel
     public function integration(): BelongsTo
     {
         return $this->belongsTo(AmigoIntegration::class, 'integration_id');
+    }
+
+    public function listenable(): MorphTo
+    {
+        return $this->morphTo();
     }
 
     public function webhooks(): HasMany

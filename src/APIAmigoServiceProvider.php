@@ -214,6 +214,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             'create_amigo_recordings_table',
             'create_amigo_recording_amigo_request_table',
             'alter_amigo_endpoint_aggregates_restructure_table',
+            'alter_amigo_listeners_add_transient_columns',
         ];
     }
 }
