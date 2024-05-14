@@ -2,9 +2,12 @@
 
 namespace ChrisReedIO\APIAmigo\Middleware\Saloon;
 
+use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Saloon\Contracts\RequestMiddleware;
 use Saloon\Http\PendingRequest;
+use function auth;
+use function microtime;
 
 class TrackSaloonRequest implements RequestMiddleware
 {
@@ -15,7 +18,34 @@ class TrackSaloonRequest implements RequestMiddleware
         // Here we need to log the request
         // Things to track: request URL, request method, request headers, request body
         // Depending on our logging strategy, we may want to log the response as well
-        AmigoRequest::track($pendingRequest);
-        // dump('Created AmigoRequest model:', $request->toArray());
+        // AmigoRequest::track($pendingRequest); // Old Deprecated Method
+
+        // Track the request
+        $requestId = AmigoRequest::generateId();
+        $pendingRequest->config()->add('amigo.request_id', $requestId);
+        $pendingRequest->config()->add('amigo.request_time', microtime(true));
+
+        // Find or create the endpoint
+        $endpoint = AmigoEndpoint::track($pendingRequest);
+
+        $request = $endpoint->requests()->create([
+            'unique_id' => $requestId,
+            'user_id' => auth()->user()?->id,
+            'path' => $this->getPath($pendingRequest),
+        ]);
+
+        $request->attachRecordings();
+    }
+
+    private function getPath(PendingRequest $pendingRequest): string
+    {
+        $pathParts = $pendingRequest->getUri();
+        $path = $pathParts->getPath();
+        $query = $pathParts->getQuery();
+        if ($query !== '') {
+            $path .= '?' . $query;
+        }
+
+        return $path;
     }
 }

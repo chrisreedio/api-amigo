@@ -4,6 +4,7 @@ namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\RelationManagers;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointResponsesTableChart;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -81,10 +82,13 @@ class AmigoEndpointResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('connector.integration.name')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('connector.name')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->placeholder('Not Set')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('method')
@@ -92,6 +96,7 @@ class AmigoEndpointResource extends Resource
                     ->badge()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('styled_path')
+                    ->label('Path')
                     ->copyable()
                     ->sortable()
                     ->html()
@@ -102,8 +107,9 @@ class AmigoEndpointResource extends Resource
                     ->formatStateUsing(fn ($state) => number_format($state))
                     ->counts('responses')
                     ->sortable(),
-                InlineChart::make('Request / Response Chart')
-                    ->chart(\ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointResponsesTableChart::class)
+                InlineChart::make('response_chart')
+                    ->label('Successful vs Failed Requests')
+                    ->chart(EndpointResponsesTableChart::class)
                     ->maxWidth(350)// int, default 200
                     ->maxHeight(90)// int, default 50
                     // ->description('description')
@@ -178,7 +184,7 @@ class AmigoEndpointResource extends Resource
         return [
             \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointStatsOverview::class,
             \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointResponsesChart::class,
-            \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointResponsesTableChart::class,
+            EndpointResponsesTableChart::class,
 
             \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointListOverview::class,
         ];
