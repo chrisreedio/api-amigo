@@ -14,7 +14,10 @@ class APIAmigoPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        $panel->discoverClusters(in: __DIR__.'/Clusters', for: 'ChrisReedIO\APIAmigo\Clusters');
+        // )
         $panel->resources([
+            // Clusters\APIAmigo::class,
             Resources\AmigoIntegrationResource::class,
             Resources\AmigoConnectorResource::class,
             Resources\AmigoRecordingResource::class,
