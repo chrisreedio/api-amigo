@@ -97,12 +97,12 @@ class AmigoResponseResource extends Resource
                     ->schema([
                         Infolists\Components\TextEntry::make('status_code')
                             ->label('Status')
-                            ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
+                            ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value.' '.$record->status_code->getLabel())
                             ->badge(),
 
                         Infolists\Components\TextEntry::make('duration')
                             ->label('Duration')
-                            ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
+                            ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000).'ms')
                             ->color(function ($state) {
                                 if ($state >= config('api-amigo.thresholds.duration.error')) {
                                     return Color::Red;
@@ -122,7 +122,7 @@ class AmigoResponseResource extends Resource
                             // ->url(fn (AmigoResponse $record) => AmigoRequestResource::getUrl('view', ['record' => $record->request]))
                             ->formatStateUsing(function ($state) {
                                 // $replacedVars = preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $state);
-                                $formatted = '<code>' . $state . '</code>';
+                                $formatted = '<code>'.$state.'</code>';
 
                                 return new HtmlString($formatted);
                             })
@@ -142,6 +142,16 @@ class AmigoResponseResource extends Resource
                     ->label('Response Body')
                     ->placeholder('No Recorded Response Body')
                     ->visible(fn (AmigoResponse $record) => $record->body === null || $record->body === []),
+
+                Infolists\Components\Section::make('Response Headers')
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        SyntaxEntry::make('headers')
+                            // ->label('Webhook Headers')
+                            ->label('')
+                            ->columnSpanFull(),
+                    ]),
 
                 SyntaxEntry::make('body')
                     ->hidden(function (AmigoResponse $record) {
@@ -198,29 +208,29 @@ class AmigoResponseResource extends Resource
 
                 Tables\Columns\TextColumn::make('endpoint.connector.integration.name')
                     ->label('Integration')
-                    ->badge()
+                    // ->badge()
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('endpoint.connector.name')
                     ->label('Connector')
                     // ->tooltip(fn (AmigoResponse $record) => $record->endpoint->connector->base_url)
-                    ->badge()
+                    // ->badge()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('endpoint.name')
+                Tables\Columns\TextColumn::make('endpoint.display_name')
                     ->label('Endpoint')
                     // ->getStateUsing(fn (AmigoResponse $record) => $record->endpoint->name ?? $record->endpoint->path ?? 'hi')
                     ->tooltip(fn (AmigoResponse $record) => $record->endpoint->path)
                     ->placeholder('No Endpoint')
-                    ->badge()
+                    ->badge(fn (AmigoResponse $record) => $record->endpoint->name !== null)
                     ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('status_code')
                     ->label('Status')
-                    ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
+                    ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value.' '.$record->status_code->getLabel())
                     ->badge()
                     ->sortable(),
 
@@ -237,7 +247,7 @@ class AmigoResponseResource extends Resource
                             return Color::Green;
                         }
                     })
-                    ->getStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
+                    ->getStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000).'ms')
                     // ->suffix('s')
                     ->sortable(),
 
@@ -256,13 +266,13 @@ class AmigoResponseResource extends Resource
                     ->label('Connector')
                     ->relationship('endpoint.connector', 'name'),
                 Tables\Filters\SelectFilter::make('status_code')
-                    ->getOptionLabelUsing(fn ($value) => $value->value . ' - ' . $value->getLabel())
+                    ->getOptionLabelUsing(fn ($value) => $value->value.' - '.$value->getLabel())
                     ->searchable()
                     ->preload()
                     ->multiple()
                     ->options(function () {
                         return collect(HTTPStatus::cases())
-                            ->mapWithKeys(fn (HTTPStatus $code) => [$code->value => $code->value . ' - ' . $code->getLabel()]);
+                            ->mapWithKeys(fn (HTTPStatus $code) => [$code->value => $code->value.' - '.$code->getLabel()]);
                     }),
                 Tables\Filters\TernaryFilter::make('success')
                     ->label('Fail or Success')
