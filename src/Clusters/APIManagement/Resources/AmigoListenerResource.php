@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use Carbon\CarbonInterface;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Facades\APIAmigo;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
@@ -14,6 +15,7 @@ use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Rawilk\FilamentPasswordInput\Password;
 
@@ -236,6 +238,25 @@ class AmigoListenerResource extends Resource
                     ->placeholder('Not Linked')
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('expires_at')
+                    ->label('Expires in')
+                    ->dateTime()
+                    ->placeholder('Never')
+                    ->tooltip(fn (AmigoListener $record) => $record->expires_at ? 'Expires at ' . $record->expires_at->format('F j, Y g:i A') : null)
+                    ->formatStateUsing(function (AmigoListener $record) {
+                        if ($record->expires_at->isPast()) {
+                            return 'Expired';
+                        }
+
+                        return $record->expires_at->diffForHumans(now(), CarbonInterface::DIFF_ABSOLUTE);
+                        // return $record->expires_at->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW);
+                        // print this in a very readable format like Month Day, Year Hour:Minute AM/PM
+                        // return $record->expires_at->format('F j, Y g:i A');
+
+                        // return $record->expires_at ? $record->expires_at->diffForHumans() : null;
+                    })
+                    ->sortable(),
+
                 // Tables\Columns\TextColumn::make('created_at')
                 //     ->searchable()
                 //     ->sortable()
@@ -259,6 +280,31 @@ class AmigoListenerResource extends Resource
                     ->queries(
                         true: fn (Builder $query) => $query->whereNotNull('listenable_type'),
                         false: fn (Builder $query) => $query->whereNull('listenable_type'),
+                        blank: fn (Builder $query) => $query // In this example, we do not want to filter the query when it is blank.
+                    ),
+
+                Tables\Filters\TernaryFilter::make('expires')
+                    ->label('Expires')
+                    ->nullable()
+                    ->default(false)
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('expires_at'),
+                        false: fn (Builder $query) => $query->whereNull('expires_at'),
+                        blank: fn (Builder $query) => $query // In this example, we do not want to filter the query when it is blank.
+                    ),
+
+                Tables\Filters\TernaryFilter::make('expired')
+                    ->label('Expired')
+                    ->nullable()
+                    // visible only if the tableFilters[expires] is true
+                    // ->visible(function (Request $request) {
+                    //     dd($request->input('tableFilters.expires'));
+                    //     return $request->input('tableFilters.expires') === 'true';
+                    // })
+                    ->default(false)
+                    ->queries(
+                        true: fn (Builder $query) => $query->expired(),
+                        false: fn (Builder $query) => $query->expired(false),
                         blank: fn (Builder $query) => $query // In this example, we do not want to filter the query when it is blank.
                     ),
             ])

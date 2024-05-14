@@ -40,6 +40,10 @@ class AmigoListener extends AmigoModel
         'expires_at',
     ];
 
+    protected $casts = [
+        'expires_at' => 'datetime',
+    ];
+
     protected static function booted(): void
     {
         static::creating(function (AmigoListener $listener) {
@@ -73,6 +77,16 @@ class AmigoListener extends AmigoModel
                 $this->unique_id,
             ])
         );
+    }
+
+    public function scopeExpired(Builder $query, bool $value = true): Builder
+    {
+        return $query->when($value, function (Builder $query) {
+            $query->where('expires_at', '<=', Carbon::now());
+        }, function (Builder $query) {
+            $query->whereNull('expires_at')
+                ->orWhere('expires_at', '>', Carbon::now());
+        });
     }
 
     public function scopeTransient(Builder $query, bool $value = true): Builder
