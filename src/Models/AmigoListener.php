@@ -30,6 +30,9 @@ class AmigoListener extends AmigoModel
         'handler',
         'color',
         'webhook_secret',
+        'uses',
+        'uses_remaining',
+        'expires_at',
     ];
 
     protected static function booted(): void
