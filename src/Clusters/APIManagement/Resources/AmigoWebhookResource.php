@@ -114,42 +114,49 @@ class AmigoWebhookResource extends Resource
                     })
                     ->badge(),
 
-                SyntaxEntry::make('headers')
-                    ->label('Webhook Headers')
-                    ->columnSpanFull(),
-                // ->getStateUsing(function (AmigoWebhook $record) {
-                //     if (is_array($record->headers)) {
-                //         return json_encode($record->headers, JSON_PRETTY_PRINT);
-                //     }
-                //
-                //     return json_encode(json_decode($record->headers, true), JSON_PRETTY_PRINT);
-                // }),
-                // Disabling this for now as it's misbehaving
-                // ->getStateUsing(fn (AmigoWebhook $record) => json_encode($record->headers, JSON_PRETTY_PRINT)),
+                Infolists\Components\Section::make('Request Headers')
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        SyntaxEntry::make('headers')
+                            // ->label('Webhook Headers')
+                            ->label('')
+                            ->columnSpanFull(),
+                        // ->getStateUsing(function (AmigoWebhook $record) {
+                        //     if (is_array($record->headers)) {
+                        //         return json_encode($record->headers, JSON_PRETTY_PRINT);
+                        //     }
+                        //
+                        //     return json_encode(json_decode($record->headers, true), JSON_PRETTY_PRINT);
+                        // }),
+                        // Disabling this for now as it's misbehaving
+                        // ->getStateUsing(fn (AmigoWebhook $record) => json_encode($record->headers, JSON_PRETTY_PRINT)),
 
-                // Infolists\Components\TextEntry::make('headers')
-                //     ->columnSpanFull()
-                //     ->label('Webhook Headers')
-                //     ->getStateUsing(function (AmigoWebhook $record) {
-                //         if (is_array($record->headers)) {
-                //             return json_encode($record->headers, JSON_PRETTY_PRINT);
-                //         }
-                //
-                //         return json_encode(json_decode($record->headers, true), JSON_PRETTY_PRINT);
-                //     })
-                //     ->formatStateUsing(function ($state) {
-                //         if (empty($state)) {
-                //             return 'No Headers';
-                //         }
-                //
-                //         // return '```json' . $state . '';
-                //         return new HtmlString('<pre>' . $state . '</pre>');
-                //     })
-                //     // ->html(),
-                //     ->copyable()
-                //     ->maxWidth('2xl')
-                //     ->markdown()
-                //     ->grow(),
+                        // Infolists\Components\TextEntry::make('headers')
+                        //     ->columnSpanFull()
+                        //     ->label('Webhook Headers')
+                        //     ->getStateUsing(function (AmigoWebhook $record) {
+                        //         if (is_array($record->headers)) {
+                        //             return json_encode($record->headers, JSON_PRETTY_PRINT);
+                        //         }
+                        //
+                        //         return json_encode(json_decode($record->headers, true), JSON_PRETTY_PRINT);
+                        //     })
+                        //     ->formatStateUsing(function ($state) {
+                        //         if (empty($state)) {
+                        //             return 'No Headers';
+                        //         }
+                        //
+                        //         // return '```json' . $state . '';
+                        //         return new HtmlString('<pre>' . $state . '</pre>');
+                        //     })
+                        //     // ->html(),
+                        //     ->copyable()
+                        //     ->maxWidth('2xl')
+                        //     ->markdown()
+                        //     ->grow(),
+
+                    ]),
 
                 SyntaxEntry::make('payload')
                     ->label('Webhook Payload')
