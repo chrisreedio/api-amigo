@@ -34,7 +34,7 @@ class TrackGuzzleRequest
         return $pendingRequest;
     }
 
-    public function getEndpoint(RequestInterface $request): AmigoEndpoint
+    private function getEndpoint(RequestInterface $request): AmigoEndpoint
     {
         $connector = $this->getConnector($request);
 
