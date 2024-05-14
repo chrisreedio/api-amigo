@@ -44,7 +44,7 @@ class AmigoResponseResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return Cache::remember('amigo_response_count', 60 * 5, fn () => number_format(static::getModel()::count()));
+        return Cache::remember('amigo_response_count', 60 * 1, fn () => number_format(static::getModel()::count()));
         // TODO: This should be used once we have hourly aggregation going
         // return number_format(AmigoEndpointAggregate::query()->sum('total_requests'));
     }
@@ -210,7 +210,10 @@ class AmigoResponseResource extends Resource
 
                 Tables\Columns\TextColumn::make('endpoint.name')
                     ->label('Endpoint')
+                    // ->getStateUsing(fn (AmigoResponse $record) => $record->endpoint->name ?? $record->endpoint->path ?? 'hi')
                     ->tooltip(fn (AmigoResponse $record) => $record->endpoint->path)
+                    ->placeholder('No Endpoint')
+                    ->badge()
                     ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
                     ->searchable()
                     ->sortable(),

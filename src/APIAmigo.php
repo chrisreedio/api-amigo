@@ -49,8 +49,10 @@ class APIAmigo
         $handlerStack = HandlerStack::create($config['handler']);
 
         // Add the tracking middleware to the handler stack
-        $handlerStack->push(Middleware::mapRequest(new TrackGuzzleRequest), 'amigo-track_guzzle_request');
-        $handlerStack->push(Middleware::mapResponse(new TrackGuzzleResponse), 'amigo-log_guzzle_response');
+        // $handlerStack->push(Middleware::mapRequest(new TrackGuzzleRequest), 'amigo-track_guzzle_request');
+        // $handlerStack->push(Middleware::mapResponse(new TrackGuzzleResponse), 'amigo-log_guzzle_response');
+        $handlerStack->push(new TrackGuzzleRequest, 'amigo-track_guzzle_request');
+        $handlerStack->push(new TrackGuzzleResponse, 'amigo-log_guzzle_response');
 
         // Create a new Guzzle client with the modified handler stack
         return new Client(array_merge($config, ['handler' => $handlerStack]));

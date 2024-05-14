@@ -49,13 +49,25 @@ class AmigoEndpoint extends AmigoModel
 
     public function getNameAttribute(): string
     {
+        // If the name is empty, return the styled path
         if (empty($this->attributes['name'])) {
+            // If the class is empty, return the styled path
+            if (empty($this->attributes['class'])) {
+                return $this->styled_path;
+            }
+
+            // Otherwise, return the class name
             return class_basename($this->class);
         }
         $snake = Str::snake($this->attributes['name']);
 
         return Str::title(str_replace('_', ' ', $snake));
     }
+
+    // public function getDisplayNameAttribute(): string
+    // {
+    //
+    // }
 
     public function getStyledPathAttribute(): string
     {

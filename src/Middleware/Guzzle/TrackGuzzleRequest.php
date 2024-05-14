@@ -15,23 +15,31 @@ use function parse_url;
 
 class TrackGuzzleRequest
 {
-    public function __invoke(RequestInterface $pendingRequest): RequestInterface
+    // public function __invoke(RequestInterface $pendingRequest): RequestInterface
+    public function __invoke(callable $handler)
     {
-        // dump('== API Amigo TrackGuzzleRequest middleware invoked ==');
-        $requestId = AmigoRequest::generateId();
-        $pendingRequest->withHeader('X-Api-Amigo-Request-Id', $requestId);
+        return function (RequestInterface $pendingRequest, array $options) use ($handler) {
+            // dump('== API Amigo TrackGuzzleRequest middleware invoked ==');
+            $requestId = AmigoRequest::generateId();
+            $options['amigo']['request_id'] = $requestId;
+            $options['amigo']['request_time'] = microtime(true);
+            $options['amigo']['method'] = $pendingRequest->getMethod();
+            // $options['amigo']['base_uri'] = $pendingRequest->getUri()->__toString());
+            // $pendingRequest->withHeader('X-Api-Amigo-Request-Id', $requestId);
 
-        $endpoint = $this->getEndpoint($pendingRequest);
+            $endpoint = $this->getEndpoint($pendingRequest);
 
-        $request = $endpoint->requests()->create([
-            'unique_id' => $requestId,
-            'user_id' => auth()->user()?->id,
-            'path' => $this->getPath($pendingRequest),
-        ]);
+            $request = $endpoint->requests()->create([
+                'unique_id' => $requestId,
+                'user_id' => auth()->user()?->id,
+                'path' => $this->getPath($pendingRequest),
+            ]);
 
-        $request->attachRecordings();
+            $request->attachRecordings();
 
-        return $pendingRequest;
+            return $handler($pendingRequest, $options);
+            // return $pendingRequest;
+        };
     }
 
     private function getEndpoint(RequestInterface $request): AmigoEndpoint
