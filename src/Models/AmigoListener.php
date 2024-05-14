@@ -5,6 +5,7 @@ namespace ChrisReedIO\APIAmigo\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -18,6 +19,9 @@ use Illuminate\Support\Str;
  * @property string $color
  * @property string $webhook_secret
  * @property string $url
+ * @property int $uses
+ * @property int $max_uses
+ * @property Carbon $expires_at
  * @property AmigoIntegration $integration
  * @property AmigoWebhook[] $webhooks
  */

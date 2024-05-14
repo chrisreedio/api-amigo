@@ -28,10 +28,10 @@ class AmigoWebhookResource extends Resource
 
     protected static ?string $slug = 'webhooks';
 
-    public static function getNavigationGroup(): ?string
-    {
-        return config('api-amigo.filament.navigation_group');
-    }
+    // public static function getNavigationGroup(): ?string
+    // {
+    //     return config('api-amigo.filament.navigation_group');
+    // }
 
     public static function getNavigationBadge(): ?string
     {

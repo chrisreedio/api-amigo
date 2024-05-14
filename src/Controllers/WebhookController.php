@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Controllers;
 
+use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
 use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use Illuminate\Http\JsonResponse;
@@ -22,9 +23,15 @@ class WebhookController extends Controller
             }
         } elseif ($listener->integration()->exists() && $listener->integration->webhook_secret !== null) {
             $secret = $listener->integration->webhook_secret;
-            if (!$this->validateSignature($request, $secret)) {
+            if (! $this->validateSignature($request, $secret)) {
                 return response()->json(['error' => 'Invalid signature'], 401);
             }
+        }
+
+        // Check to see if the existing uses is >= the max uses for the listener
+        // If so, return an error that indicates the link is expired
+        if ($listener->max_uses !== null && $listener->uses >= $listener->max_uses) {
+            return response()->json(['error' => 'This webhook has reached its max number of uses.'], HTTPStatus::GONE->value);
         }
 
         $requestBody = $request->getContent();

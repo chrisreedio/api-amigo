@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Traits;
 
+use Carbon\Carbon;
 use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use Filament\Support\Colors\Color;
@@ -20,7 +21,7 @@ trait HasTransientWebhooks
         return $this->morphMany(AmigoListener::class, 'listenable');
     }
 
-    public function createTransientListener(string $handler, ?int $uses = null): AmigoListener
+    public function createTransientListener(string $handler, ?Carbon $expires_at = null, ?int $uses = null): AmigoListener
     {
         if (! is_subclass_of($handler, ProcessWebhookJob::class)) {
             throw new \InvalidArgumentException('Handler must be a subclass of ' . ProcessWebhookJob::class);
@@ -37,6 +38,10 @@ trait HasTransientWebhooks
             $targetName,
         ]);
 
+        if (! $expires_at) {
+            $expires_at = Carbon::now()->addDay();
+        }
+
         // dd($handler);
         $color = Color::Yellow[500];
         $colorHex = sprintf("#%02x%02x%02x", $color[0], $color[1], $color[2]);
@@ -46,6 +51,7 @@ trait HasTransientWebhooks
             'handler' => $handler,
             'max_uses' => $uses ?? 1,
             'color' => $colorHex,
+            'expires_at' => $expires_at,
         ]);
     }
 }

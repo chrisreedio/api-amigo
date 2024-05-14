@@ -24,10 +24,10 @@ class AmigoConnectorResource extends Resource
 
     protected static ?string $slug = 'connectors';
 
-    public static function getNavigationGroup(): ?string
-    {
-        return config('api-amigo.filament.navigation_group');
-    }
+    // public static function getNavigationGroup(): ?string
+    // {
+    //     return config('api-amigo.filament.navigation_group');
+    // }
 
     public static function getNavigationBadge(): ?string
     {
