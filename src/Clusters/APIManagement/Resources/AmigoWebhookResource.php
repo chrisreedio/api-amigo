@@ -45,7 +45,10 @@ class AmigoWebhookResource extends Resource
             ->schema([
                 Infolists\Components\TextEntry::make('listener.integration.name')
                     ->label('Integration')
-                    ->url(fn (AmigoWebhook $record) => AmigoIntegrationResource::getUrl('view', ['record' => $record->listener->integration]))
+                    ->url(function (AmigoWebhook $record) {
+                        return $record->listener?->integration ? AmigoIntegrationResource::getUrl('view', ['record' => $record->listener->integration]) : null;
+                    })
+                    ->placeholder('No Integration')
                     ->icon('far-integral'),
 
                 Infolists\Components\TextEntry::make('listener.display_name')
@@ -66,7 +69,7 @@ class AmigoWebhookResource extends Resource
                     ->label('Listener Path')
                     ->copyable()
                     ->columnSpan(2)
-                    ->formatStateUsing(fn ($state) => new HtmlString('<code>' . $state . '</code>'))
+                    ->formatStateUsing(fn ($state) => new HtmlString('<code>'.$state.'</code>'))
                     ->icon('far-sign-post'),
 
                 Infolists\Components\TextEntry::make('listener.handler')
@@ -96,7 +99,7 @@ class AmigoWebhookResource extends Resource
                         return match ($record->processing_time) {
                             null => 'Not Processed',
                             0 => 'Instant',
-                            default => $record->processing_time . 's',
+                            default => $record->processing_time.'s',
                         };
                     })
                     ->color(fn (AmigoWebhook $record) => match ($record->processing_time) {
@@ -113,15 +116,16 @@ class AmigoWebhookResource extends Resource
 
                 SyntaxEntry::make('headers')
                     ->label('Webhook Headers')
-                    ->columnSpanFull()
-                    // ->getStateUsing(function (AmigoWebhook $record) {
-                    //     if (is_array($record->headers)) {
-                    //         return json_encode($record->headers, JSON_PRETTY_PRINT);
-                    //     }
-                    //
-                    //     return json_encode(json_decode($record->headers, true), JSON_PRETTY_PRINT);
-                    // }),
-                    ->getStateUsing(fn (AmigoWebhook $record) => json_encode($record->headers, JSON_PRETTY_PRINT)),
+                    ->columnSpanFull(),
+                // ->getStateUsing(function (AmigoWebhook $record) {
+                //     if (is_array($record->headers)) {
+                //         return json_encode($record->headers, JSON_PRETTY_PRINT);
+                //     }
+                //
+                //     return json_encode(json_decode($record->headers, true), JSON_PRETTY_PRINT);
+                // }),
+                // Disabling this for now as it's misbehaving
+                // ->getStateUsing(fn (AmigoWebhook $record) => json_encode($record->headers, JSON_PRETTY_PRINT)),
 
                 // Infolists\Components\TextEntry::make('headers')
                 //     ->columnSpanFull()
@@ -149,8 +153,8 @@ class AmigoWebhookResource extends Resource
 
                 SyntaxEntry::make('payload')
                     ->label('Webhook Payload')
-                    ->columnSpanFull()
-                    ->getStateUsing(fn (AmigoWebhook $record) => json_encode($record->payload, JSON_PRETTY_PRINT)),
+                    ->columnSpanFull(),
+                // ->getStateUsing(fn (AmigoWebhook $record) => json_encode($record->payload, JSON_PRETTY_PRINT)),
 
                 // Infolists\Components\TextEntry::make('payload')
                 //     ->columnSpanFull()
