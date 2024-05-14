@@ -71,7 +71,8 @@ class AmigoEndpoint extends AmigoModel
 
     public function getStyledPathAttribute(): string
     {
-        $path = $this->attributes['path'];
+        // $path = $this->attributes['path'];
+        $path = $this->path;
 
         return preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $path);
     }
