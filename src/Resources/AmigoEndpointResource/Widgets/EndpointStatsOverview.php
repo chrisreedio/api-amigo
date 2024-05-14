@@ -24,18 +24,25 @@ class EndpointStatsOverview extends BaseWidget
 
         // Calculate the success percent from the total and failed counts
         $totalSuccesses = $this->record->aggregates->sum('successful_requests');
-        $successPercent = number_format(($totalSuccesses / $total) * 100, 1);
-        $successColor = match (true) {
-            $successPercent > 90 => Color::Green[500],
-            $successPercent > 80 => Color::Yellow[500],
-            default => Color::Red[500],
-        };
+        if ($total === 0) {
+            // $successPercent = number_format(100, 1);
+            $successPercent = 'N/A';
+            $successColor = Color::Gray[500];
+        } else {
+            $successPercent = number_format(($totalSuccesses / $total) * 100, 1);
+            $successColor = match (true) {
+                $successPercent > 90 => Color::Green[500],
+                $successPercent > 80 => Color::Yellow[500],
+                default => Color::Red[500],
+            };
+            $successPercent .= '%';
+        }
 
         return [
             Stat::make('Total Responses', number_format($total)),
             Stat::make('P90 Response Time', $tempAverage),
-            Stat::make('Success Rate', $successPercent . '%')
-                ->value(new HtmlString('<span style="color: rgb(' . $successColor . ')">' . $successPercent . '%</span>')),
+            Stat::make('Success Rate', $successPercent)
+                ->value(new HtmlString('<span style="color: rgb(' . $successColor . ')">' . $successPercent . '</span>')),
         ];
     }
 }
