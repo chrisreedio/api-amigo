@@ -6,7 +6,6 @@ use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Illuminate\Support\Facades\File;
-use function dump;
 
 class APIAmigoPlugin implements Plugin
 {
