@@ -3,6 +3,14 @@
 namespace ChrisReedIO\APIAmigo;
 
 use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
+use ChrisReedIO\APIAmigo\Middleware\Guzzle\Request\TrackGuzzleRequest;
+use ChrisReedIO\APIAmigo\Middleware\Guzzle\Response\LogGuzzleResponse;
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use ReflectionException;
+
+use function array_merge;
 
 class APIAmigo
 {
@@ -27,5 +35,25 @@ class APIAmigo
     public static function getWebhookHandlers(): array
     {
         return self::$webhookHandlers;
+    }
+
+    public static function hookGuzzle(Client $client): Client
+    {
+        // Get the existing client config via reflection
+        try {
+            $config = (new \ReflectionClass($client))->getProperty('config')->getValue($client);
+        } catch (ReflectionException $e) {
+            throw new \RuntimeException('Unable to access the Guzzle client configuration.');
+        }
+
+        // Create a handler stack from the existing client handler stack
+        $handlerStack = HandlerStack::create($config['handler']);
+
+        // Add the tracking middleware to the handler stack
+        $handlerStack->push(Middleware::mapRequest(new TrackGuzzleRequest), 'amigo-track_guzzle_request');
+        $handlerStack->push(Middleware::mapResponse(new LogGuzzleResponse), 'amigo-log_guzzle_response');
+
+        // Create a new Guzzle client with the modified handler stack
+        return new Client(array_merge($config, ['handler' => $handlerStack]));
     }
 }
