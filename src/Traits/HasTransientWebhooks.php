@@ -7,6 +7,9 @@ use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use Filament\Support\Colors\Color;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use function class_basename;
+use function get_class;
+use function implode;
 use function is_subclass_of;
 
 /** @mixin Model */
@@ -23,11 +26,22 @@ trait HasTransientWebhooks
             throw new \InvalidArgumentException('Handler must be a subclass of ' . ProcessWebhookJob::class);
         }
 
+        $targetName = class_basename($this);
+        if ($this->name) {
+            $targetName .= ': ' . $this->name;
+        }
+
+        $name = implode(' ', [
+            class_basename($handler),
+            'for',
+            $targetName,
+        ]);
+
         // dd($handler);
         $color = Color::Yellow[500];
         $colorHex = sprintf("#%02x%02x%02x", $color[0], $color[1], $color[2]);
         return $this->listeners()->create([
-            'display_name' => 'Transient Listener',
+            'display_name' => $name,
             // 'handler' => get_class($handler),
             'handler' => $handler,
             'max_uses' => $uses ?? 1,

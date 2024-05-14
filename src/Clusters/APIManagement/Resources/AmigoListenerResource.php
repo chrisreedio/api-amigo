@@ -7,12 +7,16 @@ use ChrisReedIO\APIAmigo\Facades\APIAmigo;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Rawilk\FilamentPasswordInput\Password;
 
+use function class_basename;
 use function config;
 
 class AmigoListenerResource extends Resource
@@ -37,16 +41,49 @@ class AmigoListenerResource extends Resource
         return number_format(static::getModel()::count());
     }
 
-    // public static function infolist(Infolist $infolist): Infolist
-    // {
-    //     return $infolist
-    //         ->schema([
-    //             Infolists\Components\TextEntry::make('display_name'),
-    //
-    //             Infolists\Components\TextEntry::make('integration.name')
-    //                 ->label('Integration'),
-    //         ]);
-    // }
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\TextEntry::make('display_name'),
+
+                Infolists\Components\TextEntry::make('integration.name')
+                    ->label('Integration')
+                    ->placeholder('No Integration'),
+
+                Infolists\Components\TextEntry::make('webhook_secret')
+                    ->formatStateUsing(fn ($record) => $record->webhook_secret ? 'Yes' : 'No')
+                    ->placeholder('Unsecured')
+                    ->label('Webhook Secret'),
+
+                Infolists\Components\TextEntry::make('handler')
+                    ->badge(),
+
+                Infolists\Components\TextEntry::make('uses')
+                    ->badge()
+                    ->label('Successful Uses'),
+
+                Infolists\Components\TextEntry::make('max_uses')
+                    ->placeholder('Unlimited')
+                    ->badge()
+                    ->label('Max Uses'),
+
+                Infolists\Components\TextEntry::make('url')
+                    // ->formatStateUsing(fn ($record) => $record->url)
+                    ->columnSpanFull()
+                    ->copyable(),
+
+                // Infolists\Components\TextEntry::make('listenable.name')
+                //     ->label('Listenable Type'),
+
+                Infolists\Components\TextEntry::make('listenable_type')
+                    ->label('Listenable Type'),
+
+                Infolists\Components\TextEntry::make('listenable_id')
+                    ->label('Listenable ID'),
+
+            ]);
+    }
 
     public static function form(Form $form): Form
     {
@@ -58,8 +95,8 @@ class AmigoListenerResource extends Resource
                     ->maxLength(255),
 
                 Forms\Components\Select::make('integration_id')
-                    ->relationship('integration', 'name')
-                    ->required(),
+                    // ->required()
+                    ->relationship('integration', 'name'),
 
                 Password::make('webhook_secret')
                     ->label('Webhook Secret')
@@ -81,6 +118,28 @@ class AmigoListenerResource extends Resource
                     ->columnSpan(2)
                     ->options(fn () => collect(APIAmigo::getWebhookHandlers())->mapWithKeys(fn ($handler) => [$handler => $handler]))
                     ->required(),
+
+                // Forms\Components\TextInput::make('listenable_type')
+                //     ->visibleOn(['view'])
+                //     // ->columnSpan(2)
+                //     ->readOnly()
+                //     // ->default('App\Models\AmigoWebhook')
+                //     ->label('Listenable Type'),
+                //
+                // Forms\Components\Select::make('listenable')
+                //     ->relationship('listenable'),
+
+                Forms\Components\TextInput::make('uses')
+                    // ->columnSpan(2)
+                    ->readOnly()
+                    ->hiddenOn(['create', 'edit'])
+                    ->numeric()
+                    ->label('Uses'),
+
+                Forms\Components\TextInput::make('max_uses')
+                    ->label('Max Uses')
+                    ->hint('Leave blank for unlimited uses.')
+                    ->numeric(),
 
                 // Forms\Components\TextInput::make('url_preview')
                 //     ->visibleOn(['view'])
@@ -128,19 +187,52 @@ class AmigoListenerResource extends Resource
 
                 Tables\Columns\TextColumn::make('integration.name')
                     ->label('Integration')
+                    ->placeholder('No Integration')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('url_preview')
-                    ->label('URL Preview')
-                    ->searchable()
-                    ->sortable()
-                    ->copyable()
-                    ->getStateUsing(fn (AmigoListener $record) => $record->url),
+                // Tables\Columns\TextColumn::make('url_preview')
+                //     ->label('URL Preview')
+                //     ->searchable()
+                //     ->sortable()
+                //     ->copyable()
+                //     ->getStateUsing(fn (AmigoListener $record) => $record->url),
 
                 Tables\Columns\TextColumn::make('handler')
                     ->searchable()
                     ->badge()
+                    ->formatStateUsing(fn (AmigoListener $record) => class_basename($record->handler))
+                    ->tooltip(fn (AmigoListener $record) => $record->handler)
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('uses')
+                    ->badge()
+                    ->color(function (AmigoListener $record) {
+                        if ($record->max_uses && $record->uses >= $record->max_uses) {
+                            return Color::Red;
+                        }
+
+                        if ($record->uses > 0) {
+                            return Color::Green;
+                        }
+
+                        return Color::Gray;
+                    })
+                    ->numeric()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('max_uses')
+                    ->badge()
+                    ->numeric()
+                    ->placeholder('Unlimited')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('linked_model')
+                    ->label('Linked Model')
+                    ->getStateUsing(fn (AmigoListener $record) => $record->listenable_type ? 'Yes' : 'No')
+                    ->color(fn (AmigoListener $record) => $record->listenable_type ? 'success' : 'danger')
+                    ->badge()
+                    ->placeholder('Not Linked')
                     ->sortable(),
 
                 // Tables\Columns\TextColumn::make('created_at')
