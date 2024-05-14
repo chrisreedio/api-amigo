@@ -34,6 +34,11 @@ class WebhookController extends Controller
             return response()->json(['error' => 'This webhook has reached its max number of uses.'], HTTPStatus::GONE->value);
         }
 
+        // Check to see if the listener has expired
+        if ($listener->expires_at !== null && $listener->expires_at->isPast()) {
+            return response()->json(['error' => 'This webhook has expired.'], HTTPStatus::GONE->value);
+        }
+
         $requestBody = $request->getContent();
         $payload = json_validate($requestBody) ? json_decode($requestBody, true) : $request->getPayload()->all();
         // $payload = json_decode($request->getContent(), true);

@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -72,6 +73,20 @@ class AmigoListener extends AmigoModel
                 $this->unique_id,
             ])
         );
+    }
+
+    public function scopeTransient(Builder $query, bool $value = true): Builder
+    {
+        return $query
+            ->when($value, function (Builder $query) {
+                $query->whereNotNull('listenable_id')
+                    ->orWhereNotNull('expires_at')
+                    ->orWhereNotNull('max_uses');
+            }, function (Builder $query) {
+                $query->whereNull('listenable_id')
+                    ->whereNull('expires_at')
+                    ->whereNull('max_uses');
+            });
     }
 
     // public function validatePayload(string $payload, string $userSignature): bool

@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Rawilk\FilamentPasswordInput\Password;
 
@@ -242,7 +243,24 @@ class AmigoListenerResource extends Resource
                 //     ->toggledHiddenByDefault(),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('isTransient')
+                    ->label('Transient')
+                    ->nullable()
+                    ->default(false)
+                    ->queries(
+                        true: fn (Builder $query) => $query->transient(),
+                        false: fn (Builder $query) => $query->transient(false),
+                        blank: fn (Builder $query) => $query // In this example, we do not want to filter the query when it is blank.
+                    ),
+                Tables\Filters\TernaryFilter::make('linked_model')
+                    ->label('Linked Model')
+                    ->nullable()
+                    // ->default(false)
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('listenable_type'),
+                        false: fn (Builder $query) => $query->whereNull('listenable_type'),
+                        blank: fn (Builder $query) => $query // In this example, we do not want to filter the query when it is blank.
+                    ),
             ])
             ->actions([
                 // Tables\Actions\Action::make('test')
