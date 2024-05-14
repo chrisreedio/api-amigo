@@ -6,6 +6,7 @@ use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Illuminate\Support\Facades\File;
+use function dump;
 
 class APIAmigoPlugin implements Plugin
 {
@@ -22,8 +23,10 @@ class APIAmigoPlugin implements Plugin
         // Custom logic to look for classes that extend the ProcessWebhookJob class
         $webhookHandlers = collect(File::allFiles(app_path('Webhooks')));
         $webhookHandlers->each(function ($file) {
-            $class = 'App\\' . str_replace(['/', '.php'], ['\\', ''], $file->getRelativePathname());
+            $class = 'App\\Webhooks\\' . str_replace(['/', '.php'], ['\\', ''], $file->getRelativePathname());
+            // dump('Checking webhook handler: ' . $class . ' - File: ' . $file->getRelativePathname());
             if (is_subclass_of($class, ProcessWebhookJob::class)) {
+                // dump('Registering webhook handler: ' . $class . ' - File: ' . $file->getRelativePathname() . ' - Subclass of: ' . ProcessWebhookJob::class);
                 APIAmigo::registerWebhookHandler($class);
             }
         });
