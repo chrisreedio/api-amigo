@@ -204,7 +204,7 @@ class AmigoResponseResource extends Resource
 
                 Tables\Columns\TextColumn::make('endpoint.connector.name')
                     ->label('Connector')
-                    ->tooltip(fn (AmigoResponse $record) => $record->endpoint->connector->base_url)
+                    // ->tooltip(fn (AmigoResponse $record) => $record->endpoint->connector->base_url)
                     ->badge()
                     ->sortable(),
 
