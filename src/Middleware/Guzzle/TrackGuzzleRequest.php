@@ -7,11 +7,8 @@ use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Psr\Http\Message\RequestInterface;
-use Saloon\Http\SoloRequest;
+
 use function auth;
-use function class_basename;
-use function get_class;
-use function parse_url;
 
 class TrackGuzzleRequest
 {
@@ -59,6 +56,7 @@ class TrackGuzzleRequest
         ]);
 
         $connectorName = 'Guzzle';
+
         return AmigoConnector::firstOrCreate([
             'name' => $connectorName,
             'integration_id' => $integration->id,

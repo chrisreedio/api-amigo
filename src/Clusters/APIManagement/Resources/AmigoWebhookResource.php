@@ -69,7 +69,7 @@ class AmigoWebhookResource extends Resource
                     ->label('Listener Path')
                     ->copyable()
                     ->columnSpan(2)
-                    ->formatStateUsing(fn ($state) => new HtmlString('<code>'.$state.'</code>'))
+                    ->formatStateUsing(fn ($state) => new HtmlString('<code>' . $state . '</code>'))
                     ->icon('far-sign-post'),
 
                 Infolists\Components\TextEntry::make('listener.handler')
@@ -99,7 +99,7 @@ class AmigoWebhookResource extends Resource
                         return match ($record->processing_time) {
                             null => 'Not Processed',
                             0 => 'Instant',
-                            default => $record->processing_time.'s',
+                            default => $record->processing_time . 's',
                         };
                     })
                     ->color(fn (AmigoWebhook $record) => match ($record->processing_time) {

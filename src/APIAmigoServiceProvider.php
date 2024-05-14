@@ -5,8 +5,8 @@ namespace ChrisReedIO\APIAmigo;
 use ChrisReedIO\APIAmigo\Commands\APIAmigoCommand;
 use ChrisReedIO\APIAmigo\Commands\ResponsesAggregationCommand;
 use ChrisReedIO\APIAmigo\Controllers\WebhookController;
-use ChrisReedIO\APIAmigo\Middleware\Saloon\TrackSaloonResponse;
 use ChrisReedIO\APIAmigo\Middleware\Saloon\TrackSaloonRequest;
+use ChrisReedIO\APIAmigo\Middleware\Saloon\TrackSaloonResponse;
 use ChrisReedIO\APIAmigo\Testing\TestsAPIAmigo;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Colors\Color;
@@ -23,6 +23,7 @@ use Saloon\Exceptions\DuplicatePipeNameException;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+
 use function number_format;
 
 class APIAmigoServiceProvider extends PackageServiceProvider

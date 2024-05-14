@@ -3,12 +3,13 @@
 namespace ChrisReedIO\APIAmigo;
 
 use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
-use ChrisReedIO\APIAmigo\Middleware\Guzzle\TrackGuzzleResponse;
 use ChrisReedIO\APIAmigo\Middleware\Guzzle\TrackGuzzleRequest;
+use ChrisReedIO\APIAmigo\Middleware\Guzzle\TrackGuzzleResponse;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use ReflectionException;
+
 use function array_merge;
 
 class APIAmigo

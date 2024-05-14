@@ -6,6 +6,7 @@ use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Saloon\Contracts\RequestMiddleware;
 use Saloon\Http\PendingRequest;
+
 use function auth;
 use function microtime;
 

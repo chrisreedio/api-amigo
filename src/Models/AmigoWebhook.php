@@ -2,7 +2,6 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
-use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;

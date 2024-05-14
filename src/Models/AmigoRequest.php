@@ -68,8 +68,6 @@ class AmigoRequest extends AmigoModel
     /**
      * Track a request
      *
-     * @param PendingRequest $pendingRequest
-     * @return self
      * @deprecated
      */
     public static function track(PendingRequest $pendingRequest): self

@@ -10,14 +10,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Class AmigoIntegration
  *
- * @package ChrisReedIO\APIAmigo\Models
  * @property int $id
  * @property string $name
  * @property string $display_name
  * @property string $color
  * @property string $webhook_secret
  * @property int $average_duration
- *
  */
 class AmigoIntegration extends Model
 {
