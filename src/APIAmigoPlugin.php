@@ -16,16 +16,16 @@ class APIAmigoPlugin implements Plugin
     {
         $panel->discoverClusters(in: __DIR__.'/Clusters', for: 'ChrisReedIO\APIAmigo\Clusters');
         // )
-        $panel->resources([
-            // Clusters\APIAmigo::class,
-            Resources\AmigoIntegrationResource::class,
-            Resources\AmigoConnectorResource::class,
-            Resources\AmigoRecordingResource::class,
-            Resources\AmigoEndpointResource::class,
-            Resources\AmigoResponseResource::class,
-            Resources\AmigoListenerResource::class,
-            Resources\AmigoWebhookResource::class,
-        ]);
+        // $panel->resources([
+        //     // Clusters\APIAmigo::class,
+        //     Clusters\APIManagement\Resources\AmigoIntegrationResource::class,
+        //     Clusters\APIManagement\Resources\AmigoConnectorResource::class,
+        //     Clusters\APIManagement\Resources\AmigoRecordingResource::class,
+        //     Clusters\APIManagement\Resources\AmigoEndpointResource::class,
+        //     Clusters\APIManagement\Resources\AmigoResponseResource::class,
+        //     Clusters\APIManagement\Resources\AmigoListenerResource::class,
+        //     Clusters\APIManagement\Resources\AmigoWebhookResource::class,
+        // ]);
     }
 
     public function boot(Panel $panel): void
