@@ -36,9 +36,9 @@ class AmigoRequestsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('endpoint.connector.name')
                     ->label('Connector'),
                 Tables\Columns\TextColumn::make('endpoint.name')
-                    ->label('Endpoint'),
+                    ->label('Endpoint Name'),
                 Tables\Columns\TextColumn::make('endpoint.styled_path')
-                    ->label('Endpoint')
+                    ->label('Endpoint Path')
                     ->html()
                     ->copyable()
                     ->searchable(),
