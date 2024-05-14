@@ -16,18 +16,17 @@ class APIAmigoPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->discoverClusters(in: __DIR__.'/Clusters', for: 'ChrisReedIO\APIAmigo\Clusters');
+        $panel->discoverClusters(in: __DIR__ . '/Clusters', for: 'ChrisReedIO\APIAmigo\Clusters');
 
         // Discover all classes in the Webhooks directory in the app directory
         // Custom logic to look for classes that extend the ProcessWebhookJob class
         $webhookHandlers = collect(File::allFiles(app_path('Webhooks')));
         $webhookHandlers->each(function ($file) {
-            $class = 'App\\'.str_replace(['/', '.php'], ['\\', ''], $file->getRelativePathname());
+            $class = 'App\\' . str_replace(['/', '.php'], ['\\', ''], $file->getRelativePathname());
             if (is_subclass_of($class, ProcessWebhookJob::class)) {
                 APIAmigo::registerWebhookHandler($class);
             }
         });
-
 
         // )
         // $panel->resources([

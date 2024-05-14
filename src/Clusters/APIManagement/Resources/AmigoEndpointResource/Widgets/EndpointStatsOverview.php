@@ -7,6 +7,7 @@ use Filament\Support\Colors\Color;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\HtmlString;
+
 use function number_format;
 
 class EndpointStatsOverview extends BaseWidget

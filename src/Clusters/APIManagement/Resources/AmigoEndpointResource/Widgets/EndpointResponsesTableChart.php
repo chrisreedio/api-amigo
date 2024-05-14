@@ -5,6 +5,7 @@ namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointRes
 use ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate;
 use Filament\Support\Colors\Color;
 use Flowframe\Trend\Trend;
+
 use function now;
 
 class EndpointResponsesTableChart extends \LaraZeus\InlineChart\InlineChartWidget

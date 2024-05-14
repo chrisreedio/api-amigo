@@ -3,9 +3,8 @@
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
-use ChrisReedIO\APIAmigo\Models\AmigoConnector;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\RelationManagers;
+use ChrisReedIO\APIAmigo\Models\AmigoConnector;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

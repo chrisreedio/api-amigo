@@ -5,7 +5,6 @@ namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Facades\APIAmigo;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\RelationManagers;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Rawilk\FilamentPasswordInput\Password;
+
 use function config;
 
 class AmigoListenerResource extends Resource

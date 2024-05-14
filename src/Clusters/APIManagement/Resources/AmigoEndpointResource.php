@@ -3,9 +3,8 @@
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
-use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\RelationManagers;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets;
+use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
@@ -15,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use LaraZeus\InlineChart\Tables\Columns\InlineChart;
+
 use function config;
 
 class AmigoEndpointResource extends Resource
