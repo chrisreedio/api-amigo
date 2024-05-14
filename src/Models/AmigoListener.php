@@ -31,7 +31,7 @@ class AmigoListener extends AmigoModel
         'color',
         'webhook_secret',
         'uses',
-        'uses_remaining',
+        'max_uses',
         'expires_at',
     ];
 

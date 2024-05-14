@@ -2,8 +2,10 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 use function now;
@@ -21,8 +23,10 @@ use function now;
  * @property int $status
  * @property string $status_message
  * @property string $processed_at
- * @property array $error
+ * @property ?array $error
  * @property AmigoListener $listener
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  */
 class AmigoWebhook extends AmigoModel
 {
@@ -71,6 +75,11 @@ class AmigoWebhook extends AmigoModel
         $this->processed_at = now();
         $this->error = null;
         $this->save();
+
+        // Increment the listener's uses count
+        if ($this->listener()->exists()) {
+            $this->listener->increment('uses');
+        }
     }
 
     public function fail(int $code = 500, ?string $message = null, ?string $trace = null): void

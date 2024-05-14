@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::table($tablePrefix.'listeners', function (Blueprint $table) {
             $table->nullableMorphs('listenable');
             $table->integer('uses')->default(0);
-            $table->integer('uses_remaining')->nullable();
+            $table->integer('max_uses')->nullable();
             $table->timestamp('expires_at')->nullable();
         });
 
@@ -33,7 +33,7 @@ return new class extends Migration
         Schema::table($tablePrefix.'listeners', function (Blueprint $table) {
             $table->dropMorphs('listenable');
             $table->dropColumn('uses');
-            $table->dropColumn('uses_remaining');
+            $table->dropColumn('max_uses');
             $table->dropColumn('expires_at');
         });
 

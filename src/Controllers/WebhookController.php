@@ -15,9 +15,14 @@ class WebhookController extends Controller
 {
     public function __invoke(Request $request, AmigoListener $listener): JsonResponse
     {
-        if ($listener->webhook_secret !== null || $listener->integration->webhook_secret !== null) {
-            $secret = $listener->webhook_secret ?? $listener->integration->webhook_secret;
+        if ($listener->webhook_secret !== null) {
+            $secret = $listener->webhook_secret;
             if (! $this->validateSignature($request, $secret)) {
+                return response()->json(['error' => 'Invalid signature'], 401);
+            }
+        } elseif ($listener->integration()->exists() && $listener->integration->webhook_secret !== null) {
+            $secret = $listener->integration->webhook_secret;
+            if (!$this->validateSignature($request, $secret)) {
                 return response()->json(['error' => 'Invalid signature'], 401);
             }
         }
