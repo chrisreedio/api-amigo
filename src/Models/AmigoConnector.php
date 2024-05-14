@@ -15,6 +15,25 @@ use function class_basename;
 use function get_class;
 use function get_parent_class;
 
+/**
+ * AmigoConnector
+ *
+ * Represents a connector to an API
+ *
+ * @property int $id
+ * @property int $integration_id
+ * @property string $name
+ * @property string $display_name
+ * @property string $base_url
+ * @property int $rate_limit
+ * @property int $rate_limit_remaining
+ * @property int $total_requests
+ * @property int $total_errors
+ * @property AmigoIntegration $integration
+ * @property AmigoEndpoint[] $endpoints
+ * @property AmigoRequest[] $requests
+ * @property AmigoEndpointAggregate[] $aggregates
+ */
 class AmigoConnector extends Model
 {
     // use SoftDeletes;
