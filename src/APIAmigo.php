@@ -3,13 +3,12 @@
 namespace ChrisReedIO\APIAmigo;
 
 use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
-use ChrisReedIO\APIAmigo\Middleware\Guzzle\Request\TrackGuzzleRequest;
-use ChrisReedIO\APIAmigo\Middleware\Guzzle\Response\LogGuzzleResponse;
+use ChrisReedIO\APIAmigo\Middleware\Guzzle\TrackGuzzleResponse;
+use ChrisReedIO\APIAmigo\Middleware\Guzzle\TrackGuzzleRequest;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use ReflectionException;
-
 use function array_merge;
 
 class APIAmigo
@@ -51,7 +50,7 @@ class APIAmigo
 
         // Add the tracking middleware to the handler stack
         $handlerStack->push(Middleware::mapRequest(new TrackGuzzleRequest), 'amigo-track_guzzle_request');
-        $handlerStack->push(Middleware::mapResponse(new LogGuzzleResponse), 'amigo-log_guzzle_response');
+        $handlerStack->push(Middleware::mapResponse(new TrackGuzzleResponse), 'amigo-log_guzzle_response');
 
         // Create a new Guzzle client with the modified handler stack
         return new Client(array_merge($config, ['handler' => $handlerStack]));

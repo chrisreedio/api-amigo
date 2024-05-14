@@ -1,14 +1,12 @@
 <?php
 
-namespace ChrisReedIO\APIAmigo\Middleware\Saloon\Request;
+namespace ChrisReedIO\APIAmigo\Middleware\Saloon;
 
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Saloon\Contracts\RequestMiddleware;
 use Saloon\Http\PendingRequest;
-use Saloon\Http\Request;
-use Saloon\Http\Response;
 
-class TrackRequest implements RequestMiddleware
+class TrackSaloonRequest implements RequestMiddleware
 {
     public function __invoke(PendingRequest $pendingRequest): void
     {

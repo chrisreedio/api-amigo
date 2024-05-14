@@ -1,12 +1,12 @@
 <?php
 
-namespace ChrisReedIO\APIAmigo\Middleware\Saloon\Response;
+namespace ChrisReedIO\APIAmigo\Middleware\Saloon;
 
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Saloon\Contracts\ResponseMiddleware;
 use Saloon\Http\Response;
 
-class LogResponse implements ResponseMiddleware
+class TrackSaloonResponse implements ResponseMiddleware
 {
     public function __invoke(Response $response): void
     {

@@ -1,13 +1,10 @@
 <?php
 
-namespace ChrisReedIO\APIAmigo\Middleware\Guzzle\Response;
+namespace ChrisReedIO\APIAmigo\Middleware\Guzzle;
 
-use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Psr\Http\Message\ResponseInterface;
-use Saloon\Contracts\ResponseMiddleware;
-use Saloon\Http\Response;
 
-class LogGuzzleResponse
+class TrackGuzzleResponse
 {
     public function __invoke(ResponseInterface $response): ResponseInterface
     {
