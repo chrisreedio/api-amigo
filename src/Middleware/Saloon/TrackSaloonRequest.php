@@ -15,11 +15,6 @@ class TrackSaloonRequest implements RequestMiddleware
     {
         // dump('== API Amigo TrackRequest middleware invoked ==');
 
-        // Here we need to log the request
-        // Things to track: request URL, request method, request headers, request body
-        // Depending on our logging strategy, we may want to log the response as well
-        // AmigoRequest::track($pendingRequest); // Old Deprecated Method
-
         // Track the request
         $requestId = AmigoRequest::generateId();
         $pendingRequest->config()->add('amigo.request_id', $requestId);

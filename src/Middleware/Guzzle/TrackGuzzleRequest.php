@@ -31,54 +31,31 @@ class TrackGuzzleRequest
 
         $request->attachRecordings();
 
-        // dd($pendingRequest, $request->toArray());
-        // Here we need to log the request
-        // Things to track: request URL, request method, request headers, request body
-        // Depending on our logging strategy, we may want to log the response as well
-        // AmigoRequest::track($pendingRequest);
-        // dump('Created AmigoRequest model:', $request->toArray());
-
         return $pendingRequest;
     }
 
     public function getEndpoint(RequestInterface $request): AmigoEndpoint
     {
-        // $connector = AmigoConnector::track($pendingRequest);
         $connector = $this->getConnector($request);
-        // $request = $pendingRequest->getRequest();
-
-        // $endpointName = class_basename($request);
-        // $endpointClass = get_class($request);
-
-        // $urlParts = parse_url($pendingRequest->getUrl());
-        // dd($urlParts);
 
         return $connector->endpoints()->firstOrCreate([
             'method' => $request->getMethod(),
-            // 'name' => $request->getUri()->getPath(),
-            // 'class' => $endpointClass,
-            // 'path' => $urlParts['path'],
             'path' => $request->getUri()->getPath(),
         ]);
     }
 
     private function getConnector(RequestInterface $request): AmigoConnector
     {
+        $integration = AmigoIntegration::firstOrCreate([
+            'name' => $request->getUri()->getHost(),
+        ]);
+
         $connectorName = 'Guzzle';
         return AmigoConnector::firstOrCreate([
-            // 'name' => (isset($parentClass) && $parentClass === SoloRequest::class) ? 'Solo Requests' : class_basename($saloonConnector),
             'name' => $connectorName,
-            'integration_id' => $this->getIntegration($request)->id,
+            'integration_id' => $integration->id,
         ], [
             'base_url' => $request->getUri()->getHost(),
-        ]);
-    }
-
-    public function getIntegration(RequestInterface $request): AmigoIntegration
-    {
-        $integrationName = $request->getUri()->getHost();
-        return AmigoIntegration::firstOrCreate([
-            'name' => $integrationName,
         ]);
     }
 

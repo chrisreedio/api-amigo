@@ -11,6 +11,7 @@ class TrackGuzzleResponse
         dump('== API Amigo LogGuzzleResponse middleware invoked ==');
 
         // AmigoResponse::track($response);
+        dd($response);
 
         return $response;
     }
