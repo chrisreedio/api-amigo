@@ -65,7 +65,7 @@ class AmigoResponseResource extends Resource
                     // ->icon('far-outlet'),
                     ->icon('far-plug'),
 
-                Infolists\Components\TextEntry::make('endpoint.name')
+                Infolists\Components\TextEntry::make('endpoint.display_name')
                     ->label('Endpoint')
                     ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
                     ->icon('far-outlet'),

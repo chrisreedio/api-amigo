@@ -8,10 +8,12 @@ use ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
+use Illuminate\Support\Collection;
+use function now;
 
 class EndpointResponsesChart extends ChartWidget
 {
-    protected static ?string $heading = 'Responses';
+    protected static ?string $heading = 'Response Times';
 
     public ?string $filter = 'month';
 
@@ -19,58 +21,48 @@ class EndpointResponsesChart extends ChartWidget
 
     protected int | string | array $columnSpan = 'full';
 
+    protected static ?string $maxHeight = '300px';
+
     protected function getData(): array
     {
         $activeFilter = $this->filter;
-        if (! $activeFilter) {
-            $curFilter = ChartFilters::Today;
-        } else {
-            $curFilter = ChartFilters::from($activeFilter);
-        }
+        $curFilter = !$activeFilter ? ChartFilters::Today : ChartFilters::from($activeFilter);
 
-        // Totals per month
-        $query = AmigoEndpointAggregate::where('endpoint_id', $this->record->id);
-        $totalsTrend = Trend::query($query)
-            ->dateColumn('window_start')
-            ->between(
-                start: $curFilter->getStartDate(),
-                end: now()
-            )
-            ->perDay()
-            ->sum('total_requests');
-
-        $totals = [
-            'label' => 'Total Responses',
-            'data' => $totalsTrend->pluck('aggregate'),
-        ];
-
-        // Failures
-        $failuresTrend = Trend::query($query)
-            ->dateColumn('window_start')
-            ->between(
-                start: $curFilter->getStartDate(),
-                end: now()
-            )
-            ->perDay()
-            ->sum('failed_requests');
-
-        $failures = [
-            'label' => 'Failures',
-            'data' => $failuresTrend->pluck('aggregate'),
-            'borderColor' => 'rgb(' . Color::Rose[500] . ')',
-        ];
-
-        $labels = $totalsTrend->pluck('date')->toArray();
-
-        // dd($trend);
+        $totalsTrend = $this->calculateTrend('total_requests', $curFilter);
+        $failuresTrend = $this->calculateTrend('failed_requests', $curFilter);
 
         return [
             'datasets' => [
-                $totals,
-                $failures,
+                // Totals
+                [
+                    'label' => 'Total Responses',
+                    'data' => $totalsTrend->pluck('aggregate'),
+                ],
+                // Failures
+                [
+                    'label' => 'Failures',
+                    'data' => $failuresTrend->pluck('aggregate'),
+                    'borderColor' => 'rgb(' . Color::Rose[500] . ')',
+                ],
             ],
-            'labels' => $labels,
+            'labels' => $totalsTrend->pluck('date')->toArray(),
         ];
+    }
+
+    private function calculateTrend(string $column, ChartFilters $curFilter): Collection
+    {
+        $query = AmigoEndpointAggregate::query()
+            ->where('endpoint_id', $this->record->id);
+
+        return Trend::query($query)
+            // ->dateColumn('window_start')
+            ->between(
+                start: $curFilter->getStartDate(),
+                end: now()
+            )
+            ->perDay()
+            // ->perHour()
+            ->sum('total_requests');
     }
 
     protected function getType(): string

@@ -45,13 +45,22 @@ class AmigoEndpointResource extends Resource
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
-            ->columns(3)
+            ->columns(4)
             ->schema([
-                Infolists\Components\TextEntry::make('name'),
+                Infolists\Components\TextEntry::make('name')->placeholder('No Name'),
+                // ->getStateUsing(fn (AmigoEndpoint $record) => $record->attributes['name']),
                 Infolists\Components\TextEntry::make('connector.name'),
-                Infolists\Components\TextEntry::make('method')->badge(),
-                Infolists\Components\TextEntry::make('styled_path')->label('Path')->html(),
-                Infolists\Components\TextEntry::make('class')->columnSpan(2),
+                Infolists\Components\TextEntry::make('connector.integration.name')
+                    ->label('Integration'),
+                Infolists\Components\TextEntry::make('method')
+                    ->badge(),
+                Infolists\Components\TextEntry::make('styled_path')
+                    ->label('Path')
+                    ->columnSpan(2)
+                    ->html(),
+                Infolists\Components\TextEntry::make('class')
+                    ->columnSpan(2)
+                    ->placeholder('None'),
             ]);
     }
 
@@ -163,7 +172,7 @@ class AmigoEndpointResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // RelationManagers\AmigoRequestsRelationManager::class,
+            RelationManagers\AmigoRequestsRelationManager::class,
             // RelationManagers\AmigoEndpointAggregatesRelationManager::class,
         ];
     }

@@ -47,7 +47,7 @@ class AmigoEndpoint extends AmigoModel
         'method' => Method::class,
     ];
 
-    public function getNameAttribute(): string
+    public function getDisplayNameAttribute(): string
     {
         // If the name is empty, return the styled path
         if (empty($this->attributes['name'])) {
