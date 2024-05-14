@@ -26,8 +26,7 @@ class TrackGuzzleResponse
                     $amigoRequestId = $options['amigo']['request_id'];
                     $responseTimeDelta = microtime(true) - $options['amigo']['request_time'];
                     $method = $options['amigo']['method'];
-                    /** @var UriInterface $uri */
-                    $uri = $options['base_uri'];
+                    $uri = $request->getUri();
 
                     $connector = self::getConnector($uri->getHost());
                     // dd($request);
@@ -90,7 +89,7 @@ class TrackGuzzleResponse
         ]);
 
         return AmigoConnector::firstOrCreate([
-            'name' => 'Guzzle',
+            'name' => $host . ' via Guzzle',
             'integration_id' => $integration->id,
         ], [
             'base_url' => $host,
