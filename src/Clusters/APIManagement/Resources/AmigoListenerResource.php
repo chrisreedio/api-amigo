@@ -21,6 +21,7 @@ use Rawilk\FilamentPasswordInput\Password;
 
 use function class_basename;
 use function config;
+use function now;
 
 class AmigoListenerResource extends Resource
 {
@@ -242,7 +243,7 @@ class AmigoListenerResource extends Resource
                     ->label('Expires in')
                     ->dateTime()
                     ->placeholder('Never')
-                    ->tooltip(fn (AmigoListener $record) => $record->expires_at ? 'Expires at ' . $record->expires_at->format('F j, Y g:i A') : null)
+                    ->tooltip(fn (AmigoListener $record) => $record->expires_at ? 'Expires at '.$record->expires_at->format('F j, Y g:i A') . ' UTC' : null)
                     ->formatStateUsing(function (AmigoListener $record) {
                         if ($record->expires_at->isPast()) {
                             return 'Expired';
@@ -255,6 +256,19 @@ class AmigoListenerResource extends Resource
 
                         // return $record->expires_at ? $record->expires_at->diffForHumans() : null;
                     })
+                    ->color(function (AmigoListener $record) {
+                        if ($record->expires_at && $record->expires_at->isPast()) {
+                            return Color::Red;
+                        }
+                        // dd($record->expires_at->diffInMinutes());
+                        //     dd(now()->diffInMinutes($record->expires_at));
+                        if ($record->expires_at && now()->diffInMinutes($record->expires_at) < 60) {
+                            return Color::Yellow;
+                        }
+
+                        return Color::Green;
+                    })
+                    ->badge()
                     ->sortable(),
 
                 // Tables\Columns\TextColumn::make('created_at')

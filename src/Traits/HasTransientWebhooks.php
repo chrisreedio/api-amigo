@@ -28,17 +28,29 @@ trait HasTransientWebhooks
      *
      * @param  string|null  $handler  The handler to prune for, or null to prune all
      */
-    public function pruneUnusedListeners(?string $handler = null): void
+    public function pruneUnusedListeners(?string $handler = null, bool $delete = false): void
     {
         // Expire any listeners that have no uses for the given handler
         $this->listeners()
+            // Where the listener has no uses
             ->where('uses', 0)
+            // Where the listener is either not expired or expires_at is null
+            ->where(function (Builder $query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', Carbon::now());
+            })
+            // Where the handler is the given handler
             ->when($handler, function (Builder $query) use ($handler) {
                 $query->where('handler', $handler);
             })
-            ->update([
-                'expires_at' => Carbon::now(),
-            ]);
+            // Either delete the listeners or update them to expire
+            ->when($delete, function (Builder $query) {
+                $query->delete();
+            }, function (Builder $query) {
+                $query->update([
+                    'expires_at' => Carbon::now(),
+                ]);
+            });
     }
 
     public function createTransientListener(string $handler, ?Carbon $expires_at = null, ?int $uses = null): AmigoListener
