@@ -55,7 +55,7 @@ class AmigoWebhook extends AmigoModel
         });
     }
 
-    public function getProcessingTimeAttribute(): ?int
+    public function getProcessingTimeAttribute(): int|float|null
     {
         if ($this->processed_at === null) {
             return null;
