@@ -87,4 +87,10 @@ trait HasTransientWebhooks
             'expires_at' => $expires_at,
         ]);
     }
+
+    public function generateTransientListener(string $handler): AmigoListener
+    {
+        $this->pruneUnusedListeners($handler, true);
+        return $this->createTransientListener($handler);
+    }
 }
