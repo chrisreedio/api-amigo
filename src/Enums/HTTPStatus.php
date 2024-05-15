@@ -10,6 +10,8 @@ enum HTTPStatus: int implements HasColor, HasLabel
 {
     case CONTINUE = 100;
     case SWITCHING_PROTOCOLS = 101;
+    case PROCESSING = 102;
+    case EARLY_HINTS = 103;
     // 102-199 Unassigned
 
     // 200-299 Success
@@ -20,6 +22,9 @@ enum HTTPStatus: int implements HasColor, HasLabel
     case NO_CONTENT = 204;
     case RESET_CONTENT = 205;
     case PARTIAL_CONTENT = 206;
+    case MULTI_STATUS = 207;
+    case ALREADY_REPORTED = 208;
+    case IM_USED = 226;
     // 207-299 Unassigned
 
     // 300-399 Redirection
@@ -30,6 +35,7 @@ enum HTTPStatus: int implements HasColor, HasLabel
     case NOT_MODIFIED = 304;
     case USE_PROXY = 305;
     case TEMPORARY_REDIRECT = 307;
+    case PERMANENT_REDIRECT = 308;
     // 308-399 Unassigned
 
     // 400-499 Client Error
@@ -51,8 +57,17 @@ enum HTTPStatus: int implements HasColor, HasLabel
     case UNSUPPORTED_MEDIA_TYPE = 415;
     case REQUESTED_RANGE_NOT_SATISFIABLE = 416;
     case EXPECTATION_FAILED = 417;
+    case TEAPOT = 418;
+    case MISDIRECTED_REQUEST = 421;
+    case UNPROCESSABLE_CONTENT = 422;
+    case LOCKED = 423;
+    case FAILED_DEPENDENCY = 424;
+    case TOO_EARLY = 425;
+    case UPGRADE_REQUIRED = 426;
+    case PRECONDITION_REQUIRED = 428;
     case TOO_MANY_REQUESTS = 429;
-    // 418-499 Unassigned
+    case REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
+    case UNAVAILABLE_FOR_LEGAL_REASONS = 451;
 
     // 500-599 Server Error
     case INTERNAL_SERVER_ERROR = 500;
@@ -61,6 +76,11 @@ enum HTTPStatus: int implements HasColor, HasLabel
     case SERVICE_UNAVAILABLE = 503;
     case GATEWAY_TIMEOUT = 504;
     case HTTP_VERSION_NOT_SUPPORTED = 505;
+    case VARIANT_ALSO_NEGOTIATES = 506;
+    case INSUFFICIENT_STORAGE = 507;
+    case LOOP_DETECTED = 508;
+    case NOT_EXTENDED = 510;
+    case NETWORK_AUTHENTICATION_REQUIRED = 511;
 
     public function getColor(): string | array | null
     {
@@ -87,6 +107,8 @@ enum HTTPStatus: int implements HasColor, HasLabel
             // 100
             self::CONTINUE => 'Continue',
             self::SWITCHING_PROTOCOLS => 'Switching Protocols',
+            self::PROCESSING => 'Processing',
+            self::EARLY_HINTS => 'Early Hints',
 
             // 200
             self::OK => 'OK',
@@ -96,6 +118,9 @@ enum HTTPStatus: int implements HasColor, HasLabel
             self::NO_CONTENT => 'No Content',
             self::RESET_CONTENT => 'Reset Content',
             self::PARTIAL_CONTENT => 'Partial Content',
+            self::MULTI_STATUS => 'Multi-Status',
+            self::ALREADY_REPORTED => 'Already Reported',
+            self::IM_USED => 'IM Used',
 
             // 300
             self::MULTIPLE_CHOICES => 'Multiple Choices',
@@ -105,6 +130,7 @@ enum HTTPStatus: int implements HasColor, HasLabel
             self::NOT_MODIFIED => 'Not Modified',
             self::USE_PROXY => 'Use Proxy',
             self::TEMPORARY_REDIRECT => 'Temporary Redirect',
+            self::PERMANENT_REDIRECT => 'Permanent Redirect',
 
             // 400
             self::BAD_REQUEST => 'Bad Request',
@@ -125,7 +151,17 @@ enum HTTPStatus: int implements HasColor, HasLabel
             self::UNSUPPORTED_MEDIA_TYPE => 'Unsupported Media Type',
             self::REQUESTED_RANGE_NOT_SATISFIABLE => 'Requested Range Not Satisfiable',
             self::EXPECTATION_FAILED => 'Expectation Failed',
+            self::TEAPOT => 'I\'m a teapot',
+            self::MISDIRECTED_REQUEST => 'Misdirected Request',
+            self::UNPROCESSABLE_CONTENT => 'Unprocessable Content',
+            self::LOCKED => 'Locked',
+            self::FAILED_DEPENDENCY => 'Failed Dependency',
+            self::TOO_EARLY => 'Too Early',
+            self::UPGRADE_REQUIRED => 'Upgrade Required',
+            self::PRECONDITION_REQUIRED => 'Precondition Required',
             self::TOO_MANY_REQUESTS => 'Too Many Requests',
+            self::REQUEST_HEADER_FIELDS_TOO_LARGE => 'Request Header Fields Too Large',
+            self::UNAVAILABLE_FOR_LEGAL_REASONS => 'Unavailable For Legal Reasons',
 
             // 500
             self::INTERNAL_SERVER_ERROR => 'Internal Server Error',
@@ -134,6 +170,11 @@ enum HTTPStatus: int implements HasColor, HasLabel
             self::SERVICE_UNAVAILABLE => 'Service Unavailable',
             self::GATEWAY_TIMEOUT => 'Gateway Timeout',
             self::HTTP_VERSION_NOT_SUPPORTED => 'HTTP Version Not Supported',
+            self::VARIANT_ALSO_NEGOTIATES => 'Variant Also Negotiates',
+            self::INSUFFICIENT_STORAGE => 'Insufficient Storage',
+            self::LOOP_DETECTED => 'Loop Detected',
+            self::NOT_EXTENDED => 'Not Extended',
+            self::NETWORK_AUTHENTICATION_REQUIRED => 'Network Authentication Required',
         };
     }
 }
