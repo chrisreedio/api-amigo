@@ -22,9 +22,12 @@ use Illuminate\Support\Str;
  * @property string $url
  * @property int $uses
  * @property int $max_uses
- * @property Carbon $expires_at
+ * @property ?Carbon $expires_at
  * @property AmigoIntegration $integration
  * @property AmigoWebhook[] $webhooks
+ * @property MorphTo $listenable
+ * @property ?string $listenable_type
+ * @property ?int $listenable_id
  */
 class AmigoListener extends AmigoModel
 {

@@ -31,9 +31,9 @@ class ResponsesAggregationCommand extends Command
 
     protected $description = 'Aggregate responses for reporting purposes.';
 
-    const INTERVAL = 60;
+    const int INTERVAL = 60;
 
-    const INTERVAL_UNITS = 'minute';
+    const string INTERVAL_UNITS = 'minute';
 
     public function handle(): void
     {

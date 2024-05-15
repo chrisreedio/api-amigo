@@ -20,7 +20,7 @@ class EndpointStatsOverview extends BaseWidget
         $total = $this->record->aggregates->sum('total_requests');
 
         // Calculate the average response time -- TODO: Replace with P90 (or one of the other percentiles)
-        $tempAverage = number_format(($this->record->aggregates->average('avg_duration') * 1000 ?? 0)) . 'ms';
+        $tempAverage = number_format(($this->record->aggregates->average('avg_duration') ?? 0 * 1000)) . 'ms';
 
         // Calculate the success percent from the total and failed counts
         $totalSuccesses = $this->record->aggregates->sum('successful_requests');

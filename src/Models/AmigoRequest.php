@@ -22,7 +22,7 @@ use function is_null;
  * @property string $path
  * @property int $user_id
  * @property AmigoEndpoint $endpoint
- * @property AmigoResponse $response
+ * @property ?AmigoResponse $response
  * @property AmigoRecording[] $recordings
  */
 class AmigoRequest extends AmigoModel

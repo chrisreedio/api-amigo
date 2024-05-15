@@ -23,7 +23,7 @@ use function now;
  * @property string $status_message
  * @property string $processed_at
  * @property ?array $error
- * @property AmigoListener $listener
+ * @property ?AmigoListener $listener
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+use Illuminate\Support\Carbon;
 use function config;
 
 /**
@@ -19,8 +20,8 @@ use function config;
  * @property int $connector_id
  * @property string $name
  * @property string $description
- * @property int $started_at
- * @property int $ended_at
+ * @property ?Carbon $started_at
+ * @property ?Carbon $ended_at
  * @property bool $global
  * @property bool $capture_body
  * @property AmigoConnector $connector
@@ -40,8 +41,8 @@ class AmigoRecording extends Model
     ];
 
     protected $casts = [
-        'started_at' => 'timestamp',
-        'ended_at' => 'timestamp',
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
         'global' => 'boolean',
         'capture_body' => 'boolean',
     ];

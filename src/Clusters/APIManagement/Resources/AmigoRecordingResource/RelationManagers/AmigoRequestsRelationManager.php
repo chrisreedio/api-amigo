@@ -47,7 +47,7 @@ class AmigoRequestsRelationManager extends RelationManager
                     ->badge()
                     ->placeholder('No Response')
                     ->color(function ($record) {
-                        $duration = $record->response !== null ? $record->response->duration : 99999;
+                        $duration = $record->response()->exists() ? $record->response->duration : 99999;
                         if ($duration >= config('api-amigo.thresholds.duration.error')) {
                             return Color::Red;
                         } elseif ($duration >= config('api-amigo.thresholds.duration.warning')) {
@@ -82,7 +82,7 @@ class AmigoRequestsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make()
-                    ->url(fn (AmigoRequest $record) => $record->response ? AmigoResponseResource::getUrl('view', ['record' => $record->response]) : null),
+                    ->url(fn (AmigoRequest $record) => $record->response()->exists() ? AmigoResponseResource::getUrl('view', ['record' => $record->response]) : null),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

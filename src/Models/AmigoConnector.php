@@ -84,6 +84,7 @@ class AmigoConnector extends Model
         // If this a solo request, we need to calculate things a little differently
         if ($connectorClassName === NullConnector::class) {
             $parentClass = get_parent_class($pendingRequest->getRequest());
+
             if ($parentClass === SoloRequest::class) {
                 $saloonConnector = $pendingRequest->getRequest();
                 $connectorClassName = get_class($saloonConnector);
