@@ -210,12 +210,20 @@ class AmigoResponseResource extends Resource
                     ->label('Integration')
                     // ->badge()
                     ->searchable()
+                    ->toggleable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('endpoint.connector.name')
                     ->label('Connector')
                     // ->tooltip(fn (AmigoResponse $record) => $record->endpoint->connector->base_url)
                     // ->badge()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('endpoint.method')
+                    ->label('Method')
+                    ->alignCenter()
+                    ->badge()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('endpoint.display_name')
@@ -224,18 +232,20 @@ class AmigoResponseResource extends Resource
                     ->tooltip(fn (AmigoResponse $record) => $record->endpoint->path)
                     ->placeholder('No Endpoint')
                     ->badge(fn (AmigoResponse $record) => $record->endpoint->name !== null)
-                    ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
+                    // ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('status_code')
                     ->label('Status')
                     ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value.' '.$record->status_code->getLabel())
+                    ->alignCenter()
                     ->badge()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('duration')
                     ->label('Duration')
+                    ->alignCenter()
                     ->badge()
                     ->color(function ($record) {
                         $duration = $record->duration;
@@ -296,7 +306,7 @@ class AmigoResponseResource extends Resource
             ->filtersFormWidth('xl')
             ->defaultSort('created_at', 'desc')
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                // Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
