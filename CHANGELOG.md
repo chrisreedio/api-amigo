@@ -2,6 +2,17 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.31 - 2024-05-15
+
+### What's Changed
+
+* 🔧 chore: updated dependencies and CI for Laravel 11 compatibility by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/40
+* Feature/cluster by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/43
+* Fix Divide by Zero on Endpoint View Page by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/45
+* Transient Webhooks by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/42
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.30...v1.0.0-alpha.31
+
 ## v1.0.0-alpha.30 - 2024-05-02
 
 ### What's Changed
