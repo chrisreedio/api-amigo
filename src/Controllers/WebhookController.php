@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Controllers;
 
+use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
 use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use Illuminate\Http\JsonResponse;
@@ -15,11 +16,27 @@ class WebhookController extends Controller
 {
     public function __invoke(Request $request, AmigoListener $listener): JsonResponse
     {
-        if ($listener->webhook_secret !== null || $listener->integration->webhook_secret !== null) {
-            $secret = $listener->webhook_secret ?? $listener->integration->webhook_secret;
+        if ($listener->webhook_secret !== null) {
+            $secret = $listener->webhook_secret;
             if (! $this->validateSignature($request, $secret)) {
                 return response()->json(['error' => 'Invalid signature'], 401);
             }
+        } elseif ($listener->integration()->exists() && $listener->integration->webhook_secret !== null) {
+            $secret = $listener->integration->webhook_secret;
+            if (! $this->validateSignature($request, $secret)) {
+                return response()->json(['error' => 'Invalid signature'], 401);
+            }
+        }
+
+        // Check to see if the existing uses is >= the max uses for the listener
+        // If so, return an error that indicates the link is expired
+        if ($listener->max_uses !== null && $listener->uses >= $listener->max_uses) {
+            return response()->json(['error' => 'This webhook has reached its max number of uses.'], HTTPStatus::GONE->value);
+        }
+
+        // Check to see if the listener has expired
+        if ($listener->expires_at !== null && $listener->expires_at->isPast()) {
+            return response()->json(['error' => 'This webhook has expired.'], HTTPStatus::GONE->value);
         }
 
         $requestBody = $request->getContent();

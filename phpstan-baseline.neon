@@ -1,0 +1,81 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method ChrisReedIO\\\\APIAmigo\\\\APIAmigoServiceProvider\\:\\:sortable\\(\\)\\.$#"
+			count: 1
+			path: src/APIAmigoServiceProvider.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$displayName\\.$#"
+			count: 1
+			path: src/Clusters/APIManagement/Resources/AmigoEndpointResource/Pages/ViewAmigoEndpoint.php
+
+		-
+			message: "#^Call to an undefined method Filament\\\\Tables\\\\Columns\\\\TextColumn\\:\\:floatDuration\\(\\)\\.$#"
+			count: 2
+			path: src/Clusters/APIManagement/Resources/AmigoEndpointResource/Pages/ViewEndpointAggregates.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$id\\.$#"
+			count: 1
+			path: src/Clusters/APIManagement/Resources/AmigoEndpointResource/Widgets/EndpointResponsesTableChart.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\:\\:expired\\(\\)\\.$#"
+			count: 2
+			path: src/Clusters/APIManagement/Resources/AmigoListenerResource.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\:\\:transient\\(\\)\\.$#"
+			count: 2
+			path: src/Clusters/APIManagement/Resources/AmigoListenerResource.php
+
+		-
+			message: "#^Access to an undefined property ChrisReedIO\\\\APIAmigo\\\\Models\\\\AmigoResponse\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: src/Commands/ResponsesAggregationCommand.php
+
+		-
+			message: "#^Access to an undefined property ChrisReedIO\\\\APIAmigo\\\\Models\\\\AmigoResponse\\:\\:\\$interval\\.$#"
+			count: 1
+			path: src/Commands/ResponsesAggregationCommand.php
+
+		-
+			message: "#^Access to an undefined property ChrisReedIO\\\\APIAmigo\\\\Models\\\\AmigoResponse\\:\\:\\$max_requests_per_minute\\.$#"
+			count: 1
+			path: src/Commands/ResponsesAggregationCommand.php
+
+		-
+			message: "#^Access to an undefined property ChrisReedIO\\\\APIAmigo\\\\Models\\\\AmigoResponse\\:\\:\\$window_start\\.$#"
+			count: 1
+			path: src/Commands/ResponsesAggregationCommand.php
+
+		-
+			message: "#^Elseif condition is always true\\.$#"
+			count: 1
+			path: src/Commands/ResponsesAggregationCommand.php
+
+		-
+			message: "#^Left side of && is always true\\.$#"
+			count: 1
+			path: src/Commands/ResponsesAggregationCommand.php
+
+		-
+			message: "#^Method ChrisReedIO\\\\APIAmigo\\\\Commands\\\\ResponsesAggregationCommand\\:\\:printDay\\(\\) is unused\\.$#"
+			count: 1
+			path: src/Commands/ResponsesAggregationCommand.php
+
+		-
+			message: "#^Method ChrisReedIO\\\\APIAmigo\\\\Commands\\\\ResponsesAggregationCommand\\:\\:printStats\\(\\) is unused\\.$#"
+			count: 1
+			path: src/Commands/ResponsesAggregationCommand.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: src/Models/AmigoConnector.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between false and 'Saloon\\\\\\\\Http\\\\\\\\SoloRequest' will always evaluate to false\\.$#"
+			count: 2
+			path: src/Models/AmigoConnector.php

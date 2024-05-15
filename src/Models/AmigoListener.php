@@ -2,8 +2,11 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -17,8 +20,14 @@ use Illuminate\Support\Str;
  * @property string $color
  * @property string $webhook_secret
  * @property string $url
+ * @property int $uses
+ * @property int $max_uses
+ * @property ?Carbon $expires_at
  * @property AmigoIntegration $integration
  * @property AmigoWebhook[] $webhooks
+ * @property MorphTo $listenable
+ * @property ?string $listenable_type
+ * @property ?int $listenable_id
  */
 class AmigoListener extends AmigoModel
 {
@@ -29,6 +38,13 @@ class AmigoListener extends AmigoModel
         'handler',
         'color',
         'webhook_secret',
+        'uses',
+        'max_uses',
+        'expires_at',
+    ];
+
+    protected $casts = [
+        'expires_at' => 'datetime',
     ];
 
     protected static function booted(): void
@@ -41,6 +57,11 @@ class AmigoListener extends AmigoModel
     public function integration(): BelongsTo
     {
         return $this->belongsTo(AmigoIntegration::class, 'integration_id');
+    }
+
+    public function listenable(): MorphTo
+    {
+        return $this->morphTo();
     }
 
     public function webhooks(): HasMany
@@ -59,6 +80,30 @@ class AmigoListener extends AmigoModel
                 $this->unique_id,
             ])
         );
+    }
+
+    public function scopeExpired(Builder $query, bool $value = true): Builder
+    {
+        return $query->when($value, function (Builder $query) {
+            $query->where('expires_at', '<=', Carbon::now());
+        }, function (Builder $query) {
+            $query->whereNull('expires_at')
+                ->orWhere('expires_at', '>', Carbon::now());
+        });
+    }
+
+    public function scopeTransient(Builder $query, bool $value = true): Builder
+    {
+        return $query
+            ->when($value, function (Builder $query) {
+                $query->whereNotNull('listenable_id')
+                    ->orWhereNotNull('expires_at')
+                    ->orWhereNotNull('max_uses');
+            }, function (Builder $query) {
+                $query->whereNull('listenable_id')
+                    ->whereNull('expires_at')
+                    ->whereNull('max_uses');
+            });
     }
 
     // public function validatePayload(string $payload, string $userSignature): bool

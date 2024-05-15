@@ -1,0 +1,48 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $tablePrefix = config('api-amigo.table_prefix');
+        Schema::table($tablePrefix.'listeners', function (Blueprint $table) {
+            $table->nullableMorphs('listenable');
+            $table->integer('uses')->default(0);
+            $table->integer('max_uses')->nullable();
+            $table->timestamp('expires_at')->nullable();
+        });
+
+        Schema::table($tablePrefix.'webhooks', function (Blueprint $table) use ($tablePrefix) {
+            // Change the existing listener_id column to null on delete
+            // Drop the foreign key constraint and readd
+            $table->dropForeign(['listener_id']);
+            $table->foreign('listener_id')
+                ->references('id')
+                ->on($tablePrefix.'listeners')
+                ->nullOnDelete();
+        });
+    }
+
+    public function down(): void
+    {
+        $tablePrefix = config('api-amigo.table_prefix');
+        Schema::table($tablePrefix.'listeners', function (Blueprint $table) {
+            $table->dropMorphs('listenable');
+            $table->dropColumn('uses');
+            $table->dropColumn('max_uses');
+            $table->dropColumn('expires_at');
+        });
+
+        Schema::table($tablePrefix.'webhooks', function (Blueprint $table) use ($tablePrefix) {
+            $table->dropForeign(['listener_id']);
+            $table->foreign('listener_id')
+                ->references('id')
+                ->on($tablePrefix.'listeners')
+                ->cascadeOnDelete();
+        });
+    }
+};

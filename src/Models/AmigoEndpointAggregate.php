@@ -5,6 +5,30 @@ namespace ChrisReedIO\APIAmigo\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate
+ *
+ * @property int $id
+ * @property int $integration_id
+ * @property int $endpoint_id
+ * @property string $window_start
+ * @property int $interval
+ * @property int $total_requests
+ * @property int $successful_requests
+ * @property int $failed_requests
+ * @property int $max_requests_per_minute
+ * @property int $min_duration
+ * @property int $max_duration
+ * @property int $p50_duration
+ * @property int $p75_duration
+ * @property int $p95_duration
+ * @property int $p99_duration
+ * @property array $duration_histogram
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \ChrisReedIO\APIAmigo\Models\AmigoEndpoint $endpoint
+ * @property-read \ChrisReedIO\APIAmigo\Models\AmigoIntegration $integration
+ */
 class AmigoEndpointAggregate extends Model
 {
     protected $fillable = [

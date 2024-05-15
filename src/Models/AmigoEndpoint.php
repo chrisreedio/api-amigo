@@ -14,7 +14,6 @@ use Saloon\Http\Request;
 
 use function class_basename;
 use function collect;
-use function dd;
 use function get_class;
 use function is_scalar;
 
@@ -48,9 +47,16 @@ class AmigoEndpoint extends AmigoModel
         'method' => Method::class,
     ];
 
-    public function getNameAttribute(): string
+    public function getDisplayNameAttribute(): string
     {
+        // If the name is empty, return the styled path
         if (empty($this->attributes['name'])) {
+            // If the class is empty, return the styled path
+            if (empty($this->attributes['class'])) {
+                return $this->styled_path;
+            }
+
+            // Otherwise, return the class name
             return class_basename($this->class);
         }
         $snake = Str::snake($this->attributes['name']);
@@ -58,9 +64,15 @@ class AmigoEndpoint extends AmigoModel
         return Str::title(str_replace('_', ' ', $snake));
     }
 
+    // public function getDisplayNameAttribute(): string
+    // {
+    //
+    // }
+
     public function getStyledPathAttribute(): string
     {
-        $path = $this->attributes['path'];
+        // $path = $this->attributes['path'];
+        $path = $this->path;
 
         return preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $path);
     }

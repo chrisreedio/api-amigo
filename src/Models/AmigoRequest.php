@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Saloon\Http\PendingRequest;
 
 use function config;
+use function is_null;
 
 /**
  * AmigoRequest
@@ -21,7 +22,7 @@ use function config;
  * @property string $path
  * @property int $user_id
  * @property AmigoEndpoint $endpoint
- * @property AmigoResponse $response
+ * @property ?AmigoResponse $response
  * @property AmigoRecording[] $recordings
  */
 class AmigoRequest extends AmigoModel
@@ -59,9 +60,19 @@ class AmigoRequest extends AmigoModel
         );
     }
 
+    public static function generateId(): string
+    {
+        return Str::ulid()->toBase58();
+    }
+
+    /**
+     * Track a request
+     *
+     * @deprecated
+     */
     public static function track(PendingRequest $pendingRequest): self
     {
-        $requestId = Str::ulid()->toBase58();
+        $requestId = self::generateId();
         $pendingRequest->config()->add('amigo.request_id', $requestId);
         $pendingRequest->config()->add('amigo.request_time', microtime(true));
         // dump('Injected Amigo tracking data into request config');
@@ -86,22 +97,30 @@ class AmigoRequest extends AmigoModel
         ]);
 
         // Check for any active global recordings
+        $request->attachRecordings();
+
+        return $request;
+    }
+
+    public function attachRecordings(): void
+    {
+        // Check for any active global recordings
         AmigoRecording::active()
-            ->each(function (AmigoRecording $recording) use ($request, $user) {
+            ->each(function (AmigoRecording $recording) {
+                $user = auth()->user();
+
                 // If this isn't a global recording and the user is not the owner, skip it
                 if (! $recording->global && (is_null($user) || $recording->user_id !== $user->id)) {
                     return;
                 }
 
                 // Now do a connector check to make sure it's not been filtered out
-                if ($recording->connector_id !== null && $recording->connector_id !== $request->endpoint->connector_id) {
+                if ($recording->connector_id !== null && $recording->connector_id !== $this->endpoint->connector_id) {
                     return;
                 }
 
                 // dd('Recording request', $recording, $request);
-                $recording->requests()->attach($request);
+                $recording->requests()->attach($this);
             });
-
-        return $request;
     }
 }

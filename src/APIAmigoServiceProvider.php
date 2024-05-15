@@ -5,13 +5,10 @@ namespace ChrisReedIO\APIAmigo;
 use ChrisReedIO\APIAmigo\Commands\APIAmigoCommand;
 use ChrisReedIO\APIAmigo\Commands\ResponsesAggregationCommand;
 use ChrisReedIO\APIAmigo\Controllers\WebhookController;
-use ChrisReedIO\APIAmigo\Middleware\Saloon\Request\TrackRequest;
-use ChrisReedIO\APIAmigo\Middleware\Saloon\Response\LogResponse;
+use ChrisReedIO\APIAmigo\Middleware\Saloon\TrackSaloonRequest;
+use ChrisReedIO\APIAmigo\Middleware\Saloon\TrackSaloonResponse;
 use ChrisReedIO\APIAmigo\Testing\TestsAPIAmigo;
-use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
-use Filament\Support\Assets\Css;
-use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
@@ -136,8 +133,8 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             // If the package is enabled, we'll hook up the middleware to track requests and log responses
             if (config('api-amigo.enabled')) {
                 \Saloon\Config::globalMiddleware()
-                    ->onRequest(new TrackRequest(), 'amigo-track-request', PipeOrder::LAST)
-                    ->onResponse(new LogResponse(), 'amigo-log-response', PipeOrder::FIRST);
+                    ->onRequest(new TrackSaloonRequest(), 'amigo-track-request', PipeOrder::LAST)
+                    ->onResponse(new TrackSaloonResponse(), 'amigo-log-response', PipeOrder::FIRST);
             }
 
         } catch (DuplicatePipeNameException $e) {
@@ -213,8 +210,8 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             'create_amigo_webhooks_table',
             'create_amigo_recordings_table',
             'create_amigo_recording_amigo_request_table',
-            'alter_amigo_responses_add_endpoint_id_index',
             'alter_amigo_endpoint_aggregates_restructure_table',
+            'alter_amigo_listeners_add_transient_columns',
         ];
     }
 }
