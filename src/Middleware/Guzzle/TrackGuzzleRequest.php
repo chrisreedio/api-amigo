@@ -55,7 +55,7 @@ class TrackGuzzleRequest
             'name' => $request->getUri()->getHost(),
         ]);
 
-        $connectorName = $request->getUri()->getHost() .  ' via Guzzle';
+        $connectorName = $request->getUri()->getHost() . ' via Guzzle';
 
         return AmigoConnector::firstOrCreate([
             'name' => $connectorName,

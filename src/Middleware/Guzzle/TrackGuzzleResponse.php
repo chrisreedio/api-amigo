@@ -8,7 +8,6 @@ use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
 
 use function config;
 use function trim;

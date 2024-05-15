@@ -9,6 +9,7 @@ use Filament\Support\Colors\Color;
 use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
 use Illuminate\Support\Collection;
+
 use function now;
 
 class EndpointResponsesChart extends ChartWidget
@@ -26,7 +27,7 @@ class EndpointResponsesChart extends ChartWidget
     protected function getData(): array
     {
         $activeFilter = $this->filter;
-        $curFilter = !$activeFilter ? ChartFilters::Today : ChartFilters::from($activeFilter);
+        $curFilter = ! $activeFilter ? ChartFilters::Today : ChartFilters::from($activeFilter);
 
         $totalsTrend = $this->calculateTrend('total_requests', $curFilter);
         $failuresTrend = $this->calculateTrend('failed_requests', $curFilter);

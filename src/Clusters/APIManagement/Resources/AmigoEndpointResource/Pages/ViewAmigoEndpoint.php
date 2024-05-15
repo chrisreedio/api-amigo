@@ -15,7 +15,7 @@ class ViewAmigoEndpoint extends ViewRecord
 
     public function getTitle(): string | Htmlable
     {
-        return  'Endpoint: ' . $this->getRecord()->displayName;
+        return 'Endpoint: ' . $this->getRecord()->displayName;
     }
 
     protected function getHeaderWidgets(): array
