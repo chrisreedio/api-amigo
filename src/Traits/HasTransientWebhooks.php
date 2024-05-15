@@ -91,6 +91,7 @@ trait HasTransientWebhooks
     public function generateTransientListener(string $handler): AmigoListener
     {
         $this->pruneUnusedListeners($handler, true);
+
         return $this->createTransientListener($handler);
     }
 }
