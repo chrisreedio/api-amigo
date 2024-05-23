@@ -20,7 +20,17 @@ class APIAmigoPlugin implements Plugin
 
         // Discover all classes in the Webhooks directory in the app directory
         // Custom logic to look for classes that extend the ProcessWebhookJob class
-        $webhookHandlers = collect(File::allFiles(app_path('Webhooks')));
+        // Check if the Webhooks directory exists
+        $webhookDirectory = app_path('Webhooks');
+
+        if (File::isDirectory($webhookDirectory)) {
+            // Discover all classes in the Webhooks directory in the app directory
+            // Custom logic to look for classes that extend the ProcessWebhookJob class
+            $webhookHandlers = collect(File::allFiles($webhookDirectory));
+        } else {
+            // Handle the case where the directory does not exist
+            $webhookHandlers = collect();
+        }
         $webhookHandlers->each(function ($file) {
             $class = 'App\\Webhooks\\' . str_replace(['/', '.php'], ['\\', ''], $file->getRelativePathname());
             // dump('Checking webhook handler: ' . $class . ' - File: ' . $file->getRelativePathname());
