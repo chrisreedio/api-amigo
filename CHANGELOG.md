@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.32 - 2024-05-23
+
+### What's Changed
+
+* 🛠️ refactor(APIAmigoPlugin): Ensure `Webhooks` directory existence by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/46
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.31...v1.0.0-alpha.32
+
 ## v1.0.0-alpha.31 - 2024-05-15
 
 ### What's Changed
