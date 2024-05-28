@@ -7,6 +7,8 @@ use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource
 use ChrisReedIO\APIAmigo\Models\AmigoConnector;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -32,6 +34,72 @@ class AmigoConnectorResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return number_format(static::getModel()::count());
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->columns(3)
+            ->schema([
+                // Infolists\Components\TextEntry::make('name'),
+
+                Infolists\Components\TextEntry::make('integration.name')
+                    ->url(fn (AmigoConnector $record) => AmigoIntegrationResource::getUrl('view', ['record' => $record->integration]))
+                    ->placeholder('All Integrations')
+                    ->label('Integration'),
+
+                Infolists\Components\TextEntry::make('display_name')
+                    ->placeholder('Not Set')
+                    ->label('Display Name'),
+
+                Infolists\Components\TextEntry::make('rate_limit')
+                    ->numeric()
+                    ->badge()
+                    ->placeholder('Unknown')
+                    ->label('Rate Limit'),
+
+                Infolists\Components\TextEntry::make('rate_usage')
+                    ->numeric()
+                    ->badge()
+                    ->placeholder('Unknown')
+                    ->label('Rate Usage'),
+
+                Infolists\Components\TextEntry::make('rate_limit_remaining')
+                    ->numeric()
+                    ->badge()
+                    ->placeholder('Unknown')
+                    ->label('Rate Limit Remaining'),
+
+                Infolists\Components\TextEntry::make('rate_usage_percentage')
+                    ->numeric()
+                    ->badge()
+                    ->label('Usage Percent')
+                    ->placeholder('Unknown')
+                    ->suffix('%'),
+
+                // Infolists\Components\TextEntry::make('endpoints_count')
+                //     ->label('Endpoints')
+                //     ->placeholder('Unknown')
+                //     ->badge(),
+                //
+                // Infolists\Components\TextEntry::make('aggregates_sum_total_requests')
+                //     ->label('Requests')
+                //     ->placeholder('Unknown')
+                //     ->badge()
+                //     ->numeric(),
+
+                // Infolists\Components\TextEntry::make('requests_count')
+                //     ->label('Requests')
+                //     ->badge(),
+
+                // Infolists\Components\TextEntry::make('deleted_at')
+                //     ->dateTime()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // Infolists\Components\TextEntry::make('created_at')
+                //     ->dateTime(),
+                // Infolists\Components\TextEntry::make('updated_at')
+                //     ->dateTime(),
+            ]);
     }
 
     public static function form(Form $form): Form
