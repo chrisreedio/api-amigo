@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-alpha.34 - 2024-05-28
+
+### What's Changed
+
+* ✨ feat(resources): Added `infolist` methods and updated titles by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/48
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.33...v1.0.0-alpha.34
+
 ## v1.0.0-alpha.33 - 2024-05-28
 
 ### What's Changed
