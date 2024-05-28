@@ -4,7 +4,6 @@ namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingRe
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
-use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -64,7 +63,7 @@ class AmigoRequestsRelationManager extends RelationManager
                             return Color::Green;
                         }
                     })
-                    ->getStateUsing(fn (AmigoRequest $record) => $record->response !== null ? ($record->response->duration * 1000).'ms' : null)
+                    ->getStateUsing(fn (AmigoRequest $record) => $record->response !== null ? ($record->response->duration * 1000) . 'ms' : null)
                     // ->suffix('s')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
