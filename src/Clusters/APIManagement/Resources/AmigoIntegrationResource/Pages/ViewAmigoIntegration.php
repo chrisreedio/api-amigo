@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages;
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource;
+use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Contracts\Support\Htmlable;
 
@@ -12,7 +13,10 @@ class ViewAmigoIntegration extends ViewRecord
 
     public function getTitle(): string | Htmlable
     {
-        return 'Viewing Integration: ' . $this->getRecord()->name;
+        /** @var AmigoIntegration $integration */
+        $integration = $this->getRecord();
+
+        return 'Viewing Integration: ' . $integration->name;
     }
 
     protected function getHeaderActions(): array
