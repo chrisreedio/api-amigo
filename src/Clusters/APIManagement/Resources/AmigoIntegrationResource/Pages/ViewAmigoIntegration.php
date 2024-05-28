@@ -10,9 +10,9 @@ class ViewAmigoIntegration extends ViewRecord
 {
     protected static string $resource = AmigoIntegrationResource::class;
 
-    public function getTitle(): string|Htmlable
+    public function getTitle(): string | Htmlable
     {
-        return 'Viewing Integration: '.$this->getRecord()->name;
+        return 'Viewing Integration: ' . $this->getRecord()->name;
     }
 
     protected function getHeaderActions(): array

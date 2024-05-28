@@ -10,9 +10,9 @@ class ViewAmigoConnector extends ViewRecord
 {
     protected static string $resource = AmigoConnectorResource::class;
 
-    public function getTitle(): string|Htmlable
+    public function getTitle(): string | Htmlable
     {
-           return 'Viewing Connector: ' . $this->getRecord()->name;
+        return 'Viewing Connector: ' . $this->getRecord()->name;
     }
 
     protected function getHeaderActions(): array
