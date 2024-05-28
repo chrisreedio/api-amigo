@@ -4,6 +4,7 @@ namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingRe
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
+use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -36,17 +37,24 @@ class AmigoRequestsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('endpoint.connector.name')
                     ->label('Connector'),
                 Tables\Columns\TextColumn::make('endpoint.name')
+                    ->placeholder('No Display Name')
                     ->label('Endpoint Name'),
                 Tables\Columns\TextColumn::make('endpoint.styled_path')
                     ->label('Endpoint Path')
                     ->html()
                     ->copyable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('response.status_code')
+                    ->label('Status')
+                    ->formatStateUsing(fn (AmigoRequest $record) => $record->response?->status_code?->value . ' ' . $record->response?->status_code?->getLabel())
+                    ->alignCenter()
+                    ->badge()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('response.duration')
                     ->label('Duration')
                     ->badge()
                     ->placeholder('No Response')
-                    ->color(function ($record) {
+                    ->color(function (AmigoRequest $record) {
                         $duration = $record->response()->exists() ? $record->response->duration : 99999;
                         if ($duration >= config('api-amigo.thresholds.duration.error')) {
                             return Color::Red;
@@ -56,7 +64,7 @@ class AmigoRequestsRelationManager extends RelationManager
                             return Color::Green;
                         }
                     })
-                    ->getStateUsing(fn (AmigoRequest $record) => $record->response !== null ? ($record->response->duration * 1000) . 'ms' : null)
+                    ->getStateUsing(fn (AmigoRequest $record) => $record->response !== null ? ($record->response->duration * 1000).'ms' : null)
                     // ->suffix('s')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -69,9 +77,11 @@ class AmigoRequestsRelationManager extends RelationManager
             ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('connector_id')
-                    ->relationship('endpoint.connector', 'name'),
+                    ->relationship('endpoint.connector', 'name')
+                    ->label('Connector'),
                 Tables\Filters\SelectFilter::make('endpoint_id')
-                    ->relationship('endpoint', 'name')
+                    ->relationship('endpoint', 'path')
+                    ->label('Endpoint')
                     ->searchable()
                     ->multiple()
                     ->preload(),
