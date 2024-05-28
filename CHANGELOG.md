@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.1 - 2024-05-28
+
+### What's Changed
+
+* 🔼 chore(deps): bumped spatie/shiki-php version to ^2.0 by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/49
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-alpha.34...v1.0.0-beta.1
+
 ## v1.0.0-alpha.34 - 2024-05-28
 
 ### What's Changed
