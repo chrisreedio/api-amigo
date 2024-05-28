@@ -6,6 +6,8 @@ use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -30,6 +32,39 @@ class AmigoIntegrationResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return number_format(static::getModel()::count());
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->columns(2)
+            ->schema([
+                Infolists\Components\TextEntry::make('name'),
+
+                Infolists\Components\TextEntry::make('display_name')
+                    ->placeholder('Not Set')
+                    ->label('Display Name'),
+
+                // Infolists\Components\TextEntry::make('total_requests')
+                //     ->numeric()
+                //     ->label('Total Requests'),
+
+                // Infolists\Components\TextEntry::make('total_errors')
+                //     ->numeric()
+                //     ->label('Total Errors'),
+
+                // Infolists\Components\TextEntry::make('deleted_at')
+                //     ->dateTime()
+                //     ->label('Deleted At'),
+
+                // Infolists\Components\TextEntry::make('created_at')
+                //     ->dateTime()
+                //     ->label('Created At'),
+
+                // Infolists\Components\TextEntry::make('updated_at')
+                //     ->dateTime()
+                //     ->label('Updated At'),
+            ]);
     }
 
     public static function form(Form $form): Form

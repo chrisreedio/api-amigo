@@ -220,7 +220,7 @@ class AmigoWebhookResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('listener.display_name')
                     ->label('Listener')
-                    ->url(fn (AmigoWebhook $record) => $record->listener ? AmigoListenerResource::getUrl('view', ['record' => $record->listener]) : null)
+                    // ->url(fn (AmigoWebhook $record) => $record->listener ? AmigoListenerResource::getUrl('view', ['record' => $record->listener]) : null)
                     ->searchable()
                     ->sortable(),
 

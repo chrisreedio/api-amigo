@@ -7,6 +7,8 @@ use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource
 use ChrisReedIO\APIAmigo\Models\AmigoRecording;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -34,6 +36,60 @@ class AmigoRecordingResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return number_format(static::getModel()::count());
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->columns(4)
+            ->schema([
+                Infolists\Components\TextEntry::make('name'),
+
+                Infolists\Components\TextEntry::make('connector.name')
+                    ->placeholder('All Connectors')
+                    ->label('Connector'),
+
+                Infolists\Components\TextEntry::make('started_at')
+                    ->placeholder('Not Started')
+                    ->icon(fn (AmigoRecording $recording) => $recording->started_at ? 'far-play' : null)
+                    ->iconColor(fn (AmigoRecording $recording) => $recording->started_at ? Color::Green : null)
+                    ->dateTime()
+                    ->label('Started At'),
+
+                Infolists\Components\TextEntry::make('ended_at')
+                    ->placeholder('Not Ended')
+                    ->icon(fn (AmigoRecording $recording) => $recording->ended_at ? 'far-stop' : null)
+                    ->iconColor(fn (AmigoRecording $recording) => $recording->ended_at ? Color::Red : null)
+                    ->dateTime()
+                    ->label('Ended At'),
+
+                Infolists\Components\IconEntry::make('global')
+                    ->boolean()
+                    ->columnSpan(2)
+                    // ->columnSpan([
+                    //     'sm' => 2,
+                    //     '2xl' => 1,
+                    // ])
+                    // ->hint('Includes system requests'),
+                    ->helperText('Includes system requests'),
+
+                Infolists\Components\IconEntry::make('capture_body')
+                    ->boolean()
+                    ->label('Capture Response Body')
+                    // ->hint('Could include sensitive data!')
+                    ->columnSpan(2)
+                    // ->columnSpan([
+                    //     'sm' => 2,
+                    //     '2xl' => 1,
+                    // ])
+                    // ->hintColor(Color::Yellow),
+                    ->helperText('Could include sensitive data!'),
+
+                Infolists\Components\TextEntry::make('description')
+                    ->hidden(fn (AmigoRecording $recording) => ! $recording->description)
+                    ->placeholder('No Description')
+                    ->columnSpanFull(),
+            ]);
     }
 
     public static function form(Form $form): Form
