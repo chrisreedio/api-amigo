@@ -43,7 +43,7 @@ class AmigoRequestsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('endpoint.styled_path')
                     ->label('Endpoint Path')
                     ->html()
-                    ->copyable()
+                    // ->copyable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('response.status_code')
                     ->label('Status')

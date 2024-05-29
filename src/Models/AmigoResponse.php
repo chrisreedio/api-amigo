@@ -117,7 +117,7 @@ class AmigoResponse extends AmigoModel
             }
 
             // dd("'" . $saloonResponse->body() . "'");
-
+            // dd('Cached Response? ', $saloonResponse->isCached());
             return $endpoint->responses()->create([
                 'request_id' => $request?->id,
                 'status_code' => $saloonResponse->status(),
@@ -131,7 +131,7 @@ class AmigoResponse extends AmigoModel
                 'cached' => $saloonResponse->isCached(),
             ]);
         } catch (\Exception $e) {
-            Log::error('API Amigo failed to track response: ' . $e->getMessage(), [
+            Log::error('API Amigo failed to track response: '.$e->getMessage(), [
                 'exception' => $e,
                 'response' => $saloonResponse,
             ]);

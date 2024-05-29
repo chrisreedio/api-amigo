@@ -11,7 +11,7 @@ class TrackSaloonResponse implements ResponseMiddleware
     public function __invoke(Response $response): void
     {
         // dump('== API Amigo - LogResponse middleware invoked ==');
-
+        // dd($response);
         AmigoResponse::track($response);
 
         // dd('Done Tracking Response');
