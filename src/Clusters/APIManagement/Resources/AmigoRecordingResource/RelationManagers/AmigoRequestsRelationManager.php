@@ -4,7 +4,6 @@ namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingRe
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
-use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -47,7 +46,7 @@ class AmigoRequestsRelationManager extends RelationManager
                     ->searchable(),
                 Tables\Columns\TextColumn::make('response.status_code')
                     ->label('Status')
-                    ->formatStateUsing(fn (AmigoRequest $record) => $record->response?->status_code?->value.' '.$record->response?->status_code?->getLabel())
+                    ->formatStateUsing(fn (AmigoRequest $record) => $record->response?->status_code?->value . ' ' . $record->response?->status_code?->getLabel())
                     ->alignCenter()
                     ->badge()
                     ->sortable(),
@@ -65,15 +64,15 @@ class AmigoRequestsRelationManager extends RelationManager
                             return Color::Green;
                         }
                     })
-                    ->getStateUsing(fn (AmigoRequest $record) => $record->response !== null ? ($record->response->duration * 1000).'ms' : null)
+                    ->getStateUsing(fn (AmigoRequest $record) => $record->response !== null ? ($record->response->duration * 1000) . 'ms' : null)
                     // ->suffix('s')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('response.cached')
                     ->label('Cached')
                     ->icon('far-database')
-                    ->color(fn(AmigoRequest $record) => $record->response?->cached ? Color::Green : Color::Red)
-                    ->formatStateUsing(fn($state) => $state ? 'Yes' : 'No')
+                    ->color(fn (AmigoRequest $record) => $record->response?->cached ? Color::Green : Color::Red)
+                    ->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No')
                     ->badge()
                     ->placeholder('N/A')
                     ->alignCenter()

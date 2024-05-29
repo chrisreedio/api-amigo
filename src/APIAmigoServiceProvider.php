@@ -95,7 +95,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
                     }
                 })
                 ->formatStateUsing(function ($state) {
-                    return number_format($state * 1000).'ms';
+                    return number_format($state * 1000) . 'ms';
                 });
         });
     }
@@ -118,7 +118,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
 
         // Handle Stubs
         if (app()->runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__.'/../stubs/') as $file) {
+            foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
                 $this->publishes([
                     $file->getRealPath() => base_path("stubs/api-amigo/{$file->getFilename()}"),
                 ], 'api-amigo-stubs');
