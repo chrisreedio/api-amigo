@@ -134,7 +134,9 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             if (config('api-amigo.enabled')) {
                 \Saloon\Config::globalMiddleware()
                     ->onRequest(new TrackSaloonRequest(), 'amigo-track-request', PipeOrder::LAST)
-                    ->onResponse(new TrackSaloonResponse(), 'amigo-log-response', PipeOrder::FIRST);
+                    // ->onResponse(new TrackSaloonResponse(), 'amigo-log-response', PipeOrder::FIRST);
+                    // Moving this to 'Last' so that we can pick up that the response is cached
+                    ->onResponse(new TrackSaloonResponse(), 'amigo-log-response', PipeOrder::LAST);
             }
 
         } catch (DuplicatePipeNameException $e) {
@@ -212,6 +214,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             'create_amigo_recording_amigo_request_table',
             'alter_amigo_endpoint_aggregates_restructure_table',
             'alter_amigo_listeners_add_transient_columns',
+            'alter_amigo_responses_add_cached_flag',
         ];
     }
 }

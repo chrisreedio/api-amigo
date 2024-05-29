@@ -27,6 +27,7 @@ use function gettype;
  * @property HTTPStatus $status_code
  * @property string $status_message
  * @property float $duration
+ * @property bool $cached
  */
 class AmigoResponse extends AmigoModel
 {
@@ -40,6 +41,7 @@ class AmigoResponse extends AmigoModel
         'status_code',
         'status_message',
         'duration',
+        'cached',
     ];
 
     protected $casts = [
@@ -115,7 +117,7 @@ class AmigoResponse extends AmigoModel
             }
 
             // dd("'" . $saloonResponse->body() . "'");
-
+            // dd('Cached Response? ', $saloonResponse->isCached());
             return $endpoint->responses()->create([
                 'request_id' => $request?->id,
                 'status_code' => $saloonResponse->status(),
@@ -126,6 +128,7 @@ class AmigoResponse extends AmigoModel
                 // 'rate_limit' => $rateLimit,
                 // 'rate_limit_remaining' => $rateLimitRemaining,
                 'duration' => $responseTimeDelta,
+                'cached' => $saloonResponse->isCached(),
             ]);
         } catch (\Exception $e) {
             Log::error('API Amigo failed to track response: ' . $e->getMessage(), [

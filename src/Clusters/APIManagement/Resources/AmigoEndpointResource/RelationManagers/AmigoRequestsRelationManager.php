@@ -7,6 +7,7 @@ use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -30,6 +31,7 @@ class AmigoRequestsRelationManager extends RelationManager
     {
         return $table
             // ->recordTitleAttribute('name')
+            ->recordUrl(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response]))
             ->columns([
                 // Tables\Columns\TextColumn::make('endpoint.name')
                 //     ->label('Endpoint')
@@ -41,7 +43,8 @@ class AmigoRequestsRelationManager extends RelationManager
                     ->label('Path')
                     ->getStateUsing(fn (AmigoRequest $record) => $record->path ?? $record->endpoint->styled_path)
                     ->html()
-                    ->copyable()
+                    // ->copyable()
+                    ->limit(100)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('response.status_code')
@@ -54,7 +57,6 @@ class AmigoRequestsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('response.duration')
                     ->label('Duration')
                     ->badge()
-
                     ->getStateUsing(fn (AmigoRequest $record) => $record->response ? ($record->response->duration * 1000) . 'ms' : null)
                     ->placeholder('No Response')
                     // ->suffix('s')
@@ -65,6 +67,24 @@ class AmigoRequestsRelationManager extends RelationManager
                 //     ->badge()
                 //     ->counts('requests')
                 //     ->sortable(),
+
+                // Tables\Columns\IconColumn::make('cached')
+                //     ->label('Cached')
+                //     ->boolean()
+                //     ->placeholder('N/A')
+                //     ->getStateUsing(fn (AmigoRequest $record) => $record->response?->cached)
+                //     ->alignCenter()
+                //     ->sortable(),
+
+                Tables\Columns\TextColumn::make('response.cached')
+                    ->label('Cached')
+                    ->icon('far-database')
+                    ->color(fn (AmigoRequest $record) => $record->response?->cached ? Color::Green : Color::Red)
+                    ->formatStateUsing(fn (AmigoRequest $record) => $record->response?->cached ? 'Yes' : 'No')
+                    ->badge()
+                    // ->placeholder('N/A1')
+                    ->alignCenter()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Sent At')
@@ -82,7 +102,8 @@ class AmigoRequestsRelationManager extends RelationManager
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 // Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ViewAction::make()->url(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response])),
+                // Tables\Actions\ViewAction::make()
+                //     ->url(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
