@@ -73,70 +73,51 @@ class AmigoResponseResource extends Resource
                 Infolists\Components\TextEntry::make('response_size')
                     ->label('Response Size')
                     ->numeric()
-                    // ->getStateUsing(fn (AmigoResponse $record) => number_format($record->body_size / 1024.0, 1))
-                    ->getStateUsing(function (AmigoResponse $record) {
-                        $size = $record->body_size;
-                        // $size = 1024 * 1024;
-
-                        return Number::fileSize($size, 2);
-                    })
+                    ->getStateUsing(fn(AmigoResponse $record) => Number::fileSize($record->body_size, 2))
                     ->color(function (AmigoResponse $record) {
                         $size = $record->body_size;
-                        // $size = 1024 * 1024;
-                        if ($size >= config('api-amigo.thresholds.response_size.error')) {
-                            return Color::Red;
-                        } elseif ($size >= config('api-amigo.thresholds.response_size.warning')) {
-                            return Color::Yellow;
-                        } else {
-                            return Color::Green;
-                        }
+                        return match (true) {
+                            $size >= config('api-amigo.thresholds.response_size.error') => Color::Red,
+                            $size >= config('api-amigo.thresholds.response_size.warning') => Color::Yellow,
+                            default => Color::Green,
+                        };
                     })
                     ->icon('far-hard-drive'),
 
-                Infolists\Components\Grid::make(6)
+                Infolists\Components\Grid::make(7)
                     ->schema([
                         Infolists\Components\TextEntry::make('status_code')
                             ->label('Status')
-                            ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
+                            ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value.' '.$record->status_code->getLabel())
                             ->badge(),
 
                         Infolists\Components\TextEntry::make('duration')
                             ->label('Duration')
-                            ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
+                            ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000).'ms')
                             ->color(function ($state) {
-                                if ($state >= config('api-amigo.thresholds.duration.error')) {
-                                    return Color::Red;
-                                } elseif ($state >= config('api-amigo.thresholds.duration.warning')) {
-                                    return Color::Yellow;
-                                } else {
-                                    return Color::Green;
-                                }
+                                return match (true) {
+                                    $state >= config('api-amigo.thresholds.duration.error') => Color::Red,
+                                    $state >= config('api-amigo.thresholds.duration.warning') => Color::Yellow,
+                                    default => Color::Green,
+                                };
                             })
                             ->icon('far-stopwatch')
                             ->badge(),
+
+                        Infolists\Components\TextEntry::make('cached')
+                            ->label('Cached')
+                            ->badge()
+                            ->color(fn(AmigoResponse $record) => $record->cached ? Color::Green : Color::Red)
+                            ->formatStateUsing(fn($state) => $state ? 'Yes' : 'No')
+                            ->icon('far-database'),
 
                         Infolists\Components\TextEntry::make('request.path')
                             ->label('Request Path')
                             ->copyable()
                             ->columnSpan(4)
-                            // ->url(fn (AmigoResponse $record) => AmigoRequestResource::getUrl('view', ['record' => $record->request]))
-                            ->formatStateUsing(function ($state) {
-                                // $replacedVars = preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $state);
-                                $formatted = '<code>' . $state . '</code>';
-
-                                return new HtmlString($formatted);
-                            })
+                            ->formatStateUsing(fn($state) => new HtmlString('<code>'.$state.'</code>'))
                             ->icon('far-sign-post'),
                     ]),
-
-                // Infolists\Components\TextEntry::make('decoded_body')
-                // Infolists\Components\TextEntry::make('body')
-                //     Infolists\Components\TextEntry::make('encoded_body')
-                //     ->label('Response Body Contents')
-                // ->language('json')
-                // ->getStateUsing(fn (AmigoResponse $record) => json_encode($record->body, JSON_PRETTY_PRINT))
-                // ->getStateUsing(fn (AmigoResponse $record) => $record->getOriginal('body'))
-                // ->columnSpanFull(),
 
                 Infolists\Components\TextEntry::make('no_response_body')
                     ->label('Response Body')
@@ -238,7 +219,7 @@ class AmigoResponseResource extends Resource
 
                 Tables\Columns\TextColumn::make('status_code')
                     ->label('Status')
-                    ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
+                    ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value.' '.$record->status_code->getLabel())
                     ->alignCenter()
                     ->badge()
                     ->sortable(),
@@ -257,8 +238,18 @@ class AmigoResponseResource extends Resource
                             return Color::Green;
                         }
                     })
-                    ->getStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
+                    ->getStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000).'ms')
                     // ->suffix('s')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('cached')
+                    ->label('Cached')
+                    ->icon('far-database')
+                    ->color(fn(AmigoResponse $record) => $record->cached ? Color::Green : Color::Red)
+                    ->formatStateUsing(fn($state) => $state ? 'Yes' : 'No')
+                    ->badge()
+                    ->placeholder('N/A')
+                    ->alignCenter()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
@@ -276,13 +267,13 @@ class AmigoResponseResource extends Resource
                     ->label('Connector')
                     ->relationship('endpoint.connector', 'name'),
                 Tables\Filters\SelectFilter::make('status_code')
-                    ->getOptionLabelUsing(fn ($value) => $value->value . ' - ' . $value->getLabel())
+                    ->getOptionLabelUsing(fn ($value) => $value->value.' - '.$value->getLabel())
                     ->searchable()
                     ->preload()
                     ->multiple()
                     ->options(function () {
                         return collect(HTTPStatus::cases())
-                            ->mapWithKeys(fn (HTTPStatus $code) => [$code->value => $code->value . ' - ' . $code->getLabel()]);
+                            ->mapWithKeys(fn (HTTPStatus $code) => [$code->value => $code->value.' - '.$code->getLabel()]);
                     }),
                 Tables\Filters\TernaryFilter::make('success')
                     ->label('Fail or Success')
