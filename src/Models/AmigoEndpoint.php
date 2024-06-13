@@ -109,7 +109,7 @@ class AmigoEndpoint extends AmigoModel
         // dd($urlParts);
 
         return $connector->endpoints()->firstOrCreate([
-            'method' => $request->getMethod(),
+            'method' => Method::from($request->getMethod()->value),
             'name' => $endpointName,
             'class' => $endpointClass,
             // 'path' => $urlParts['path'],
