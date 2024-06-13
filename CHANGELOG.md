@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.3 - 2024-06-13
+
+### What's Changed
+
+* 🛠️ bugfix(`Method` enum & `AmigoEndpoint`): Added HTTP methods and improved method handling by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/51
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.2...v1.0.0-beta.3
+
 ## v1.0.0-beta.2 - 2024-05-29
 
 ### What's Changed
