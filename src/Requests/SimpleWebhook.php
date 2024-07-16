@@ -13,9 +13,7 @@ class SimpleWebhook extends SoloRequest implements HasBody
 
     protected Method $method = Method::POST;
 
-    public function __construct(protected string $url, protected array $data, protected ?string $secret = null)
-    {
-    }
+    public function __construct(protected string $url, protected array $data, protected ?string $secret = null) {}
 
     // public static function make(string $url, array $data, ?string $secret = null): static
     // {

@@ -53,7 +53,8 @@ class AmigoWebhookResource extends Resource
 
                 Infolists\Components\TextEntry::make('listener.display_name')
                     ->label('Listener')
-                    ->url(fn (AmigoWebhook $record) => AmigoListenerResource::getUrl('view', ['record' => $record->listener]))
+                    ->url(fn (AmigoWebhook $record) => $record->listener ? AmigoListenerResource::getUrl('view', ['record' => $record->listener]) : null)
+                    ->placeholder('No Listener')
                     ->icon('far-headphones-simple'),
 
                 Infolists\Components\TextEntry::make('error.message')
@@ -222,6 +223,7 @@ class AmigoWebhookResource extends Resource
                     ->label('Listener')
                     // ->url(fn (AmigoWebhook $record) => $record->listener ? AmigoListenerResource::getUrl('view', ['record' => $record->listener]) : null)
                     ->searchable()
+                    ->placeholder('No Listener')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('processed_at')
