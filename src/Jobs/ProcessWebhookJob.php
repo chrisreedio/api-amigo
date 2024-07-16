@@ -16,9 +16,7 @@ abstract class ProcessWebhookJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(protected AmigoWebhook $webhook)
-    {
-    }
+    public function __construct(protected AmigoWebhook $webhook) {}
 
     final public function handle(): void
     {
