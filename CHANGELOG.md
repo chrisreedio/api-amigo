@@ -2,6 +2,15 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.4 - 2024-07-16
+
+### What's Changed
+
+* build(deps): bump dependabot/fetch-metadata from 2.1.0 to 2.2.0 by @dependabot in https://github.com/chrisreedio/api-amigo/pull/52
+* 🐛 fix(resources): added null check and placeholder for listener in `AmigoWebhookResource` by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/53
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.3...v1.0.0-beta.4
+
 ## v1.0.0-beta.3 - 2024-06-13
 
 ### What's Changed
