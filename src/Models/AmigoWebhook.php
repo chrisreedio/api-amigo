@@ -2,11 +2,15 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use const JSON_PRETTY_PRINT;
+
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
+use function json_decode;
+use function json_encode;
 use function now;
 
 /**
@@ -95,5 +99,15 @@ class AmigoWebhook extends AmigoModel
     public function failWithException(Exception $exception): void
     {
         $this->fail($exception->getCode(), $exception->getMessage(), $exception->getTraceAsString());
+    }
+
+    public function getBodyAttribute()
+    {
+        return json_decode(json_decode($this->payload, true), true);
+    }
+
+    public function getEncodedBodyAttribute(): string
+    {
+        return json_encode($this->body, JSON_PRETTY_PRINT);
     }
 }
