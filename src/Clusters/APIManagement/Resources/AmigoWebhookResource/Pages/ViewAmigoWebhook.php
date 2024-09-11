@@ -20,7 +20,7 @@ class ViewAmigoWebhook extends ViewRecord
                 ->icon('far-download')
                 ->label('Download Payload')
                 ->button()
-                ->hidden(fn (AmigoWebhook $record) => $record->body === null || $record->body === [])
+                ->hidden(fn (AmigoWebhook $record) => $record->payload === null || $record->payload === [] || $record->payload === '')
                 ->action(function (AmigoWebhook $record) {
                     // Stream the $record->body field as a JSON file to the browser for download
                     $filename = 'amigo-webhook-' . $record->id . '.json';
