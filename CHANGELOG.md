@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.7 - 2024-09-11
+
+### What's Changed
+
+* fix: corrected payload visibility check in `ViewAmigoWebhook.php` by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/56
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.6...v1.0.0-beta.7
+
 ## v1.0.0-beta.6 - 2024-09-11
 
 ### What's Changed
