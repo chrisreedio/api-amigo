@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.6 - 2024-09-11
+
+### What's Changed
+
+* 🛠️ fix: added confirmation requirement for `reprocess` action by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/55
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.5...v1.0.0-beta.6
+
 ## v1.0.0-beta.5 - 2024-09-11
 
 ### What's Changed
