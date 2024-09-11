@@ -37,6 +37,7 @@ class ViewAmigoWebhook extends ViewRecord
             Actions\Action::make('reprocess')
                 ->label('Reprocess')
                 ->icon('far-arrows-rotate')
+                ->requiresConfirmation()
                 ->action(function (AmigoWebhook $record) {
                     /** @var ProcessWebhookJob $handler */
                     $handler = $record->listener->handler;
