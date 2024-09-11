@@ -126,17 +126,17 @@ class APIAmigoServiceProvider extends PackageServiceProvider
         }
 
         // Testing
-        Testable::mixin(new TestsAPIAmigo());
+        Testable::mixin(new TestsAPIAmigo);
 
         // Begin Tracking work
         try {
             // If the package is enabled, we'll hook up the middleware to track requests and log responses
             if (config('api-amigo.enabled')) {
                 \Saloon\Config::globalMiddleware()
-                    ->onRequest(new TrackSaloonRequest(), 'amigo-track-request', PipeOrder::LAST)
+                    ->onRequest(new TrackSaloonRequest, 'amigo-track-request', PipeOrder::LAST)
                     // ->onResponse(new TrackSaloonResponse(), 'amigo-log-response', PipeOrder::FIRST);
                     // Moving this to 'Last' so that we can pick up that the response is cached
-                    ->onResponse(new TrackSaloonResponse(), 'amigo-log-response', PipeOrder::LAST);
+                    ->onResponse(new TrackSaloonResponse, 'amigo-log-response', PipeOrder::LAST);
             }
 
         } catch (DuplicatePipeNameException $e) {
