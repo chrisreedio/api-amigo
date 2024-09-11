@@ -101,13 +101,8 @@ class AmigoWebhook extends AmigoModel
         $this->fail($exception->getCode(), $exception->getMessage(), $exception->getTraceAsString());
     }
 
-    public function getBodyAttribute()
-    {
-        return json_decode(json_decode($this->payload, true), true);
-    }
-
     public function getEncodedBodyAttribute(): string
     {
-        return json_encode($this->body, JSON_PRETTY_PRINT);
+        return json_encode($this->payload, JSON_PRETTY_PRINT);
     }
 }
