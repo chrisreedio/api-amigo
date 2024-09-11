@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.5 - 2024-09-11
+
+### What's Changed
+
+* ✨ feat: added download payload action to ViewAmigoWebhook by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/54
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.4...v1.0.0-beta.5
+
 ## v1.0.0-beta.4 - 2024-07-16
 
 ### What's Changed
