@@ -2,10 +2,10 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use const JSON_PRETTY_PRINT;
 
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
@@ -65,7 +65,7 @@ class AmigoWebhook extends AmigoModel
         });
     }
 
-    public function getProcessingTimeAttribute(): int|float|null
+    public function getProcessingTimeAttribute(): int | float | null
     {
         if ($this->processed_at === null) {
             return null;
