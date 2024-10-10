@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $tablePrefix = config('api-amigo.table_prefix');
+        Schema::table($tablePrefix.'webhooks', function (Blueprint $table) {
+            $table->nullableMorphs('webhookable');
+            $table->string('type')->nullable()->index();
+
+            $table->index(['webhookable_id', 'webhookable_type']);
+        });
+    }
+
+    public function down(): void
+    {
+        $tablePrefix = config('api-amigo.table_prefix');
+        Schema::table($tablePrefix.'webhooks', function (Blueprint $table) {
+            $table->dropMorphs('webhookable');
+            $table->dropColumn('type');
+
+            $table->dropIndex(['webhookable_id', 'webhookable_type']);
+        });
+    }
+};
