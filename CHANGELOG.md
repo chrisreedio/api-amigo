@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.8 - 2024-10-10
+
+### What's Changed
+
+* Feature: Webhookable by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/57
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.7...v1.0.0-beta.8
+
 ## v1.0.0-beta.7 - 2024-09-11
 
 ### What's Changed
