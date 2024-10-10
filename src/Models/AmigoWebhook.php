@@ -5,7 +5,9 @@ namespace ChrisReedIO\APIAmigo\Models;
 use const JSON_PRETTY_PRINT;
 
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -29,6 +31,8 @@ use function now;
  * @property ?AmigoListener $listener
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property ?Model $webhookable
+ * @property string $type
  */
 class AmigoWebhook extends AmigoModel
 {
@@ -43,6 +47,9 @@ class AmigoWebhook extends AmigoModel
         'status_message',
         'processed_at',
         'error',
+        'webhookable_id',
+        'webhookable_type',
+        'type',
     ];
 
     protected $casts = [
@@ -70,6 +77,11 @@ class AmigoWebhook extends AmigoModel
     public function listener(): BelongsTo
     {
         return $this->belongsTo(AmigoListener::class, 'listener_id');
+    }
+
+    public function webhookable(): MorphTo
+    {
+        return $this->morphTo();
     }
 
     public function complete(): void
