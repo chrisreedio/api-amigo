@@ -8,7 +8,7 @@ use Illuminate\Contracts\Support\Htmlable;
 class APIManagement extends Cluster
 {
     // protected static ?string $navigationIcon = 'far-truck-bolt';
-    public static function getNavigationIcon(): string|Htmlable|null
+    public static function getNavigationIcon(): string | Htmlable | null
     {
         return config('api-amigo.filament.navigation.icon', 'far-truck-fast');
     }
