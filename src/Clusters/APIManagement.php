@@ -3,17 +3,38 @@
 namespace ChrisReedIO\APIAmigo\Clusters;
 
 use Filament\Clusters\Cluster;
+use Illuminate\Contracts\Support\Htmlable;
 
 class APIManagement extends Cluster
 {
     // protected static ?string $navigationIcon = 'far-truck-bolt';
-    protected static ?string $navigationIcon = 'far-truck-fast';
+    public static function getNavigationIcon(): string|Htmlable|null
+    {
+        return config('api-amigo.filament.navigation.icon', 'far-truck-fast');
+    }
 
-    protected static ?int $navigationSort = 6000;
+    public static function getNavigationSort(): ?int
+    {
+        return config('api-amigo.filament.navigation.sort', 6000);
+    }
 
-    protected static ?string $navigationLabel = 'API Management';
+    public static function getNavigationLabel(): string
+    {
+        return config('api-amigo.filament.navigation.label', 'API Management');
+    }
 
-    protected static ?string $clusterBreadcrumb = 'API Management';
+    public static function getNavigationGroup(): ?string
+    {
+        return config('api-amigo.filament.navigation.group');
+    }
 
-    protected static ?string $slug = 'api-management';
+    public static function getClusterBreadcrumb(): ?string
+    {
+        return config('api-amigo.filament.breadcrumb', 'API Management');
+    }
+
+    public static function getSlug(): string
+    {
+        return config('api-amigo.filament.slug', 'api-management');
+    }
 }

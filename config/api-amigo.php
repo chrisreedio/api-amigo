@@ -6,7 +6,14 @@ return [
     'table_prefix' => 'amigo_',
 
     'filament' => [
-        'navigation_group' => 'API Management',
+        'navigation' => [
+            // These are the defaults, Uncomment to override
+            // 'icon' => 'far-truck-fast',
+            // 'label' => 'API Management',
+            // 'group' => null,
+            // 'sort' => 6000,
+            // 'breadcrumb' => 'API Management',
+        ],
     ],
 
     'requests' => [
