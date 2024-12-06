@@ -26,8 +26,24 @@ class WebhookController extends Controller
             if (! $this->validateSignature($request, $secret)) {
                 return response()->json(['error' => 'Invalid signature'], 401);
             }
+        } elseif ($listener->tokens()->count() > 0) {
+            $token = $request->bearerToken();
+            // If the listener has tokens, validate the token
+            if ($token === null) {
+                return response()->json(['error' => 'Invalid token'], 401);
+            }
+
+            // Validate the request token against the listener tokens
+            // The tokens in the db are not plain text, so we need to hash the token
+            $hashedToken = hash('sha256', $token);
+            $validToken = $listener->tokens()->where('token', $hashedToken)->first();
+            if ($validToken === null) {
+                return response()->json(['error' => 'Invalid token'], 401);
+            }
+
+            // If the token is valid, we should update the token's last_used_at timestamp
+            $validToken->update(['last_used_at' => now()]);
         }
-        // TODO - Check to see if the listener has any API Tokens
 
         // Check to see if the existing uses is >= the max uses for the listener
         // If so, return an error that indicates the link is expired

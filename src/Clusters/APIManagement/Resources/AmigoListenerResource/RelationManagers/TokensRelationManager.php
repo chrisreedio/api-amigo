@@ -12,8 +12,9 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\PersonalAccessToken;
+
 use function __;
 
 class TokensRelationManager extends RelationManager
@@ -35,6 +36,11 @@ class TokensRelationManager extends RelationManager
     public function isReadOnly(): bool
     {
         return false;
+    }
+
+    public static function getBadge(Model $ownerRecord, string $pageClass): ?string
+    {
+        return number_format($ownerRecord->tokens()->count()) ?: null;
     }
 
     public function form(Form $form): Form

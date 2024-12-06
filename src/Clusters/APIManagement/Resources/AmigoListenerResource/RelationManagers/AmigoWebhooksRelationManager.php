@@ -42,6 +42,14 @@ class AmigoWebhooksRelationManager extends RelationManager
                     ->badge()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Type')
+                    ->badge()
+                    ->placeholder('No Type')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('error.message')
                     ->label('Result / Error Message')
                     // ->icon(fn (AmigoWebhook $record) => $record->error !== null ? 'far-triangle-exclamation' : null)

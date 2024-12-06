@@ -48,6 +48,7 @@ class AmigoListenerResource extends Resource
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
+            ->columns(4)
             ->schema([
                 Infolists\Components\TextEntry::make('display_name'),
 
@@ -72,20 +73,22 @@ class AmigoListenerResource extends Resource
                     ->badge()
                     ->label('Max Uses'),
 
+                Infolists\Components\TextEntry::make('listenable_type')
+                    ->placeholder('No Linked Model')
+                    ->label('Listenable Type'),
+
+                Infolists\Components\TextEntry::make('listenable_id')
+                    ->placeholder('No Linked Model')
+                    ->label('Listenable ID'),
+
                 Infolists\Components\TextEntry::make('url')
+                    ->label('Webhook URL')
                     // ->formatStateUsing(fn ($record) => $record->url)
                     ->columnSpanFull()
                     ->copyable(),
 
                 // Infolists\Components\TextEntry::make('listenable.name')
                 //     ->label('Listenable Type'),
-
-                Infolists\Components\TextEntry::make('listenable_type')
-                    ->label('Listenable Type'),
-
-                Infolists\Components\TextEntry::make('listenable_id')
-                    ->label('Listenable ID'),
-
             ]);
     }
 
