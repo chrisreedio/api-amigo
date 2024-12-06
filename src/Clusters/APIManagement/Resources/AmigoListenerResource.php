@@ -243,7 +243,7 @@ class AmigoListenerResource extends Resource
                     ->label('Expires in')
                     ->dateTime()
                     ->placeholder('Never')
-                    ->tooltip(fn (AmigoListener $record) => $record->expires_at ? 'Expires at ' . $record->expires_at->format('F j, Y g:i A') . ' UTC' : null)
+                    ->tooltip(fn (AmigoListener $record) => $record->expires_at ? 'Expires at '.$record->expires_at->format('F j, Y g:i A').' UTC' : null)
                     ->formatStateUsing(function (AmigoListener $record) {
                         if ($record->expires_at->isPast()) {
                             return 'Expired';
@@ -355,6 +355,7 @@ class AmigoListenerResource extends Resource
     {
         return [
             \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\RelationManagers\AmigoWebhooksRelationManager::class,
+            \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\RelationManagers\TokensRelationManager::class,
         ];
     }
 

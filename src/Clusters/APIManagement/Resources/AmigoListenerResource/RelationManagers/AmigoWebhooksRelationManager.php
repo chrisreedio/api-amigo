@@ -16,6 +16,8 @@ class AmigoWebhooksRelationManager extends RelationManager
 {
     protected static string $relationship = 'webhooks';
 
+    protected static ?string $icon = 'far-webhook';
+
     public function form(Form $form): Form
     {
         return $form

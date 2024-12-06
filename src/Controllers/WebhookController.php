@@ -27,6 +27,7 @@ class WebhookController extends Controller
                 return response()->json(['error' => 'Invalid signature'], 401);
             }
         }
+        // TODO - Check to see if the listener has any API Tokens
 
         // Check to see if the existing uses is >= the max uses for the listener
         // If so, return an error that indicates the link is expired
