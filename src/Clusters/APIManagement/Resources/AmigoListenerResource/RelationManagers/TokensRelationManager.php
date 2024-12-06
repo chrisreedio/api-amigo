@@ -28,8 +28,8 @@ class TokensRelationManager extends RelationManager
     public function copyTokenClipboard(string $token): void
     {
         $this->js(
-            'window.navigator.clipboard.writeText("'.$token.'");
-                        $tooltip("'.__('Copied to clipboard').'", { timeout: 1500 });'
+            'window.navigator.clipboard.writeText("' . $token . '");
+                        $tooltip("' . __('Copied to clipboard') . '", { timeout: 1500 });'
         );
     }
 
