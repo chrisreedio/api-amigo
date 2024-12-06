@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.10 - 2024-12-06
+
+### What's Changed
+
+* feat: added API token management to AmigoListener for Webhooks by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/58
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.9...v1.0.0-beta.10
+
 ## v1.0.0-beta.9 - 2024-12-05
 
 **Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.8...v1.0.0-beta.9
