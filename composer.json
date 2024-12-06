@@ -25,6 +25,7 @@
         "flowframe/laravel-trend": "^0.2",
         "illuminate/contracts": "^10.0|^11.0",
         "lara-zeus/inline-chart": "^1.1",
+        "laravel/sanctum": "^3.3|^4.0",
         "parallax/filament-syntax-entry": "^2.0",
         "rawilk/filament-password-input": "^2.0",
         "saloonphp/saloon": "^3.0",

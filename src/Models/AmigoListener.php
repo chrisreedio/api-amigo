@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * Class AmigoListener
@@ -31,6 +32,8 @@ use Illuminate\Support\Str;
  */
 class AmigoListener extends AmigoModel
 {
+    use HasApiTokens;
+
     protected $fillable = [
         'integration_id',
         'display_name',

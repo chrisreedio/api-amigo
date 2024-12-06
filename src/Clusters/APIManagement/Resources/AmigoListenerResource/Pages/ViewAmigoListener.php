@@ -18,10 +18,10 @@ class ViewAmigoListener extends ViewRecord
 {
     protected static string $resource = AmigoListenerResource::class;
 
-    public function getSubheading(): ?string
-    {
-        return $this->record->url;
-    }
+    // public function getSubheading(): ?string
+    // {
+    //     return $this->record->url;
+    // }
 
     protected function getHeaderActions(): array
     {

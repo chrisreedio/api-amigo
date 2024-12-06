@@ -226,6 +226,14 @@ class AmigoWebhookResource extends Resource
                     ->placeholder('No Listener')
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Type')
+                    ->badge()
+                    ->placeholder('No Type')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('processed_at')
                     ->label('Processed')
                     ->icon(fn (AmigoWebhook $record) => $record->processed_at ? 'far-circle-check' : 'far-hourglass-start')

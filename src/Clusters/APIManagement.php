@@ -10,17 +10,17 @@ class APIManagement extends Cluster
     // protected static ?string $navigationIcon = 'far-truck-bolt';
     public static function getNavigationIcon(): string | Htmlable | null
     {
-        return config('api-amigo.filament.navigation.icon', 'far-truck-fast');
+        return (string) config('api-amigo.filament.navigation.icon', 'far-truck-fast');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('api-amigo.filament.navigation.sort', 6000);
+        return (int) config('api-amigo.filament.navigation.sort', 6000);
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('api-amigo.filament.navigation.label', 'API Management');
+        return (string) config('api-amigo.filament.navigation.label', 'API Management');
     }
 
     public static function getNavigationGroup(): ?string

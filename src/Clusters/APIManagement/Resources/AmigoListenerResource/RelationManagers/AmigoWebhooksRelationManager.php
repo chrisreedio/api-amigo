@@ -16,6 +16,8 @@ class AmigoWebhooksRelationManager extends RelationManager
 {
     protected static string $relationship = 'webhooks';
 
+    protected static ?string $icon = 'far-webhook';
+
     public function form(Form $form): Form
     {
         return $form
@@ -38,6 +40,14 @@ class AmigoWebhooksRelationManager extends RelationManager
                     ->getStateUsing(fn (AmigoWebhook $record) => $record->processed_at ? Carbon::make($record->processed_at)->format('M j, Y H:i:s') : 'Not Processed')
                     ->color(fn (AmigoWebhook $record) => $record->processed_at ? 'success' : 'warning')
                     ->badge()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Type')
+                    ->badge()
+                    ->placeholder('No Type')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('error.message')
