@@ -3,12 +3,15 @@
 namespace ChrisReedIO\APIAmigo;
 
 use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
+use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Illuminate\Support\Facades\File;
 
 class APIAmigoPlugin implements Plugin
 {
+    protected bool $registerCluster = true;
+
     public function getId(): string
     {
         return 'api-amigo';
@@ -16,7 +19,9 @@ class APIAmigoPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->discoverClusters(in: __DIR__ . '/Clusters', for: 'ChrisReedIO\APIAmigo\Clusters');
+        if ($this->registerCluster) {
+            $panel->discoverClusters(in: __DIR__.'/Clusters', for: 'ChrisReedIO\APIAmigo\Clusters');
+        }
 
         // Discover all classes in the Webhooks directory in the app directory
         // Custom logic to look for classes that extend the ProcessWebhookJob class
@@ -32,7 +37,7 @@ class APIAmigoPlugin implements Plugin
             $webhookHandlers = collect();
         }
         $webhookHandlers->each(function ($file) {
-            $class = 'App\\Webhooks\\' . str_replace(['/', '.php'], ['\\', ''], $file->getRelativePathname());
+            $class = 'App\\Webhooks\\'.str_replace(['/', '.php'], ['\\', ''], $file->getRelativePathname());
             // dump('Checking webhook handler: ' . $class . ' - File: ' . $file->getRelativePathname());
             if (is_subclass_of($class, ProcessWebhookJob::class)) {
                 // dump('Registering webhook handler: ' . $class . ' - File: ' . $file->getRelativePathname() . ' - Subclass of: ' . ProcessWebhookJob::class);
@@ -69,5 +74,15 @@ class APIAmigoPlugin implements Plugin
         $plugin = filament(app(static::class)->getId());
 
         return $plugin;
+    }
+
+    public function registerCluster(bool|Closure $registerCluster = true): static
+    {
+        if ($registerCluster instanceof Closure) {
+            $registerCluster = $registerCluster();
+        }
+        $this->registerCluster = $registerCluster;
+
+        return $this;
     }
 }
