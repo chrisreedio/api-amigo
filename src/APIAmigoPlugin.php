@@ -20,7 +20,7 @@ class APIAmigoPlugin implements Plugin
     public function register(Panel $panel): void
     {
         if ($this->registerCluster) {
-            $panel->discoverClusters(in: __DIR__.'/Clusters', for: 'ChrisReedIO\APIAmigo\Clusters');
+            $panel->discoverClusters(in: __DIR__ . '/Clusters', for: 'ChrisReedIO\APIAmigo\Clusters');
         }
 
         // Discover all classes in the Webhooks directory in the app directory
@@ -37,7 +37,7 @@ class APIAmigoPlugin implements Plugin
             $webhookHandlers = collect();
         }
         $webhookHandlers->each(function ($file) {
-            $class = 'App\\Webhooks\\'.str_replace(['/', '.php'], ['\\', ''], $file->getRelativePathname());
+            $class = 'App\\Webhooks\\' . str_replace(['/', '.php'], ['\\', ''], $file->getRelativePathname());
             // dump('Checking webhook handler: ' . $class . ' - File: ' . $file->getRelativePathname());
             if (is_subclass_of($class, ProcessWebhookJob::class)) {
                 // dump('Registering webhook handler: ' . $class . ' - File: ' . $file->getRelativePathname() . ' - Subclass of: ' . ProcessWebhookJob::class);
@@ -76,7 +76,7 @@ class APIAmigoPlugin implements Plugin
         return $plugin;
     }
 
-    public function registerCluster(bool|Closure $registerCluster = true): static
+    public function registerCluster(bool | Closure $registerCluster = true): static
     {
         if ($registerCluster instanceof Closure) {
             $registerCluster = $registerCluster();
