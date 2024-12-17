@@ -2,6 +2,12 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.11 - 2024-12-17
+
+Can now selectively register the cluster.
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.10...v1.0.0-beta.11
+
 ## v1.0.0-beta.10 - 2024-12-06
 
 ### What's Changed
