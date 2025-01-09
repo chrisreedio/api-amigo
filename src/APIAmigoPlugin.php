@@ -6,11 +6,14 @@ use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Filament\Support\Concerns\EvaluatesClosures;
 use Illuminate\Support\Facades\File;
 
 class APIAmigoPlugin implements Plugin
 {
-    protected bool $registerCluster = true;
+    use EvaluatesClosures;
+
+    protected bool | \Closure $registerCluster = true;
 
     public function getId(): string
     {
@@ -19,9 +22,9 @@ class APIAmigoPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        if ($this->registerCluster) {
-            $panel->discoverClusters(in: __DIR__.'/Clusters', for: 'ChrisReedIO\APIAmigo\Clusters');
-        }
+        // if ($this->registerCluster) {
+        $panel->discoverClusters(in: __DIR__.'/Clusters', for: 'ChrisReedIO\APIAmigo\Clusters');
+        // }
 
         // Discover all classes in the Webhooks directory in the app directory
         // Custom logic to look for classes that extend the ProcessWebhookJob class
@@ -78,11 +81,13 @@ class APIAmigoPlugin implements Plugin
 
     public function registerCluster(bool|Closure $registerCluster = true): static
     {
-        if ($registerCluster instanceof Closure) {
-            $registerCluster = $registerCluster();
-        }
         $this->registerCluster = $registerCluster;
 
         return $this;
+    }
+
+    public function isAuthorized(): bool
+    {
+        return $this->evaluate($this->registerCluster) === true;
     }
 }
