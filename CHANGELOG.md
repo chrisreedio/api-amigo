@@ -2,6 +2,12 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.12 - 2025-01-09
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.11...v1.0.0-beta.12
+
+Fixed issue with registerCluster not properly evaluating closures.
+
 ## v1.0.0-beta.11 - 2024-12-17
 
 Can now selectively register the cluster.
