@@ -84,8 +84,14 @@ class AmigoListenerResource extends Resource
                 Infolists\Components\TextEntry::make('url')
                     ->label('Webhook URL')
                     // ->formatStateUsing(fn ($record) => $record->url)
-                    ->columnSpanFull()
+                    ->columnSpan(2)
                     ->copyable(),
+
+                Infolists\Components\TextEntry::make('basic_auth_username')
+                    ->label('Basic Auth Username')
+                    ->icon('heroicon-s-key')
+                    ->iconColor(fn ($record) => $record->basic_auth_password ? Color::Green : Color::Red)
+                    ->tooltip(fn ($record) => $record->basic_auth_password ? 'Basic Auth is enabled' : 'Basic Auth is disabled, no password set'),
 
                 // Infolists\Components\TextEntry::make('listenable.name')
                 //     ->label('Listenable Type'),
@@ -97,13 +103,22 @@ class AmigoListenerResource extends Resource
         return $form
             ->columns(2)
             ->schema([
-                Forms\Components\TextInput::make('display_name')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Grid::make(3)
+                    ->schema([
+                        Forms\Components\TextInput::make('display_name')
+                            ->required()
+                            ->maxLength(255),
 
-                Forms\Components\Select::make('integration_id')
-                    // ->required()
-                    ->relationship('integration', 'name'),
+                        Forms\Components\Select::make('integration_id')
+                            // ->required()
+                            ->relationship('integration', 'name'),
+
+                        Forms\Components\TextInput::make('max_uses')
+                            ->label('Max Uses')
+                            ->hint('Blank for unlimited uses')
+                            ->placeholder('Unlimited')
+                            ->numeric(),
+                    ]),
 
                 Password::make('webhook_secret')
                     ->label('Webhook Secret')
@@ -143,10 +158,27 @@ class AmigoListenerResource extends Resource
                     ->numeric()
                     ->label('Uses'),
 
-                Forms\Components\TextInput::make('max_uses')
-                    ->label('Max Uses')
-                    ->hint('Leave blank for unlimited uses.')
-                    ->numeric(),
+                Forms\Components\TextInput::make('basic_auth_username')
+                    ->label('Basic Auth Username')
+                    ->columnSpan(1)
+                    ->maxLength(255),
+
+                Password::make('basic_auth_password')
+                    ->label('Basic Auth Password')
+                    ->columnSpan(1)
+                    ->helperText('Leave blank to disable Basic Auth.')
+                    ->copyable()
+                    ->hidePasswordManagerIcons()
+                    ->autocomplete(false)
+                    // ->regeneratePassword()
+                    // ->generatePasswordUsing(fn () => Str::password(symbols: false))
+                    ->regeneratePassword(
+                        condition: true,
+                        color: 'primary',
+                        using: fn () => Str::password(symbols: false),
+                        notify: true,
+                    )
+                    ->maxLength(255),
 
                 // Forms\Components\TextInput::make('url_preview')
                 //     ->visibleOn(['view'])
@@ -246,7 +278,7 @@ class AmigoListenerResource extends Resource
                     ->label('Expires in')
                     ->dateTime()
                     ->placeholder('Never')
-                    ->tooltip(fn (AmigoListener $record) => $record->expires_at ? 'Expires at ' . $record->expires_at->format('F j, Y g:i A') . ' UTC' : null)
+                    ->tooltip(fn (AmigoListener $record) => $record->expires_at ? 'Expires at '.$record->expires_at->format('F j, Y g:i A').' UTC' : null)
                     ->formatStateUsing(function (AmigoListener $record) {
                         if ($record->expires_at->isPast()) {
                             return 'Expired';

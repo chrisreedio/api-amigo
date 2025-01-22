@@ -44,6 +44,8 @@ class AmigoListener extends AmigoModel
         'uses',
         'max_uses',
         'expires_at',
+        'basic_auth_username',
+        'basic_auth_password',
     ];
 
     protected $casts = [
