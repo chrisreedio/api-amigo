@@ -29,6 +29,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property MorphTo $listenable
  * @property ?string $listenable_type
  * @property ?int $listenable_id
+ * @property string $basic_auth_username
+ * @property string $basic_auth_password
  */
 class AmigoListener extends AmigoModel
 {
@@ -44,6 +46,8 @@ class AmigoListener extends AmigoModel
         'uses',
         'max_uses',
         'expires_at',
+        'basic_auth_username',
+        'basic_auth_password',
     ];
 
     protected $casts = [

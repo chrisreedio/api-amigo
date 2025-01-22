@@ -16,6 +16,15 @@ class WebhookController extends Controller
 {
     public function __invoke(Request $request, AmigoListener $listener): JsonResponse
     {
+        if ($listener->basic_auth_username !== null && $listener->basic_auth_password !== null) {
+            $username = $request->getUser();
+            $password = $request->getPassword();
+
+            if ($username !== $listener->basic_auth_username || $password !== $listener->basic_auth_password) {
+                return response()->json(['error' => 'Invalid credentials'], 401);
+            }
+        }
+
         if ($listener->webhook_secret !== null) {
             $secret = $listener->webhook_secret;
             if (! $this->validateSignature($request, $secret)) {
