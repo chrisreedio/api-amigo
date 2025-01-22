@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.13 - 2025-01-22
+
+### What's Changed
+
+* Feature/webhook auth modes by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/59
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.12...v1.0.0-beta.13
+
 ## v1.0.0-beta.12 - 2025-01-09
 
 **Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.11...v1.0.0-beta.12
