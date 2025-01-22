@@ -90,6 +90,7 @@ class AmigoListenerResource extends Resource
                 Infolists\Components\TextEntry::make('basic_auth_username')
                     ->label('Basic Auth Username')
                     ->icon('heroicon-s-key')
+                    ->placeholder('No Username')
                     ->iconColor(fn ($record) => $record->basic_auth_password ? Color::Green : Color::Red)
                     ->tooltip(fn ($record) => $record->basic_auth_password ? 'Basic Auth is enabled' : 'Basic Auth is disabled, no password set'),
 
