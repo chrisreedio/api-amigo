@@ -2,6 +2,16 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.14 - 2025-02-13
+
+### What's Changed
+
+* build(deps): bump dependabot/fetch-metadata from 2.2.0 to 2.3.0 by @dependabot in https://github.com/chrisreedio/api-amigo/pull/60
+* build(deps): bump aglipanci/laravel-pint-action from 2.4 to 2.5 by @dependabot in https://github.com/chrisreedio/api-amigo/pull/61
+  *🔧 fix: updated `flowframe/laravel-trend` version in `composer.json` - Bumped the version of `flowframe/laravel-trend` to `^0.3.0`.
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.13...v1.0.0-beta.14
+
 ## v1.0.0-beta.13 - 2025-01-22
 
 ### What's Changed
