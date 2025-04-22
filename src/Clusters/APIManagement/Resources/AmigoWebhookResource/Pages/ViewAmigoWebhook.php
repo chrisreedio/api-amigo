@@ -3,7 +3,6 @@
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages;
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource;
-use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;

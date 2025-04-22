@@ -2,9 +2,9 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
-use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use const JSON_PRETTY_PRINT;
 
+use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

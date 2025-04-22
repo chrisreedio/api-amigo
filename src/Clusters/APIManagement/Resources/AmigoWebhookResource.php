@@ -4,7 +4,6 @@ namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
 // use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
-use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Filament\Forms\Form;
 use Filament\Infolists;
@@ -72,7 +71,7 @@ class AmigoWebhookResource extends Resource
                     ->label('Listener Path')
                     ->copyable()
                     ->columnSpan(2)
-                    ->formatStateUsing(fn ($state) => new HtmlString('<code>'.$state.'</code>'))
+                    ->formatStateUsing(fn ($state) => new HtmlString('<code>' . $state . '</code>'))
                     ->icon('far-sign-post'),
 
                 Infolists\Components\TextEntry::make('listener.handler')
@@ -102,7 +101,7 @@ class AmigoWebhookResource extends Resource
                         return match ($record->processing_time) {
                             null => 'Not Processed',
                             0 => 'Instant',
-                            default => $record->processing_time.'s',
+                            default => $record->processing_time . 's',
                         };
                     })
                     ->color(fn (AmigoWebhook $record) => match ($record->processing_time) {
@@ -292,7 +291,7 @@ class AmigoWebhookResource extends Resource
                 Tables\Actions\Action::make('reprocess')
                     ->label('Reprocess')
                     ->icon('far-arrow-rotate-right')
-                    ->action(fn(AmigoWebhook $record) => $record->reprocess())
+                    ->action(fn (AmigoWebhook $record) => $record->reprocess())
                     ->requiresConfirmation()
                     ->color(Color::Amber),
                 // Tables\Actions\ViewAction::make(),
@@ -304,7 +303,7 @@ class AmigoWebhookResource extends Resource
                         ->label('Reprocess')
                         ->icon('far-arrow-rotate-right')
                         ->action(function (Collection $records) {
-                            $records->each(fn(AmigoWebhook $record) => $record->reprocess());
+                            $records->each(fn (AmigoWebhook $record) => $record->reprocess());
                         })
                         ->requiresConfirmation()
                         ->color(Color::Amber),
