@@ -39,10 +39,7 @@ class ViewAmigoWebhook extends ViewRecord
                 ->icon('far-arrows-rotate')
                 ->requiresConfirmation()
                 ->action(function (AmigoWebhook $record) {
-                    /** @var ProcessWebhookJob $handler */
-                    $handler = $record->listener->handler;
-                    // Create a new instance of the handler and dispatch it
-                    $job = $handler::dispatchSync($record);
+                    $record->reprocess();
                 }),
         ];
     }

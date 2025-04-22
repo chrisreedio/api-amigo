@@ -4,6 +4,7 @@ namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
 // use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
+use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Filament\Forms\Form;
 use Filament\Infolists;
@@ -13,6 +14,7 @@ use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Parallax\FilamentSyntaxEntry\SyntaxEntry;
 
@@ -70,7 +72,7 @@ class AmigoWebhookResource extends Resource
                     ->label('Listener Path')
                     ->copyable()
                     ->columnSpan(2)
-                    ->formatStateUsing(fn ($state) => new HtmlString('<code>' . $state . '</code>'))
+                    ->formatStateUsing(fn ($state) => new HtmlString('<code>'.$state.'</code>'))
                     ->icon('far-sign-post'),
 
                 Infolists\Components\TextEntry::make('listener.handler')
@@ -100,7 +102,7 @@ class AmigoWebhookResource extends Resource
                         return match ($record->processing_time) {
                             null => 'Not Processed',
                             0 => 'Instant',
-                            default => $record->processing_time . 's',
+                            default => $record->processing_time.'s',
                         };
                     })
                     ->color(fn (AmigoWebhook $record) => match ($record->processing_time) {
@@ -218,6 +220,7 @@ class AmigoWebhookResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(fn (AmigoWebhook $record) => AmigoWebhookResource::getUrl('view', ['record' => $record]))
             ->columns([
                 Tables\Columns\TextColumn::make('listener.display_name')
                     ->label('Listener')
@@ -286,12 +289,26 @@ class AmigoWebhookResource extends Resource
             ->emptyStateHeading('No Webhooks')
             ->emptyStateDescription('Setup a listener to start receiving webhooks.')
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('reprocess')
+                    ->label('Reprocess')
+                    ->icon('far-arrow-rotate-right')
+                    ->action(fn(AmigoWebhook $record) => $record->reprocess())
+                    ->requiresConfirmation()
+                    ->color(Color::Amber),
+                // Tables\Actions\ViewAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('reprocess')
+                        ->label('Reprocess')
+                        ->icon('far-arrow-rotate-right')
+                        ->action(function (Collection $records) {
+                            $records->each(fn(AmigoWebhook $record) => $record->reprocess());
+                        })
+                        ->requiresConfirmation()
+                        ->color(Color::Amber),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

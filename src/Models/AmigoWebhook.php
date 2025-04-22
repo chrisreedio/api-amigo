@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use const JSON_PRETTY_PRINT;
 
 use Exception;
@@ -115,5 +116,13 @@ class AmigoWebhook extends AmigoModel
     public function getEncodedBodyAttribute(): string
     {
         return json_encode($this->payload, JSON_PRETTY_PRINT);
+    }
+
+    public function reprocess(): void
+    {
+        /** @var ProcessWebhookJob $handler */
+        $handler = $this->listener->handler;
+        // Create a new instance of the handler and dispatch it
+        $handler::dispatchSync($this);
     }
 }
