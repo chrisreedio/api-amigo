@@ -267,7 +267,20 @@ class AmigoWebhookResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('errorMessage')
+                    ->queries(
+                        true: fn ($query) => $query->whereNotNull('error'),
+                        false: fn ($query) => $query->whereNull('error'),
+                        blank: fn ($query) => $query,
+                    )
+                    ->label('Failed')
+                    ->default(true),
+                Tables\Filters\SelectFilter::make('listener_id')
+                    ->relationship('listener', 'display_name')
+                    ->label('Listener')
+                    ->multiple()
+                    ->searchable()
+                    ->preload(),
             ])
             ->defaultSort('created_at', 'desc')
             ->emptyStateHeading('No Webhooks')
