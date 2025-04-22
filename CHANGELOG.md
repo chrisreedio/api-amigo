@@ -2,6 +2,12 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.15 - 2025-04-22
+
+Added some filters for Webhook list filtering.
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.14...v1.0.0-beta.15
+
 ## v1.0.0-beta.14 - 2025-02-13
 
 ### What's Changed
