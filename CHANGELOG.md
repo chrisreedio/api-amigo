@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.17 - 2025-04-23
+
+🗑️ chore: removed unused `illuminate/contracts` dependency from `composer.json`
+
+Adds support for Laravel12
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.15...v1.0.0-beta.17
+
 ## v1.0.0-beta.16 - 2025-04-22
 
 Added actions / bulk actions to Webhook table.
