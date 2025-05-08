@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.18 - 2025-05-08
+
+### What's Changed
+
+* 🔧 chore: update `flowframe/laravel-trend` dependency to version `^0.4.0` by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/62
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.17...v1.0.0-beta.18
+
 ## v1.0.0-beta.17 - 2025-04-23
 
 🗑️ chore: removed unused `illuminate/contracts` dependency from `composer.json`
