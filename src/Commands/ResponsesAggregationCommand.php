@@ -120,12 +120,18 @@ class ResponsesAggregationCommand extends Command
             info('Processing chunk ' . ($index + 1) . ' of ' . count($chunks) .
                 " ({$chunkStart->toFormattedDateString()} to {$chunkEnd->toFormattedDateString()})");
 
-            $chunkPeriod = CarbonPeriod::create($chunkStart, $chunkEnd);
+            // Create hourly intervals for the chunk
+            $intervals = collect();
+            $current = $chunkStart->copy();
+            while ($current <= $chunkEnd) {
+                $intervals->push($current->copy());
+                $current->addMinutes(self::INTERVAL);
+            }
 
             $start = microtime(true);
             $stats = collect();
 
-            foreach ($chunkPeriod as $date) {
+            foreach ($intervals as $date) {
                 $end = $date->copy()->addMinutes(self::INTERVAL);
                 $window = $this->processWindow($date, $end);
                 $stats = $stats->concat($window);
@@ -139,7 +145,7 @@ class ResponsesAggregationCommand extends Command
             $startTime = microtime(true);
             $chunkTotal = 0;
             $stats->each(function ($day) use (&$chunkTotal) {
-                $chunkTotal += AmigoEndpointAggregate::insertOrIgnore($day);
+                $chunkTotal += AmigoEndpointAggregate::insertOrIgnore($day->toArray());
             });
             $totalInserted += $chunkTotal;
 
