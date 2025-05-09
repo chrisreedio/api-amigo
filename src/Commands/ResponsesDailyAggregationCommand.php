@@ -6,7 +6,7 @@ use Illuminate\Support\Carbon;
 
 class ResponsesDailyAggregationCommand extends ResponsesAggregationCommand
 {
-    protected $signature = 'responses:aggregate-daily';
+    protected $signature = 'responses:aggregate-daily {startDate?} {endDate?} {--regenerate} {--bulk} {--all}';
 
     protected $description = 'Aggregate responses for the previous day.';
 

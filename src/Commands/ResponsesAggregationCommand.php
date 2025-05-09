@@ -14,7 +14,6 @@ use Illuminate\Support\Str;
 use function array_chunk;
 use function array_filter;
 use function collect;
-use function Laravel\Prompts\info;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\outro;
 use function Laravel\Prompts\progress;
@@ -35,6 +34,8 @@ class ResponsesAggregationCommand extends Command
 
     public function handle(): void
     {
+        $totalStartTime = microtime(true);
+
         // If --all is specified, find the earliest response date
         if ($this->option('all')) {
             $earliestDate = AmigoResponse::query()
@@ -101,10 +102,15 @@ class ResponsesAggregationCommand extends Command
         } else {
             outro("Inserted {$total} endpoint response " . Str::plural('aggregation', $total) . " in {$processingTime} seconds.");
         }
+
+        $totalDuration = number_format(microtime(true) - $totalStartTime, 2);
+        info("Total process completed in {$totalDuration} seconds.");
     }
 
     private function processBulk(CarbonPeriod $period): void
     {
+        $bulkStartTime = microtime(true);
+
         // Process in 30-day chunks to manage memory
         $chunkSize = 30;
         $days = $period->toArray();
@@ -113,45 +119,71 @@ class ResponsesAggregationCommand extends Command
         $totalProcessed = 0;
         $totalInserted = 0;
 
-        foreach ($chunks as $index => $chunk) {
-            $chunkStart = $chunk[0];
-            $chunkEnd = end($chunk);
+        $progress = progress(
+            label: 'Processing chunks...',
+            steps: $chunks,
+            callback: function ($chunk, $progress) use (&$totalProcessed, &$totalInserted, $chunkSize) {
+                $chunkStart = $chunk[0];
+                $chunkEnd = end($chunk);
 
-            info('Processing chunk ' . ($index + 1) . ' of ' . count($chunks) .
-                " ({$chunkStart->toFormattedDateString()} to {$chunkEnd->toFormattedDateString()})");
+                $progress
+                    ->label("Processing chunk from {$chunkStart->toFormattedDateString()} to {$chunkEnd->toFormattedDateString()}")
+                    ->hint("Processing {$chunkSize} days of data...");
 
-            $chunkPeriod = CarbonPeriod::create($chunkStart, $chunkEnd);
+                // Create hourly intervals for the chunk
+                $intervals = collect();
+                $current = $chunkStart->copy();
+                while ($current <= $chunkEnd) {
+                    $intervals->push($current->copy());
+                    $current->addMinutes(self::INTERVAL);
+                }
 
-            $start = microtime(true);
-            $stats = collect();
+                $start = microtime(true);
+                $stats = collect();
 
-            foreach ($chunkPeriod as $date) {
-                $end = $date->copy()->addMinutes(self::INTERVAL);
-                $window = $this->processWindow($date, $end);
-                $stats = $stats->concat($window);
-                $totalProcessed++;
-            }
+                // Process intervals in smaller batches to reduce memory usage
+                foreach ($intervals->chunk(24) as $intervalBatch) {
+                    foreach ($intervalBatch as $date) {
+                        $end = $date->copy()->addMinutes(self::INTERVAL);
+                        $window = $this->processWindow($date, $end);
+                        $stats = $stats->concat($window);
+                        $totalProcessed++;
+                    }
+                }
 
-            $processingTime = number_format(microtime(true) - $start, 2);
-            $this->info("Processed {$totalProcessed} intervals in {$processingTime} seconds.");
+                $processingTime = number_format(microtime(true) - $start, 2);
+                $progress->hint("Processed {$totalProcessed} intervals in {$processingTime} seconds.");
 
-            // Insert the chunk's data
-            $startTime = microtime(true);
-            $chunkTotal = 0;
-            $stats->each(function ($day) use (&$chunkTotal) {
-                $chunkTotal += AmigoEndpointAggregate::insertOrIgnore($day);
-            });
-            $totalInserted += $chunkTotal;
+                // Insert the chunk's data in batches
+                $startTime = microtime(true);
+                $chunkTotal = 0;
 
-            $processingTime = number_format(microtime(true) - $startTime, 2);
-            if ($chunkTotal === 0) {
-                warning('No new aggregations inserted for this chunk.');
-            } else {
-                info("Inserted {$chunkTotal} aggregations in {$processingTime} seconds.");
-            }
-        }
+                // Use chunking for large datasets
+                foreach ($stats->chunk(1000) as $batch) {
+                    $chunkTotal += AmigoEndpointAggregate::insertOrIgnore($batch->toArray());
+                }
 
-        outro("Bulk processing complete. Processed {$totalProcessed} intervals, inserted {$totalInserted} aggregations.");
+                $totalInserted += $chunkTotal;
+
+                $processingTime = number_format(microtime(true) - $startTime, 2);
+                if ($chunkTotal === 0) {
+                    $progress->hint('No new aggregations inserted for this chunk.');
+                } else {
+                    $progress->hint("Inserted {$chunkTotal} aggregations in {$processingTime} seconds.");
+                }
+
+                return [
+                    'chunk_start' => $chunkStart->toFormattedDateString(),
+                    'chunk_end' => $chunkEnd->toFormattedDateString(),
+                    'intervals_processed' => $totalProcessed,
+                    'aggregations_inserted' => $chunkTotal,
+                ];
+            },
+            hint: 'This may take some time.',
+        );
+
+        $totalDuration = number_format(microtime(true) - $bulkStartTime, 2);
+        outro("Processed {$totalProcessed} intervals, inserted {$totalInserted} aggregations in {$totalDuration} seconds.");
     }
 
     private function processWindow(Carbon $start, Carbon $end)
@@ -164,13 +196,13 @@ class ResponsesAggregationCommand extends Command
                 'COUNT(amigo_responses.id) as total_requests',
                 'SUM(CASE WHEN status_code < 400 THEN 1 ELSE 0 END) as successful_requests',
                 'SUM(CASE WHEN status_code >= 400 THEN 1 ELSE 0 END) as failed_requests',
-                'AVG(duration) as avg_duration',
-                'MIN(duration) as min_duration',
-                'MAX(duration) as max_duration',
-                'PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY duration) as p50_duration',
-                'PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY duration) as p75_duration',
-                'PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration) as p95_duration',
-                'PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY duration) as p99_duration',
+                'ROUND(AVG(duration)::numeric, 6) as avg_duration',
+                'ROUND(MIN(duration)::numeric, 6) as min_duration',
+                'ROUND(MAX(duration)::numeric, 6) as max_duration',
+                'ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY duration)::numeric, 6) as p50_duration',
+                'ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY duration)::numeric, 6) as p75_duration',
+                'ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration)::numeric, 6) as p95_duration',
+                'ROUND(PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY duration)::numeric, 6) as p99_duration',
                 config('api-amigo.tdigest.enabled', false) ? 'tdigest(duration, 100) AS duration_histogram' : null,
             ])))
             ->whereBetween('amigo_responses.created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
