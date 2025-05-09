@@ -3,23 +3,21 @@
 namespace ChrisReedIO\APIAmigo\Commands;
 
 use Carbon\CarbonPeriod;
-use ChrisReedIO\APIAmigo\Enums\RateGranularity;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
-use Flowframe\Trend\Trend;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
+use function array_chunk;
 use function array_filter;
 use function collect;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\outro;
 use function Laravel\Prompts\progress;
-use function Laravel\Prompts\spin;
 use function Laravel\Prompts\table;
 use function Laravel\Prompts\warning;
 use function microtime;
@@ -27,7 +25,7 @@ use function number_format;
 
 class ResponsesAggregationCommand extends Command
 {
-    protected $signature = 'responses:aggregate {startDate?} {endDate?} {--regenerate}';
+    protected $signature = 'responses:aggregate {startDate?} {endDate?} {--regenerate} {--bulk} {--all}';
 
     protected $description = 'Aggregate responses for reporting purposes.';
 
@@ -37,18 +35,39 @@ class ResponsesAggregationCommand extends Command
 
     public function handle(): void
     {
+        // If --all is specified, find the earliest response date
+        if ($this->option('all')) {
+            $earliestDate = AmigoResponse::query()
+                ->selectRaw('MIN(created_at) as earliest_date')
+                ->value('earliest_date');
+
+            if (! $earliestDate) {
+                $this->error('No responses found to aggregate.');
+
+                return;
+            }
+
+            $this->input->setArgument('startDate', Carbon::parse($earliestDate)->toDateString());
+            $this->input->setArgument('endDate', Carbon::yesterday()->endOfDay()->toDateTimeString());
+
+            // Force bulk processing for --all
+            $this->input->setOption('bulk', true);
+        }
+
         $period = $this->calculatePeriod();
 
-        $start = microtime(true);
-        // ->map(fn (Carbon $date) => $this->processDay($date));
-        // ->map(fn (Carbon $date) => $this->processWindow($date, $date->endOfDay()));
+        if (! $period) {
+            return;
+        }
 
-        // $stats = collect($period)
-        //     ->mapWithKeys(function (Carbon $date) {
-        //         $end = $date->copy()->addMinutes(self::INTERVAL);
-        //
-        //         return [$date->toDateTimeString() => $this->processWindow($date, $end)];
-        //     });
+        // If bulk processing is requested, process in chunks
+        if ($this->option('bulk')) {
+            $this->processBulk($period);
+
+            return;
+        }
+
+        $start = microtime(true);
 
         $stats = progress(
             label: 'Calculating intervals...',
@@ -56,12 +75,10 @@ class ResponsesAggregationCommand extends Command
             callback: function ($date, $progress) {
                 $end = $date->copy()->addMinutes(self::INTERVAL);
                 $progress
-                    // ->label("Calculating intervals for {$date->toFormattedDateString()} to {$end->toFormattedDateString()}")
                     ->label("Calculating intervals for {$date->toFormattedDateString()}")
                     ->hint("Processing window from {$date->format('H:i')} to {$end->format('H:i')}...");
 
                 $window = $this->processWindow($date, $end);
-                // dd($window->toArray());
 
                 return $window->toArray();
             },
@@ -73,52 +90,77 @@ class ResponsesAggregationCommand extends Command
         $processingTime = number_format(microtime(true) - $start, 2);
         $this->info("Calculated {$stats->count()} intervals in {$processingTime} seconds.");
 
-        // dump($stats->take(5)->toArray());
-
-        // Loop through each day and gather the Amigo Responses for that day
-        // and aggregate them into the AmigoEndpointAggregate model.
-        // $trend = Trend::query(AmigoResponse::query())
-        //     ->between($carbonStart, $carbonEnd)
-        //     ->perHour()
-        //     ->count();
-        // dd($trend);
-
-        // $stats = $stats->flatten();
-        // dd($stats->each(fn ($stat) => dump($stat)));
-        // Insert all of these stats into the aggregates table
         $total = 0;
         $startTime = microtime(true);
         $stats->each(function ($day) use (&$total) {
             $total += AmigoEndpointAggregate::insertOrIgnore($day);
         });
-        // dd('done');
-        // AmigoEndpointAggregate::insertOrIgnore($stats->toArray());
         $processingTime = number_format(microtime(true) - $startTime, 2);
         if ($total === 0) {
             warning('No new endpoint response aggregations were inserted.');
         } else {
             outro("Inserted {$total} endpoint response " . Str::plural('aggregation', $total) . " in {$processingTime} seconds.");
         }
+    }
 
-        // $stats->each(fn ($stat) => $this->info($stat->window_start . ' - ' . $stat->name . ' - ' . $stat->total_requests));
-        // dd($stats->toArray());
-        // $stats->each(fn ($stat) => $this->printDay($stat));
-        // ->each(fn (Carbon $date) => spin(fn () => $this->processDay($date), "Aggregating responses for {$date->toFormattedDayDateString()}..."));
+    private function processBulk(CarbonPeriod $period): void
+    {
+        // Process in 30-day chunks to manage memory
+        $chunkSize = 30;
+        $days = $period->toArray();
+        $chunks = array_chunk($days, $chunkSize);
 
-        // $this->printStats($stats);
+        $totalProcessed = 0;
+        $totalInserted = 0;
+
+        foreach ($chunks as $index => $chunk) {
+            $chunkStart = $chunk[0];
+            $chunkEnd = end($chunk);
+
+            info('Processing chunk ' . ($index + 1) . ' of ' . count($chunks) .
+                " ({$chunkStart->toFormattedDateString()} to {$chunkEnd->toFormattedDateString()})");
+
+            $chunkPeriod = CarbonPeriod::create($chunkStart, $chunkEnd);
+
+            $start = microtime(true);
+            $stats = collect();
+
+            foreach ($chunkPeriod as $date) {
+                $end = $date->copy()->addMinutes(self::INTERVAL);
+                $window = $this->processWindow($date, $end);
+                $stats = $stats->concat($window);
+                $totalProcessed++;
+            }
+
+            $processingTime = number_format(microtime(true) - $start, 2);
+            $this->info("Processed {$totalProcessed} intervals in {$processingTime} seconds.");
+
+            // Insert the chunk's data
+            $startTime = microtime(true);
+            $chunkTotal = 0;
+            $stats->each(function ($day) use (&$chunkTotal) {
+                $chunkTotal += AmigoEndpointAggregate::insertOrIgnore($day);
+            });
+            $totalInserted += $chunkTotal;
+
+            $processingTime = number_format(microtime(true) - $startTime, 2);
+            if ($chunkTotal === 0) {
+                warning('No new aggregations inserted for this chunk.');
+            } else {
+                info("Inserted {$chunkTotal} aggregations in {$processingTime} seconds.");
+            }
+        }
+
+        outro("Bulk processing complete. Processed {$totalProcessed} intervals, inserted {$totalInserted} aggregations.");
     }
 
     private function processWindow(Carbon $start, Carbon $end)
     {
-        // $startTime = (float) microtime(true);
-        // $end = $start->copy()->addMinutes(self::INTERVAL);
-        // $this->info('Processing window from ' . $start->toDateTimeString() . ' to ' . $end->toDateTimeString() . '.');
         $maxRequestsPerMinute = $this->getRequestsPerMinute($start);
         $responses = AmigoResponse::query()
             ->selectRaw(implode(', ', array_filter([
                 'endpoint_id',
                 'amigo_connectors.integration_id',
-                // 'amigo_endpoints.name',
                 'COUNT(amigo_responses.id) as total_requests',
                 'SUM(CASE WHEN status_code < 400 THEN 1 ELSE 0 END) as successful_requests',
                 'SUM(CASE WHEN status_code >= 400 THEN 1 ELSE 0 END) as failed_requests',
@@ -131,23 +173,17 @@ class ResponsesAggregationCommand extends Command
                 'PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY duration) as p99_duration',
                 config('api-amigo.tdigest.enabled', false) ? 'tdigest(duration, 100) AS duration_histogram' : null,
             ])))
-            // ->whereBetween('amigo_responses.created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
             ->whereBetween('amigo_responses.created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
             ->join('amigo_endpoints', 'amigo_endpoints.id', '=', 'amigo_responses.endpoint_id')
             ->join('amigo_connectors', 'amigo_connectors.id', '=', 'amigo_endpoints.connector_id')
-            // ->groupBy(['endpoint_id', 'amigo_endpoints.name'])
             ->groupBy(['endpoint_id', 'amigo_connectors.integration_id'])
             ->get();
 
-        // ->toRawSql();
-        // dd($responses->toArray());
-        // Merge the max requests per minute into the responses
         return $responses->map(function ($response) use ($maxRequestsPerMinute, $start) {
             $response->max_requests_per_minute = $maxRequestsPerMinute[$response->endpoint_id] ?? 0;
             $response->window_start = $start->toDateTimeString();
             $response->interval = self::INTERVAL * 60;
             $response->created_at = Carbon::now();
-            // $response->max_requests_per_second = $maxRequestsPerSecond[$response->endpoint_id] ?? 0;
 
             return $response;
         });
@@ -157,11 +193,9 @@ class ResponsesAggregationCommand extends Command
     {
         $requestsPerMinute = AmigoResponse::select([
             'endpoint_id',
-            // DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i') as minute"), // MySQL
-            DB::raw("to_char(created_at, 'YYYY-MM-DD HH24:MI') as minute"), // Postgres
+            DB::raw("to_char(created_at, 'YYYY-MM-DD HH24:MI') as minute"),
             DB::raw('COUNT(*) as requests_per_minute'),
         ])
-            // ->whereDate('created_at', $date->toDateString())
             ->whereBetween('created_at', [
                 $start->toDateTimeString(),
                 $start->copy()->addMinutes(self::INTERVAL)->toDateTimeString(),
@@ -169,7 +203,6 @@ class ResponsesAggregationCommand extends Command
             ->groupBy('endpoint_id', 'minute')
             ->get();
 
-        // Find the maximum requests per minute for each endpoint
         return $requestsPerMinute->groupBy('endpoint_id')
             ->map(function ($items) {
                 return $items->max('requests_per_minute');
@@ -187,7 +220,6 @@ class ResponsesAggregationCommand extends Command
         }
 
         $carbonStart = Carbon::parse($start)->startOfDay();
-        // $this->info('Carbon Start: ' . $carbonStart->toDateTimeString());
         if ($end === null) {
             $carbonEnd = $carbonStart->copy()->endOfDay();
         } else {
@@ -200,27 +232,14 @@ class ResponsesAggregationCommand extends Command
         }
 
         if ($start && $end) {
-            // $carbonStart = Carbon::parse($startDate);
-            // $carbonEnd = Carbon::parse($endDate);
             intro("Aggregating responses from {$carbonStart->toFormattedDayDateString()} to {$carbonEnd->toFormattedDayDateString()}.");
 
             return $carbonStart->toPeriod($carbonEnd->endOfDay(), self::INTERVAL, self::INTERVAL_UNITS);
         } elseif ($start) {
             intro("Aggregating responses from {$carbonStart->toFormattedDayDateString()}.");
 
-            // $period = $carbonStart->toPeriod($carbonStart->endOfDay());
-            // $period = $carbonStart->toPeriod($carbonStart);
             return $carbonStart->toPeriod($carbonStart->copy()->endOfDay(), self::INTERVAL, self::INTERVAL_UNITS);
-            // TODO - Go back to the line above this
-            // $period = $carbonStart->toPeriod($carbonStart->copy()->addHour()->subSecond(), $interval, $intervalUnits);
-
-            // $fakeEnd = $carbonStart->copy()->addHours(14)->subSecond();
-
-            // return $carbonStart
-            //     ->addHours(12)
-            //     ->toPeriod($fakeEnd, self::INTERVAL, self::INTERVAL_UNITS);
         } else {
-            // $this->info('Aggregating all responses.');
             $this->error('You must specify a start date.');
 
             return null;
@@ -229,8 +248,6 @@ class ResponsesAggregationCommand extends Command
 
     private function printDay(Collection $stats): void
     {
-        // Preprocess
-        // dd($stats);
         $stats = $stats->map(fn ($stat) => [
             $stat->window_start,
             $stat->interval,
@@ -239,7 +256,6 @@ class ResponsesAggregationCommand extends Command
             number_format($stat['successful_requests']),
             number_format($stat['failed_requests']),
             number_format($stat['max_requests_per_minute']),
-            // number_format($stat['max_requests_per_second']),
             round($stat['min_duration'] * 1000) . ' ms',
             round($stat['avg_duration'] * 1000) . ' ms',
             round($stat['p50_duration'] * 1000) . ' ms',
@@ -258,7 +274,6 @@ class ResponsesAggregationCommand extends Command
                 'Successful',
                 'Failed',
                 'Req/Min',
-                // 'Max Req/Sec',
                 'Minimum',
                 'Average',
                 '50th %',
@@ -285,7 +300,6 @@ class ResponsesAggregationCommand extends Command
             $stats,
         );
 
-        // Display another table of sums, Making sure to parse the string numbers as integers.
         $sums = $stats->reduce(
             fn ($carry, $item) => [
                 $carry[0],
@@ -298,7 +312,6 @@ class ResponsesAggregationCommand extends Command
             ['Totals', 0, 0, 0, 0, 0],
         );
 
-        // Format the values
         $sums[1] = number_format($sums[1]);
         $sums[2] = number_format($sums[2]);
         $sums[3] = number_format($sums[3]);
@@ -317,29 +330,4 @@ class ResponsesAggregationCommand extends Command
             [$sums],
         );
     }
-
-    // private function getRequestRates(Carbon $startDate, RateGranularity $granularity = RateGranularity::MINUTE): Collection
-    // {
-    //     $rates = AmigoResponse::select([
-    //         'endpoint_id',
-    //         // DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i') as "  . $granularity->value), // MySQL
-    //         match ($granularity) {
-    //             RateGranularity::MINUTE => DB::raw("to_char(created_at, 'YYYY-MM-DD HH24:MI') as minute"), // Postgres
-    //             RateGranularity::SECOND => DB::raw("to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') as second"), // Postgres
-    //         },
-    //         // DB::raw("to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') as " . $granularity->value), // Postgres
-    //         DB::raw('COUNT(*) as requests_per_' . $granularity->value),
-    //     ])
-    //         ->whereDate('created_at', $startDate->toDateString())
-    //         ->groupBy('endpoint_id', $granularity->value)
-    //         ->get();
-    //
-    //     // dd($rates->take(10)->toArray());
-    //
-    //     // Find the maximum requests per minute for each endpoint
-    //     return $rates->groupBy('endpoint_id')
-    //         ->map(function ($items) use ($granularity) {
-    //             return $items->max('requests_per_' . $granularity->value);
-    //         });
-    // }
 }

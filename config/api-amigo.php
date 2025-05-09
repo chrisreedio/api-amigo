@@ -66,4 +66,8 @@ return [
     'tdigest' => [
         'enabled' => env('AMIGO_TDIGEST_ENABLED', false),
     ],
+
+    'aggregation' => [
+        'timezone' => env('AMIGO_AGGREGATION_TIMEZONE', 'UTC'),
+    ],
 ];
