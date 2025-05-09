@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v1.0.0-beta.21 - 2025-05-09
+
+### What's Changed
+
+* ✨ feat: add pruning command for old API responses by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/65
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.20...v1.0.0-beta.21
+
 ## v1.0.0-beta.20 - 2025-05-09
 
 ### What's Changed
