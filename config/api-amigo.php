@@ -69,5 +69,6 @@ return [
 
     'aggregation' => [
         'timezone' => env('AMIGO_AGGREGATION_TIMEZONE', 'UTC'),
+        'prune_lifetime_days' => env('AMIGO_PRUNE_LIFETIME_DAYS', 90),
     ],
 ];
