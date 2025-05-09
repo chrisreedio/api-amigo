@@ -89,6 +89,15 @@ API Amigo provides powerful commands to aggregate API response data for analytic
    php artisan responses:aggregate 2023-01-01
    ```
 
+3. **Pruning Old Responses**
+   ```bash
+   # Prune responses older than the configured lifetime (default: 90 days)
+   php artisan responses:prune
+
+   # Force prune without confirmation
+   php artisan responses:prune --force
+   ```
+
 ### Setting Up Scheduling
 
 For Laravel 11/12 applications, add the following to your `app/Console/Kernel.php`:
@@ -96,6 +105,7 @@ For Laravel 11/12 applications, add the following to your `app/Console/Kernel.ph
 ```php
 use Illuminate\Support\Facades\Schedule;
 use ChrisReedIO\APIAmigo\Commands\ResponsesDailyAggregationCommand;
+use ChrisReedIO\APIAmigo\Commands\PruneResponsesCommand;
 
 protected function schedule(Schedule $schedule): void
 {
@@ -103,20 +113,28 @@ protected function schedule(Schedule $schedule): void
     Schedule::command(new ResponsesDailyAggregationCommand)
         ->dailyAt('22:00')
         ->timezone(config('api-amigo.aggregation.timezone', 'UTC'));
+
+    // Run pruning weekly on Sunday at 2 AM
+    Schedule::command(new PruneResponsesCommand, ['--force'])
+        ->weekly()
+        ->sundays()
+        ->at('02:00');
 }
 ```
 
 ### Configuration
 
-You can configure the timezone for aggregation in your `.env` file:
+You can configure the timezone and response lifetime in your `.env` file:
 ```dotenv
 AMIGO_AGGREGATION_TIMEZONE=America/New_York
+AMIGO_PRUNE_LIFETIME_DAYS=90
 ```
 
 Or directly in `config/api-amigo.php`:
 ```php
 'aggregation' => [
     'timezone' => 'America/New_York',
+    'prune_lifetime_days' => 90,
 ],
 ```
 

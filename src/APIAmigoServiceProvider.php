@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo;
 
 use ChrisReedIO\APIAmigo\Commands\APIAmigoCommand;
+use ChrisReedIO\APIAmigo\Commands\PruneResponsesCommand;
 use ChrisReedIO\APIAmigo\Commands\ResponsesAggregationCommand;
 use ChrisReedIO\APIAmigo\Commands\ResponsesDailyAggregationCommand;
 use ChrisReedIO\APIAmigo\Controllers\WebhookController;
@@ -171,6 +172,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             APIAmigoCommand::class,
             ResponsesAggregationCommand::class,
             ResponsesDailyAggregationCommand::class,
+            PruneResponsesCommand::class,
         ];
     }
 
