@@ -65,19 +65,77 @@ Optionally, you can publish the views using
 php artisan vendor:publish --tag="api-amigo-views"
 ```
 
-This is the contents of the published config file:
+## Response Aggregation
+
+API Amigo provides powerful commands to aggregate API response data for analytics and reporting. These commands help you track performance metrics, success rates, and usage patterns over time.
+
+### Available Commands
+
+1. **Daily Aggregation**
+   ```bash
+   php artisan responses:aggregate-daily
+   ```
+   This command processes the previous day's responses and creates hourly aggregations. It's designed to be run daily via the scheduler.
+
+2. **Historical Data Processing**
+   ```bash
+   # Process all historical data up to yesterday
+   php artisan responses:aggregate --all
+
+   # Process a specific date range
+   php artisan responses:aggregate 2023-01-01 2023-12-31 --bulk
+
+   # Process a single day
+   php artisan responses:aggregate 2023-01-01
+   ```
+
+### Setting Up Scheduling
+
+For Laravel 11/12 applications, add the following to your `app/Console/Kernel.php`:
 
 ```php
-return [
-];
+use Illuminate\Support\Facades\Schedule;
+use ChrisReedIO\APIAmigo\Commands\ResponsesDailyAggregationCommand;
+
+protected function schedule(Schedule $schedule): void
+{
+    // Run daily aggregation at 1 AM in your configured timezone
+    $schedule->call(new ResponsesDailyAggregationCommand)
+        ->dailyAt('01:00')
+        ->timezone(config('api-amigo.aggregation.timezone', 'UTC'));
+}
 ```
 
-## Usage
+### Configuration
 
+You can configure the timezone for aggregation in your `.env` file:
+```dotenv
+AMIGO_AGGREGATION_TIMEZONE=America/New_York
+```
+
+Or directly in `config/api-amigo.php`:
 ```php
-$aPIAmigo = new ChrisReedIO\APIAmigo();
-echo $aPIAmigo->echoPhrase('Hello, ChrisReedIO!');
+'aggregation' => [
+    'timezone' => 'America/New_York',
+],
 ```
+
+### Initial Setup
+
+When first installing API Amigo or after a long period without aggregation, you should:
+
+1. Process all historical data:
+   ```bash
+   php artisan responses:aggregate --all
+   ```
+
+2. Set up the daily scheduler as shown above
+
+The `--all` command will:
+- Find your earliest response date
+- Process all data up to yesterday
+- Use bulk processing to handle large datasets efficiently
+- Show progress and statistics during processing
 
 ## Testing
 
