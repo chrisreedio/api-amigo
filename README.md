@@ -100,8 +100,8 @@ use ChrisReedIO\APIAmigo\Commands\ResponsesDailyAggregationCommand;
 protected function schedule(Schedule $schedule): void
 {
     // Run daily aggregation at 1 AM in your configured timezone
-    $schedule->call(new ResponsesDailyAggregationCommand)
-        ->dailyAt('01:00')
+    Schedule::command(new ResponsesDailyAggregationCommand)
+        ->dailyAt('22:00')
         ->timezone(config('api-amigo.aggregation.timezone', 'UTC'));
 }
 ```
