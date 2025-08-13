@@ -2,6 +2,12 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v4.0.0-beta.5 - 2025-08-13
+
+* Add phiki/phiki as a new dependency in composer.json
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v4.0.0-beta.4...v4.0.0-beta.5
+
 ## v4.0.0-beta.4 - 2025-08-13
 
 Additional fixes for v4 release.
