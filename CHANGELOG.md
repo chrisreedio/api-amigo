@@ -2,6 +2,16 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v4.0.0-beta.1 - 2025-08-13
+
+### What's Changed
+
+* build(deps): bump dependabot/fetch-metadata from 2.3.0 to 2.4.0 by @dependabot[bot] in https://github.com/chrisreedio/api-amigo/pull/66
+* build(deps): bump aglipanci/laravel-pint-action from 2.5 to 2.6 by @dependabot[bot] in https://github.com/chrisreedio/api-amigo/pull/68
+* FilamentPHP v4 Support
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.21...v4.0.0-beta.1
+
 ## v1.0.0-beta.21 - 2025-05-09
 
 ### What's Changed
