@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v4.0.0-beta.2 - 2025-08-13
+
+### What's Changed
+
+* Fixed getSlug bug in Cluster
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v1.0.0-beta.21...v4.0.0-beta.2
+
 ## v4.0.0-beta.1 - 2025-08-13
 
 ### What's Changed
