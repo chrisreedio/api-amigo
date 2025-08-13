@@ -2,11 +2,10 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\Pages;
 
-use Filament\Actions\Action;
-use Filament\Actions\EditAction;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
-use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;

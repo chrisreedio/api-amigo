@@ -2,7 +2,6 @@
 
 namespace ChrisReedIO\APIAmigo;
 
-use Saloon\Config;
 use ChrisReedIO\APIAmigo\Commands\APIAmigoCommand;
 use ChrisReedIO\APIAmigo\Commands\PruneResponsesCommand;
 use ChrisReedIO\APIAmigo\Commands\ResponsesAggregationCommand;
@@ -21,6 +20,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Fluent;
 use Livewire\Features\SupportTesting\Testable;
+use Saloon\Config;
 use Saloon\Enums\PipeOrder;
 use Saloon\Exceptions\DuplicatePipeNameException;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;

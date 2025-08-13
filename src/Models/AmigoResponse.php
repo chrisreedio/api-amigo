@@ -2,10 +2,10 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
-use Exception;
 use const JSON_PRETTY_PRINT;
 
 use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
+use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
 use Saloon\Http\Response;

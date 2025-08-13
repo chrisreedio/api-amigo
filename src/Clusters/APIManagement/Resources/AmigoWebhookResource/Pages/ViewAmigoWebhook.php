@@ -2,10 +2,10 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages;
 
-use Filament\Actions\Action;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewAmigoWebhook extends ViewRecord

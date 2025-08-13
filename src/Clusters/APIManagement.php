@@ -2,11 +2,10 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters;
 
-use Filament\Panel;
 use BackedEnum;
 use ChrisReedIO\APIAmigo\APIAmigoPlugin;
-use Filament;
 use Filament\Clusters\Cluster;
+use Filament\Panel;
 use Illuminate\Contracts\Support\Htmlable;
 
 class APIManagement extends Cluster

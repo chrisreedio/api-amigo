@@ -2,22 +2,21 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\TextColumn;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\RelationManagers\AmigoConnectorsRelationManager;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\ListAmigoIntegrations;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\CreateAmigoIntegration;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\ViewAmigoIntegration;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\EditAmigoIntegration;
-use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\CreateAmigoIntegration;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\EditAmigoIntegration;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\ListAmigoIntegrations;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\ViewAmigoIntegration;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\RelationManagers\AmigoConnectorsRelationManager;
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Infolists;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class AmigoIntegrationResource extends Resource

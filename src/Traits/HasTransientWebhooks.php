@@ -2,7 +2,6 @@
 
 namespace ChrisReedIO\APIAmigo\Traits;
 
-use InvalidArgumentException;
 use Carbon\Carbon;
 use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
@@ -10,6 +9,7 @@ use Filament\Support\Colors\Color;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use InvalidArgumentException;
 
 use function class_basename;
 use function get_class;

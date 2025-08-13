@@ -2,12 +2,12 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
-use ReflectionClass;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Str;
+use ReflectionClass;
 use Saloon\Http\Connectors\NullConnector;
 use Saloon\Http\PendingRequest;
 use Saloon\Http\SoloRequest;
