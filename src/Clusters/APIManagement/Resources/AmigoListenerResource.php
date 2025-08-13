@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use BackedEnum;
 use Carbon\CarbonInterface;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Facades\APIAmigo;
@@ -28,7 +29,7 @@ class AmigoListenerResource extends Resource
 {
     protected static ?string $model = AmigoListener::class;
 
-    protected static ?string $navigationIcon = 'far-headphones-simple';
+    protected static string | BackedEnum | null $navigationIcon = 'far-headphones-simple';
 
     protected static ?string $modelLabel = 'Listener';
 

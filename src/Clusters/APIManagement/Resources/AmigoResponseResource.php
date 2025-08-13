@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
@@ -30,7 +31,7 @@ class AmigoResponseResource extends Resource
 {
     protected static ?string $model = AmigoResponse::class;
 
-    protected static ?string $navigationIcon = 'far-reply';
+    protected static string | BackedEnum | null $navigationIcon = 'far-reply';
 
     protected static ?string $modelLabel = 'Response';
 

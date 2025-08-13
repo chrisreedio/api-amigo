@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages;
 use ChrisReedIO\APIAmigo\Models\AmigoRecording;
@@ -20,7 +21,7 @@ class AmigoRecordingResource extends Resource
 {
     protected static ?string $model = AmigoRecording::class;
 
-    protected static ?string $navigationIcon = 'far-cassette-tape';
+    protected static string | BackedEnum | null $navigationIcon = 'far-cassette-tape';
 
     protected static ?string $modelLabel = 'Recording';
 

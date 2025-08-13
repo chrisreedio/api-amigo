@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages;
 
+use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate;
 use Filament\Forms;
@@ -16,7 +17,7 @@ class ViewEndpointAggregates extends ManageRelatedRecords
 
     protected static string $relationship = 'aggregates';
 
-    protected static ?string $navigationIcon = 'far-chart-bar';
+    protected static string | BackedEnum | null $navigationIcon = 'far-chart-bar';
 
     public static function getNavigationLabel(): string
     {

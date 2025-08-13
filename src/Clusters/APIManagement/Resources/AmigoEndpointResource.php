@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\RelationManagers;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointResponsesTableChart;
@@ -25,7 +26,7 @@ class AmigoEndpointResource extends Resource
 
     protected static ?string $model = AmigoEndpoint::class;
 
-    protected static ?string $navigationIcon = 'far-outlet';
+    protected static string | BackedEnum | null $navigationIcon = 'far-outlet';
 
     protected static ?string $modelLabel = 'Endpoint';
 

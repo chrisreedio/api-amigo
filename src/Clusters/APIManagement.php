@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters;
 
+use BackedEnum;
 use ChrisReedIO\APIAmigo\APIAmigoPlugin;
 use Filament;
 use Filament\Clusters\Cluster;
@@ -9,8 +10,8 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class APIManagement extends Cluster
 {
-    // protected static ?string $navigationIcon = 'far-truck-bolt';
-    public static function getNavigationIcon(): string | Htmlable | null
+    // protected static string | BackedEnum | null $navigationIcon = 'far-truck-bolt';
+    public static function getNavigationIcon(): string | BackedEnum | Htmlable | null
     {
         return (string) config('api-amigo.filament.navigation.icon', 'far-truck-fast');
     }

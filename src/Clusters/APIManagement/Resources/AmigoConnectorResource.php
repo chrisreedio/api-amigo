@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages;
 use ChrisReedIO\APIAmigo\Models\AmigoConnector;
@@ -18,7 +19,7 @@ class AmigoConnectorResource extends Resource
 {
     protected static ?string $model = AmigoConnector::class;
 
-    protected static ?string $navigationIcon = 'far-plug';
+    protected static string | BackedEnum | null $navigationIcon = 'far-plug';
 
     protected static ?string $modelLabel = 'Connector';
 

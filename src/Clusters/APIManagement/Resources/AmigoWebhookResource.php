@@ -3,6 +3,8 @@
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
 // use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\RelationManagers;
+
+use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Filament\Forms\Form;
@@ -22,7 +24,7 @@ class AmigoWebhookResource extends Resource
 {
     protected static ?string $model = AmigoWebhook::class;
 
-    protected static ?string $navigationIcon = 'far-webhook';
+    protected static string | BackedEnum | null $navigationIcon = 'far-webhook';
 
     protected static ?string $modelLabel = 'Webhook';
 

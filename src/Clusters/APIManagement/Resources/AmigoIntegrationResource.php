@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
 use Filament\Forms;
@@ -16,7 +17,7 @@ class AmigoIntegrationResource extends Resource
 {
     protected static ?string $model = AmigoIntegration::class;
 
-    protected static ?string $navigationIcon = 'far-integral';
+    protected static string | BackedEnum | null $navigationIcon = 'far-integral';
 
     protected static ?string $modelLabel = 'Integration';
 
