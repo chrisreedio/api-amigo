@@ -7,6 +7,7 @@ use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Filament\Forms\Form;
 use Filament\Infolists;
+use Filament\Infolists\Components\CodeEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
@@ -15,7 +16,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
-use Parallax\FilamentSyntaxEntry\SyntaxEntry;
+use Phiki\Grammar\Grammar;
 
 class AmigoWebhookResource extends Resource
 {
@@ -120,8 +121,9 @@ class AmigoWebhookResource extends Resource
                     ->collapsible()
                     ->collapsed()
                     ->schema([
-                        SyntaxEntry::make('headers')
+                        CodeEntry::make('headers')
                             // ->label('Webhook Headers')
+                            ->grammar(Grammar::Json)
                             ->label('')
                             ->columnSpanFull(),
                         // ->getStateUsing(function (AmigoWebhook $record) {
@@ -160,8 +162,9 @@ class AmigoWebhookResource extends Resource
 
                     ]),
 
-                SyntaxEntry::make('payload')
+                CodeEntry::make('payload')
                     ->label('Webhook Payload')
+                    ->grammar(Grammar::Json)
                     ->columnSpanFull(),
                 // ->getStateUsing(fn (AmigoWebhook $record) => json_encode($record->payload, JSON_PRETTY_PRINT)),
 

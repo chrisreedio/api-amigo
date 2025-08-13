@@ -8,6 +8,7 @@ use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
+use Filament\Infolists\Components\CodeEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
@@ -17,7 +18,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Number;
-use Parallax\FilamentSyntaxEntry\SyntaxEntry;
+use Phiki\Grammar\Grammar;
 
 use function collect;
 use function config;
@@ -129,13 +130,13 @@ class AmigoResponseResource extends Resource
                     ->collapsible()
                     ->collapsed()
                     ->schema([
-                        SyntaxEntry::make('headers')
+                        CodeEntry::make('headers')
                             // ->label('Webhook Headers')
                             ->label('')
                             ->columnSpanFull(),
                     ]),
 
-                SyntaxEntry::make('body')
+                CodeEntry::make('body')
                     ->hidden(function (AmigoResponse $record) {
                         if ($record->body_size >= config('api-amigo.thresholds.response_size.error')) {
                             return true;
@@ -148,7 +149,7 @@ class AmigoResponseResource extends Resource
                         return false;
                     })
                     ->label('Response Body Contents')
-                    ->language('json')
+                    ->grammar(Grammar::Json)
                     // ->getStateUsing(fn (AmigoResponse $record) => json_encode($record->body, JSON_PRETTY_PRINT))
                     // ->getStateUsing(fn (AmigoResponse $record) => $record->getOriginal('body'))
                     ->columnSpanFull(),

@@ -21,12 +21,9 @@
     ],
     "require": {
         "php": "^8.3",
-        "filament/filament": "^3.2",
+        "filament/filament": "^4.0",
         "flowframe/laravel-trend": "^0.4.0",
-        "lara-zeus/inline-chart": "^1.1",
         "laravel/sanctum": "^3.3|^4.0",
-        "parallax/filament-syntax-entry": "^2.0",
-        "rawilk/filament-password-input": "^2.0",
         "saloonphp/saloon": "^3.0",
         "spatie/laravel-package-tools": "^1.15.0",
         "spatie/shiki-php": "^2.0"

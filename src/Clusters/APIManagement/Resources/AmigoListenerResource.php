@@ -17,7 +17,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Rawilk\FilamentPasswordInput\Password;
+
+// use Rawilk\FilamentPasswordInput\Password;
 
 use function class_basename;
 use function config;
@@ -121,20 +122,31 @@ class AmigoListenerResource extends Resource
                             ->numeric(),
                     ]),
 
-                Password::make('webhook_secret')
+                // Old Password Input
+                // Password::make('webhook_secret')
+                //     ->label('Webhook Secret')
+                //     ->columnSpan(2)
+                //     ->helperText('Leave blank to disable signature verification, not recommended.')
+                //     ->copyable()
+                //     ->hidePasswordManagerIcons()
+                //     // ->regeneratePassword()
+                //     // ->generatePasswordUsing(fn () => Str::password(symbols: false))
+                //     ->regeneratePassword(
+                //         condition: true,
+                //         color: 'primary',
+                //         using: fn () => Str::password(symbols: false),
+                //         notify: true,
+                //     )
+                //     ->maxLength(255),
+                Forms\Components\TextInput::make('webhook_secret')
                     ->label('Webhook Secret')
                     ->columnSpan(2)
                     ->helperText('Leave blank to disable signature verification, not recommended.')
+                    ->password()
+                    ->revealable()
                     ->copyable()
                     ->hidePasswordManagerIcons()
-                    // ->regeneratePassword()
-                    // ->generatePasswordUsing(fn () => Str::password(symbols: false))
-                    ->regeneratePassword(
-                        condition: true,
-                        color: 'primary',
-                        using: fn () => Str::password(symbols: false),
-                        notify: true,
-                    )
+                    ->autocomplete(false)
                     ->maxLength(255),
 
                 Forms\Components\Select::make('handler')

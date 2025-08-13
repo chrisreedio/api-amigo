@@ -14,7 +14,8 @@ use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use LaraZeus\InlineChart\Tables\Columns\InlineChart;
+
+// use LaraZeus\InlineChart\Tables\Columns\InlineChart;
 
 use function config;
 
@@ -116,13 +117,13 @@ class AmigoEndpointResource extends Resource
                     ->formatStateUsing(fn ($state) => number_format($state))
                     ->counts('responses')
                     ->sortable(),
-                InlineChart::make('response_chart')
-                    ->label('Successful vs Failed Requests')
-                    ->chart(EndpointResponsesTableChart::class)
-                    ->maxWidth(350)// int, default 200
-                    ->maxHeight(90)// int, default 50
-                    // ->description('description')
-                    ->toggleable(),
+                // InlineChart::make('response_chart')
+                //     ->label('Successful vs Failed Requests')
+                //     ->chart(EndpointResponsesTableChart::class)
+                //     ->maxWidth(350)// int, default 200
+                //     ->maxHeight(90)// int, default 50
+                //     // ->description('description')
+                //     ->toggleable(),
 
                 // Tables\Columns\TextColumn::make('aggregates_avg_duration')
                 //     // ->avg('responses', 'duration')
