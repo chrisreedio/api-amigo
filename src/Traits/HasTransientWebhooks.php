@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Traits;
 
+use InvalidArgumentException;
 use Carbon\Carbon;
 use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
@@ -56,7 +57,7 @@ trait HasTransientWebhooks
     public function createTransientListener(string $handler, ?Carbon $expires_at = null, ?int $uses = null): AmigoListener
     {
         if (! is_subclass_of($handler, ProcessWebhookJob::class)) {
-            throw new \InvalidArgumentException('Handler must be a subclass of ' . ProcessWebhookJob::class);
+            throw new InvalidArgumentException('Handler must be a subclass of ' . ProcessWebhookJob::class);
         }
 
         $targetName = class_basename($this);

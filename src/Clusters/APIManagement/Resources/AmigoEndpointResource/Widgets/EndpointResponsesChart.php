@@ -14,7 +14,7 @@ use function now;
 
 class EndpointResponsesChart extends ChartWidget
 {
-    protected static ?string $heading = 'Response Times';
+    protected ?string $heading = 'Response Times';
 
     public ?string $filter = 'month';
 
@@ -22,7 +22,7 @@ class EndpointResponsesChart extends ChartWidget
 
     protected int | string | array $columnSpan = 'full';
 
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
 
     protected function getData(): array
     {

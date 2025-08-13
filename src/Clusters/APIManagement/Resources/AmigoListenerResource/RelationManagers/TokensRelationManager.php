@@ -2,12 +2,17 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -21,7 +26,7 @@ class TokensRelationManager extends RelationManager
 {
     protected static string $relationship = 'tokens';
 
-    protected static ?string $icon = 'far-key';
+    protected static string | \BackedEnum | null $icon = 'far-key';
 
     protected $listeners = ['copy-token-clipboard' => 'copyTokenClipboard'];
 
@@ -43,11 +48,11 @@ class TokensRelationManager extends RelationManager
         return number_format($ownerRecord->tokens()->count()) ?: null;
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -58,15 +63,15 @@ class TokensRelationManager extends RelationManager
         return $table
             // ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('expires_at')
+                TextColumn::make('name'),
+                TextColumn::make('expires_at')
                     ->label('Expires')
                     ->formatStateUsing(function (PersonalAccessToken $record) {
                         return $record->created_at->format('M j, Y H:i:s');
                     })
                     ->placeholder('Never')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created')
                     ->formatStateUsing(function (PersonalAccessToken $record) {
                         return $record->created_at->format('M j, Y H:i:s');
@@ -81,11 +86,11 @@ class TokensRelationManager extends RelationManager
             ->emptyStateDescription('No tokens have been created for this listener.')
             ->headerActions([
                 // Tables\Actions\CreateAction::make(),
-                Tables\Actions\Action::make('generateToken')
+                Action::make('generateToken')
                     ->label('Generate Token')
                     ->icon('far-circle-plus')
-                    ->form([
-                        Forms\Components\TextInput::make('name')
+                    ->schema([
+                        TextInput::make('name')
                             ->required()
                             ->maxLength(255),
                     ])
@@ -112,14 +117,14 @@ class TokensRelationManager extends RelationManager
                         $this->replaceMountedAction('doGenerate', ['token' => $token]);
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                DeleteAction::make(),
                 // Tables\Actions\ViewAction::make()->url(fn (AmigoWebhook $record) => AmigoWebhookResource::getUrl('view', ['record' => $record])),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

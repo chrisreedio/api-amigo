@@ -2,6 +2,8 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages;
 
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,8 +15,8 @@ class EditAmigoResponse extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            ViewAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

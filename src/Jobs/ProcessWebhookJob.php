@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Jobs;
 
+use Exception;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -31,7 +32,7 @@ abstract class ProcessWebhookJob implements ShouldQueue
                     $this->webhook->fail(500, 'An unknown error occurred.');
                 }
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             // Log the exception and mark the webhook as failed
             $this->webhook->failWithException($exception);
         }

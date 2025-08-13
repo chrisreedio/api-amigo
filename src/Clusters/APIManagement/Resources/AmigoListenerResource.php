@@ -2,15 +2,25 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Actions\ViewAction;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\RelationManagers\AmigoWebhooksRelationManager;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\RelationManagers\TokensRelationManager;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\Pages\ListAmigoListeners;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\Pages\ViewAmigoListener;
 use BackedEnum;
 use Carbon\CarbonInterface;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Facades\APIAmigo;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -29,7 +39,7 @@ class AmigoListenerResource extends Resource
 {
     protected static ?string $model = AmigoListener::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'far-headphones-simple';
+    protected static string | \BackedEnum | null $navigationIcon = 'far-headphones-simple';
 
     protected static ?string $modelLabel = 'Listener';
 
@@ -47,49 +57,49 @@ class AmigoListenerResource extends Resource
         return number_format(static::getModel()::count());
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->columns(4)
             ->schema([
-                Infolists\Components\TextEntry::make('display_name'),
+                TextEntry::make('display_name'),
 
-                Infolists\Components\TextEntry::make('integration.name')
+                TextEntry::make('integration.name')
                     ->label('Integration')
                     ->placeholder('No Integration'),
 
-                Infolists\Components\TextEntry::make('webhook_secret')
+                TextEntry::make('webhook_secret')
                     ->formatStateUsing(fn ($record) => $record->webhook_secret ? 'Yes' : 'No')
                     ->placeholder('Unsecured')
                     ->label('Webhook Secret'),
 
-                Infolists\Components\TextEntry::make('handler')
+                TextEntry::make('handler')
                     ->badge(),
 
-                Infolists\Components\TextEntry::make('uses')
+                TextEntry::make('uses')
                     ->badge()
                     ->label('Successful Uses'),
 
-                Infolists\Components\TextEntry::make('max_uses')
+                TextEntry::make('max_uses')
                     ->placeholder('Unlimited')
                     ->badge()
                     ->label('Max Uses'),
 
-                Infolists\Components\TextEntry::make('listenable_type')
+                TextEntry::make('listenable_type')
                     ->placeholder('No Linked Model')
                     ->label('Listenable Type'),
 
-                Infolists\Components\TextEntry::make('listenable_id')
+                TextEntry::make('listenable_id')
                     ->placeholder('No Linked Model')
                     ->label('Listenable ID'),
 
-                Infolists\Components\TextEntry::make('url')
+                TextEntry::make('url')
                     ->label('Webhook URL')
                     // ->formatStateUsing(fn ($record) => $record->url)
                     ->columnSpan(2)
                     ->copyable(),
 
-                Infolists\Components\TextEntry::make('basic_auth_username')
+                TextEntry::make('basic_auth_username')
                     ->label('Basic Auth Username')
                     ->icon('heroicon-s-key')
                     ->placeholder('No Username')
@@ -101,22 +111,22 @@ class AmigoListenerResource extends Resource
             ]);
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->columns(2)
             ->schema([
-                Forms\Components\Grid::make(3)
+                Grid::make(3)
                     ->schema([
-                        Forms\Components\TextInput::make('display_name')
+                        TextInput::make('display_name')
                             ->required()
                             ->maxLength(255),
 
-                        Forms\Components\Select::make('integration_id')
+                        Select::make('integration_id')
                             // ->required()
                             ->relationship('integration', 'name'),
 
-                        Forms\Components\TextInput::make('max_uses')
+                        TextInput::make('max_uses')
                             ->label('Max Uses')
                             ->hint('Blank for unlimited uses')
                             ->placeholder('Unlimited')
@@ -139,7 +149,7 @@ class AmigoListenerResource extends Resource
                 //         notify: true,
                 //     )
                 //     ->maxLength(255),
-                Forms\Components\TextInput::make('webhook_secret')
+                TextInput::make('webhook_secret')
                     ->label('Webhook Secret')
                     ->columnSpan(2)
                     ->helperText('Leave blank to disable signature verification, not recommended.')
@@ -150,7 +160,7 @@ class AmigoListenerResource extends Resource
                     ->autocomplete(false)
                     ->maxLength(255),
 
-                Forms\Components\Select::make('handler')
+                Select::make('handler')
                     ->columnSpan(2)
                     ->options(fn () => collect(APIAmigo::getWebhookHandlers())->mapWithKeys(fn ($handler) => [$handler => $handler]))
                     ->required(),
@@ -165,14 +175,14 @@ class AmigoListenerResource extends Resource
                 // Forms\Components\Select::make('listenable')
                 //     ->relationship('listenable'),
 
-                Forms\Components\TextInput::make('uses')
+                TextInput::make('uses')
                     // ->columnSpan(2)
                     ->readOnly()
                     ->hiddenOn(['create', 'edit'])
                     ->numeric()
                     ->label('Uses'),
 
-                Forms\Components\TextInput::make('basic_auth_username')
+                TextInput::make('basic_auth_username')
                     ->label('Basic Auth Username')
                     ->columnSpan(1)
                     ->maxLength(255),
@@ -233,12 +243,12 @@ class AmigoListenerResource extends Resource
                 // Tables\Columns\ColorColumn::make('color')
                 //     ->label(''),
 
-                Tables\Columns\TextColumn::make('display_name')
+                TextColumn::make('display_name')
                     ->searchable()
                     // ->badge()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('integration.name')
+                TextColumn::make('integration.name')
                     ->label('Integration')
                     ->placeholder('No Integration')
                     ->searchable()
@@ -251,14 +261,14 @@ class AmigoListenerResource extends Resource
                 //     ->copyable()
                 //     ->getStateUsing(fn (AmigoListener $record) => $record->url),
 
-                Tables\Columns\TextColumn::make('handler')
+                TextColumn::make('handler')
                     ->searchable()
                     ->badge()
                     ->formatStateUsing(fn (AmigoListener $record) => class_basename($record->handler))
                     ->tooltip(fn (AmigoListener $record) => $record->handler)
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('uses')
+                TextColumn::make('uses')
                     ->badge()
                     ->color(function (AmigoListener $record) {
                         if ($record->max_uses && $record->uses >= $record->max_uses) {
@@ -274,13 +284,13 @@ class AmigoListenerResource extends Resource
                     ->numeric()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('max_uses')
+                TextColumn::make('max_uses')
                     ->badge()
                     ->numeric()
                     ->placeholder('Unlimited')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('linked_model')
+                TextColumn::make('linked_model')
                     ->label('Linked Model')
                     ->getStateUsing(fn (AmigoListener $record) => $record->listenable_type ? 'Yes' : 'No')
                     ->color(fn (AmigoListener $record) => $record->listenable_type ? 'success' : 'danger')
@@ -288,7 +298,7 @@ class AmigoListenerResource extends Resource
                     ->placeholder('Not Linked')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('expires_at')
+                TextColumn::make('expires_at')
                     ->label('Expires in')
                     ->dateTime()
                     ->placeholder('Never')
@@ -327,7 +337,7 @@ class AmigoListenerResource extends Resource
                 //     ->toggledHiddenByDefault(),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('isTransient')
+                TernaryFilter::make('isTransient')
                     ->label('Transient')
                     ->nullable()
                     ->default(false)
@@ -336,7 +346,7 @@ class AmigoListenerResource extends Resource
                         false: fn (Builder $query) => $query->transient(false),
                         blank: fn (Builder $query) => $query // In this example, we do not want to filter the query when it is blank.
                     ),
-                Tables\Filters\TernaryFilter::make('linked_model')
+                TernaryFilter::make('linked_model')
                     ->label('Linked Model')
                     ->nullable()
                     // ->default(false)
@@ -346,7 +356,7 @@ class AmigoListenerResource extends Resource
                         blank: fn (Builder $query) => $query // In this example, we do not want to filter the query when it is blank.
                     ),
 
-                Tables\Filters\TernaryFilter::make('expires')
+                TernaryFilter::make('expires')
                     ->label('Expires')
                     ->nullable()
                     ->default(false)
@@ -356,7 +366,7 @@ class AmigoListenerResource extends Resource
                         blank: fn (Builder $query) => $query // In this example, we do not want to filter the query when it is blank.
                     ),
 
-                Tables\Filters\TernaryFilter::make('expired')
+                TernaryFilter::make('expired')
                     ->label('Expired')
                     ->nullable()
                     // visible only if the tableFilters[expires] is true
@@ -371,7 +381,7 @@ class AmigoListenerResource extends Resource
                         blank: fn (Builder $query) => $query // In this example, we do not want to filter the query when it is blank.
                     ),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\Action::make('test')
                 //     ->label('Test')
                 //     ->icon('far-play')
@@ -390,10 +400,10 @@ class AmigoListenerResource extends Resource
                 //         dd($response->json());
                 //
                 //     }),
-                Tables\Actions\ViewAction::make(),
+                ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
@@ -403,17 +413,17 @@ class AmigoListenerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\RelationManagers\AmigoWebhooksRelationManager::class,
-            \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\RelationManagers\TokensRelationManager::class,
+            AmigoWebhooksRelationManager::class,
+            TokensRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\Pages\ListAmigoListeners::route('/'),
+            'index' => ListAmigoListeners::route('/'),
             // 'create' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\Pages\CreateAmigoListener::route('/create'),
-            'view' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\Pages\ViewAmigoListener::route('/{record}'),
+            'view' => ViewAmigoListener::route('/{record}'),
             // 'edit' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\Pages\EditAmigoListener::route('/{record}/edit'),
         ];
     }

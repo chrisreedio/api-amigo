@@ -2,15 +2,26 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\QueryBuilder;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\ListAmigoResponses;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\CreateAmigoResponse;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\ViewAmigoResponse;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\EditAmigoResponse;
 use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Components\CodeEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -31,7 +42,7 @@ class AmigoResponseResource extends Resource
 {
     protected static ?string $model = AmigoResponse::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'far-reply';
+    protected static string | \BackedEnum | null $navigationIcon = 'far-reply';
 
     protected static ?string $modelLabel = 'Response';
 
@@ -51,28 +62,28 @@ class AmigoResponseResource extends Resource
         // return number_format(AmigoEndpointAggregate::query()->sum('total_requests'));
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->columns(4)
             ->schema([
-                Infolists\Components\TextEntry::make('endpoint.connector.integration.name')
+                TextEntry::make('endpoint.connector.integration.name')
                     ->label('Integration')
                     ->url(fn (AmigoResponse $record) => AmigoIntegrationResource::getUrl('view', ['record' => $record->endpoint->connector->integration]))
                     ->icon('far-integral'),
 
-                Infolists\Components\TextEntry::make('endpoint.connector.name')
+                TextEntry::make('endpoint.connector.name')
                     ->label('Connector')
                     ->url(fn (AmigoResponse $record) => AmigoConnectorResource::getUrl('view', ['record' => $record->endpoint->connector]))
                     // ->icon('far-outlet'),
                     ->icon('far-plug'),
 
-                Infolists\Components\TextEntry::make('endpoint.display_name')
+                TextEntry::make('endpoint.display_name')
                     ->label('Endpoint')
                     ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
                     ->icon('far-outlet'),
 
-                Infolists\Components\TextEntry::make('response_size')
+                TextEntry::make('response_size')
                     ->label('Response Size')
                     ->numeric()
                     ->getStateUsing(fn (AmigoResponse $record) => Number::fileSize($record->body_size, 2))
@@ -87,14 +98,14 @@ class AmigoResponseResource extends Resource
                     })
                     ->icon('far-hard-drive'),
 
-                Infolists\Components\Grid::make(7)
+                Grid::make(7)
                     ->schema([
-                        Infolists\Components\TextEntry::make('status_code')
+                        TextEntry::make('status_code')
                             ->label('Status')
                             ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
                             ->badge(),
 
-                        Infolists\Components\TextEntry::make('duration')
+                        TextEntry::make('duration')
                             ->label('Duration')
                             ->formatStateUsing(fn (AmigoResponse $record) => ($record->duration * 1000) . 'ms')
                             ->color(function ($state) {
@@ -107,14 +118,14 @@ class AmigoResponseResource extends Resource
                             ->icon('far-stopwatch')
                             ->badge(),
 
-                        Infolists\Components\TextEntry::make('cached')
+                        TextEntry::make('cached')
                             ->label('Cached')
                             ->badge()
                             ->color(fn (AmigoResponse $record) => $record->cached ? Color::Green : Color::Red)
                             ->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No')
                             ->icon('far-database'),
 
-                        Infolists\Components\TextEntry::make('request.path')
+                        TextEntry::make('request.path')
                             ->label('Request Path')
                             ->copyable()
                             ->columnSpan(4)
@@ -122,12 +133,12 @@ class AmigoResponseResource extends Resource
                             ->icon('far-sign-post'),
                     ]),
 
-                Infolists\Components\TextEntry::make('no_response_body')
+                TextEntry::make('no_response_body')
                     ->label('Response Body')
                     ->placeholder('No Recorded Response Body')
                     ->visible(fn (AmigoResponse $record) => $record->body === null || $record->body === []),
 
-                Infolists\Components\Section::make('Response Headers')
+                Section::make('Response Headers')
                     ->collapsible()
                     ->collapsed()
                     ->schema([
@@ -155,7 +166,7 @@ class AmigoResponseResource extends Resource
                     // ->getStateUsing(fn (AmigoResponse $record) => $record->getOriginal('body'))
                     ->columnSpanFull(),
 
-                Infolists\Components\TextEntry::make('large_body')
+                TextEntry::make('large_body')
                     ->hidden(fn (AmigoResponse $record) => $record->body_size < config('api-amigo.thresholds.response_size.error'))
                     ->label('Response Body')
                     ->columnSpanFull()
@@ -163,16 +174,16 @@ class AmigoResponseResource extends Resource
             ]);
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->readOnly()
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('display_name')
+                TextInput::make('display_name')
                     // ->required()
                     ->maxLength(255),
 
@@ -190,27 +201,27 @@ class AmigoResponseResource extends Resource
                 //     ->searchable()
                 //     ->sortable(),
 
-                Tables\Columns\TextColumn::make('endpoint.connector.integration.name')
+                TextColumn::make('endpoint.connector.integration.name')
                     ->label('Integration')
                     // ->badge()
                     ->searchable()
                     ->toggleable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('endpoint.connector.name')
+                TextColumn::make('endpoint.connector.name')
                     ->label('Connector')
                     // ->tooltip(fn (AmigoResponse $record) => $record->endpoint->connector->base_url)
                     // ->badge()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('endpoint.method')
+                TextColumn::make('endpoint.method')
                     ->label('Method')
                     ->alignCenter()
                     ->badge()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('endpoint.display_name')
+                TextColumn::make('endpoint.display_name')
                     ->label('Endpoint')
                     // ->getStateUsing(fn (AmigoResponse $record) => $record->endpoint->name ?? $record->endpoint->path ?? 'hi')
                     ->tooltip(fn (AmigoResponse $record) => $record->endpoint->path)
@@ -220,14 +231,14 @@ class AmigoResponseResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('status_code')
+                TextColumn::make('status_code')
                     ->label('Status')
                     ->formatStateUsing(fn (AmigoResponse $record) => $record->status_code->value . ' ' . $record->status_code->getLabel())
                     ->alignCenter()
                     ->badge()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('duration')
+                TextColumn::make('duration')
                     ->label('Duration')
                     ->alignCenter()
                     ->badge()
@@ -245,7 +256,7 @@ class AmigoResponseResource extends Resource
                     // ->suffix('s')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('cached')
+                TextColumn::make('cached')
                     ->label('Cached')
                     ->icon('far-database')
                     ->color(fn (AmigoResponse $record) => $record->cached ? Color::Green : Color::Red)
@@ -255,21 +266,21 @@ class AmigoResponseResource extends Resource
                     ->alignCenter()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Received')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('connector_id')
+                SelectFilter::make('connector_id')
                     ->label('Connector')
                     ->relationship('endpoint.connector', 'name'),
-                Tables\Filters\SelectFilter::make('status_code')
+                SelectFilter::make('status_code')
                     ->getOptionLabelUsing(fn ($value) => $value->value . ' - ' . $value->getLabel())
                     ->searchable()
                     ->preload()
@@ -278,7 +289,7 @@ class AmigoResponseResource extends Resource
                         return collect(HTTPStatus::cases())
                             ->mapWithKeys(fn (HTTPStatus $code) => [$code->value => $code->value . ' - ' . $code->getLabel()]);
                     }),
-                Tables\Filters\TernaryFilter::make('success')
+                TernaryFilter::make('success')
                     ->label('Fail or Success')
                     ->attribute('status_code')
                     ->boolean()
@@ -291,7 +302,7 @@ class AmigoResponseResource extends Resource
                     ),
                 // ->getOptionLabelUsing(fn ($value) => 'hi'), //$value->value . ' - ' . $value->getLabel()),
                 // ->getOptionLabelsUsing(fn ($values) => $values->map(fn ($value) => $value->value . ' - ' . $value->getLabel())),
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraints([
                         DateConstraint::make('created_at'),
                     ]),
@@ -299,11 +310,11 @@ class AmigoResponseResource extends Resource
             ->persistFiltersInSession()
             ->filtersFormWidth('xl')
             ->defaultSort('created_at', 'desc')
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
@@ -320,10 +331,10 @@ class AmigoResponseResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\ListAmigoResponses::route('/'),
-            'create' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\CreateAmigoResponse::route('/create'),
-            'view' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\ViewAmigoResponse::route('/{record}'),
-            'edit' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\EditAmigoResponse::route('/{record}/edit'),
+            'index' => ListAmigoResponses::route('/'),
+            'create' => CreateAmigoResponse::route('/create'),
+            'view' => ViewAmigoResponse::route('/{record}'),
+            'edit' => EditAmigoResponse::route('/{record}/edit'),
         ];
     }
 }

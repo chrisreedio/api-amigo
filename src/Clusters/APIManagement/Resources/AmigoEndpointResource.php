@@ -2,18 +2,27 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
-use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages\ListAmigoEndpoints;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages\ViewAmigoEndpoint;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages\ViewEndpointAggregates;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\RelationManagers;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointResponsesTableChart;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\RelationManagers\AmigoRequestsRelationManager;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointListOverview;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointResponsesChart;
+// use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointResponsesTableChart;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointStatsOverview;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 // use LaraZeus\InlineChart\Tables\Columns\InlineChart;
@@ -26,7 +35,7 @@ class AmigoEndpointResource extends Resource
 
     protected static ?string $model = AmigoEndpoint::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'far-outlet';
+    protected static string | \BackedEnum | null $navigationIcon = 'far-outlet';
 
     protected static ?string $modelLabel = 'Endpoint';
 
@@ -44,45 +53,45 @@ class AmigoEndpointResource extends Resource
         return number_format(static::getModel()::count());
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->columns(4)
             ->schema([
-                Infolists\Components\TextEntry::make('name')->placeholder('No Name'),
+                TextEntry::make('name')->placeholder('No Name'),
                 // ->getStateUsing(fn (AmigoEndpoint $record) => $record->attributes['name']),
-                Infolists\Components\TextEntry::make('connector.name'),
-                Infolists\Components\TextEntry::make('connector.integration.name')
+                TextEntry::make('connector.name'),
+                TextEntry::make('connector.integration.name')
                     ->label('Integration'),
-                Infolists\Components\TextEntry::make('method')
+                TextEntry::make('method')
                     ->badge(),
-                Infolists\Components\TextEntry::make('styled_path')
+                TextEntry::make('styled_path')
                     ->label('Path')
                     ->columnSpan(2)
                     ->html(),
-                Infolists\Components\TextEntry::make('class')
+                TextEntry::make('class')
                     ->columnSpan(2)
                     ->placeholder('None'),
             ]);
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
 
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->maxLength(255),
-                Forms\Components\Select::make('connector_id')
+                Select::make('connector_id')
                     ->relationship('connector', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('path')
+                TextInput::make('path')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('method')
+                TextInput::make('method')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('class')
+                TextInput::make('class')
                     ->columnSpanFull()
                     ->maxLength(255),
 
@@ -93,26 +102,26 @@ class AmigoEndpointResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('connector.integration.name')
+                TextColumn::make('connector.integration.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('connector.name')
+                TextColumn::make('connector.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->placeholder('Not Set')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('method')
+                TextColumn::make('method')
                     ->searchable()
                     ->badge()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('styled_path')
+                TextColumn::make('styled_path')
                     ->label('Path')
                     ->copyable()
                     ->sortable()
                     ->html()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('responses_count')
+                TextColumn::make('responses_count')
                     ->label('Responses')
                     ->badge()
                     ->formatStateUsing(fn ($state) => number_format($state))
@@ -145,26 +154,26 @@ class AmigoEndpointResource extends Resource
                 // ->sortable(),
                 // ->searchable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('responses_count', 'desc')
             ->filters([
-                Tables\Filters\SelectFilter::make('connector_id')
+                SelectFilter::make('connector_id')
                     ->label('Connector')
                     ->relationship('connector', 'name'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
@@ -174,7 +183,7 @@ class AmigoEndpointResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\AmigoRequestsRelationManager::class,
+            AmigoRequestsRelationManager::class,
             // RelationManagers\AmigoEndpointAggregatesRelationManager::class,
         ];
     }
@@ -182,22 +191,22 @@ class AmigoEndpointResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages\ListAmigoEndpoints::route('/'),
+            'index' => ListAmigoEndpoints::route('/'),
             // 'create' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages\CreateAmigoEndpoint::route('/create'),
-            'view' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages\ViewAmigoEndpoint::route('/{record}'),
+            'view' => ViewAmigoEndpoint::route('/{record}'),
             // 'edit' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages\EditAmigoEndpoint::route('/{record}/edit'),
-            'stats' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages\ViewEndpointAggregates::route('/{record}/stats'),
+            'stats' => ViewEndpointAggregates::route('/{record}/stats'),
         ];
     }
 
     public static function getWidgets(): array
     {
         return [
-            \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointStatsOverview::class,
-            \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointResponsesChart::class,
-            EndpointResponsesTableChart::class,
+            EndpointStatsOverview::class,
+            EndpointResponsesChart::class,
+            // EndpointResponsesTableChart::class,
 
-            \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointListOverview::class,
+            EndpointListOverview::class,
         ];
     }
 }

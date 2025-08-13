@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use Exception;
 use const JSON_PRETTY_PRINT;
 
 use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
@@ -130,7 +131,7 @@ class AmigoResponse extends AmigoModel
                 'duration' => $responseTimeDelta,
                 'cached' => $saloonResponse->isCached(),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('API Amigo failed to track response: ' . $e->getMessage(), [
                 'exception' => $e,
                 'response' => $saloonResponse,

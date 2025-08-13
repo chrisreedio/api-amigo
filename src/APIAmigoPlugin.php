@@ -13,7 +13,7 @@ class APIAmigoPlugin implements Plugin
 {
     use EvaluatesClosures;
 
-    protected bool | \Closure $registerCluster = true;
+    protected bool | Closure $registerCluster = true;
 
     public function getId(): string
     {

@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use ReflectionClass;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -92,7 +93,7 @@ class AmigoConnector extends Model
         }
 
         // Calculate the integration name from the connector namespace
-        $connectorNamespace = (new \ReflectionClass($connectorClassName))->getNamespaceName();
+        $connectorNamespace = (new ReflectionClass($connectorClassName))->getNamespaceName();
         $namespaceSegments = explode('\\', $connectorNamespace);
         // dd($namespaceSegments);
         // $integrationName = end($namespaceSegments);

@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo;
 
+use Saloon\Config;
 use ChrisReedIO\APIAmigo\Commands\APIAmigoCommand;
 use ChrisReedIO\APIAmigo\Commands\PruneResponsesCommand;
 use ChrisReedIO\APIAmigo\Commands\ResponsesAggregationCommand;
@@ -134,7 +135,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
         try {
             // If the package is enabled, we'll hook up the middleware to track requests and log responses
             if (config('api-amigo.enabled')) {
-                \Saloon\Config::globalMiddleware()
+                Config::globalMiddleware()
                     ->onRequest(new TrackSaloonRequest, 'amigo-track-request', PipeOrder::LAST)
                     // ->onResponse(new TrackSaloonResponse(), 'amigo-log-response', PipeOrder::FIRST);
                     // Moving this to 'Last' so that we can pick up that the response is cached

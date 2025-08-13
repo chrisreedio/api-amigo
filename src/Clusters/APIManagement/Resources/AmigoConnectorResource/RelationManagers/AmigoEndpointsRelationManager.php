@@ -2,10 +2,15 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -15,11 +20,11 @@ class AmigoEndpointsRelationManager extends RelationManager
 {
     protected static string $relationship = 'endpoints';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -30,24 +35,24 @@ class AmigoEndpointsRelationManager extends RelationManager
         return $table
             // ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('method')
+                TextColumn::make('method')
                     ->searchable()
                     ->badge()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('styled_path')
+                TextColumn::make('styled_path')
                     ->label('Path')
                     ->sortable()
                     ->html()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('responses_count')
+                TextColumn::make('responses_count')
                     ->label('Responses')
                     ->badge()
                     ->counts('responses')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('responses_avg_duration')
+                TextColumn::make('responses_avg_duration')
                     ->avg('responses', 'duration')
                     ->badge()
                     ->formatStateUsing(fn ($state) => round($state * 1000) . 'ms')
@@ -71,14 +76,14 @@ class AmigoEndpointsRelationManager extends RelationManager
             ->headerActions([
                 // Tables\Actions\CreateAction::make(),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make()->url(fn (AmigoEndpoint $endpoint) => AmigoEndpointResource::getUrl('view', ['record' => $endpoint])),
+                ViewAction::make()->url(fn (AmigoEndpoint $endpoint) => AmigoEndpointResource::getUrl('view', ['record' => $endpoint])),
                 // Tables\Actions\DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

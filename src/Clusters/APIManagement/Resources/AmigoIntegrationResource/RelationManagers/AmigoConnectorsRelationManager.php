@@ -2,8 +2,14 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -13,11 +19,11 @@ class AmigoConnectorsRelationManager extends RelationManager
 {
     protected static string $relationship = 'connectors';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -28,26 +34,26 @@ class AmigoConnectorsRelationManager extends RelationManager
         return $table
             // ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
                 // Tables\Columns\TextColumn::make('integration.name')
                 //     ->sortable()
                 //     ->searchable(),
-                Tables\Columns\TextColumn::make('display_name')
+                TextColumn::make('display_name')
                     ->placeholder('Not Set')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('rate_limit')
+                TextColumn::make('rate_limit')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('rate_usage')
+                TextColumn::make('rate_usage')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('rate_limit_remaining')
+                TextColumn::make('rate_limit_remaining')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('rate_usage_percentage')
+                TextColumn::make('rate_usage_percentage')
                     ->numeric()
                     ->label('Usage Percent')
                     ->badge()
@@ -79,11 +85,11 @@ class AmigoConnectorsRelationManager extends RelationManager
                 //     ->dateTime()
                 //     ->sortable()
                 //     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -93,16 +99,16 @@ class AmigoConnectorsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
+                ViewAction::make(),
                 // Tables\Actions\DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

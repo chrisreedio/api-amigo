@@ -2,13 +2,20 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\RelationManagers\AmigoConnectorsRelationManager;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\ListAmigoIntegrations;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\CreateAmigoIntegration;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\ViewAmigoIntegration;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoIntegrationResource\Pages\EditAmigoIntegration;
 use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,7 +24,7 @@ class AmigoIntegrationResource extends Resource
 {
     protected static ?string $model = AmigoIntegration::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'far-integral';
+    protected static string | \BackedEnum | null $navigationIcon = 'far-integral';
 
     protected static ?string $modelLabel = 'Integration';
 
@@ -35,14 +42,14 @@ class AmigoIntegrationResource extends Resource
         return number_format(static::getModel()::count());
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->columns(2)
             ->schema([
-                Infolists\Components\TextEntry::make('name'),
+                TextEntry::make('name'),
 
-                Infolists\Components\TextEntry::make('display_name')
+                TextEntry::make('display_name')
                     ->placeholder('Not Set')
                     ->label('Display Name'),
 
@@ -68,16 +75,16 @@ class AmigoIntegrationResource extends Resource
             ]);
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->readOnly()
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('display_name')
+                TextInput::make('display_name')
                     // ->required()
                     ->maxLength(255),
 
@@ -97,9 +104,9 @@ class AmigoIntegrationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('display_name')
+                TextColumn::make('display_name')
                     ->placeholder('Not Set')
                     ->searchable()
                     ->sortable(),
@@ -113,11 +120,11 @@ class AmigoIntegrationResource extends Resource
                 //     ->dateTime()
                 //     ->sortable()
                 //     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -125,11 +132,11 @@ class AmigoIntegrationResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
@@ -139,17 +146,17 @@ class AmigoIntegrationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            APIManagement\Resources\AmigoIntegrationResource\RelationManagers\AmigoConnectorsRelationManager::class,
+            AmigoConnectorsRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => APIManagement\Resources\AmigoIntegrationResource\Pages\ListAmigoIntegrations::route('/'),
-            'create' => APIManagement\Resources\AmigoIntegrationResource\Pages\CreateAmigoIntegration::route('/create'),
-            'view' => APIManagement\Resources\AmigoIntegrationResource\Pages\ViewAmigoIntegration::route('/{record}'),
-            'edit' => APIManagement\Resources\AmigoIntegrationResource\Pages\EditAmigoIntegration::route('/{record}/edit'),
+            'index' => ListAmigoIntegrations::route('/'),
+            'create' => CreateAmigoIntegration::route('/create'),
+            'view' => ViewAmigoIntegration::route('/{record}'),
+            'edit' => EditAmigoIntegration::route('/{record}/edit'),
         ];
     }
 }

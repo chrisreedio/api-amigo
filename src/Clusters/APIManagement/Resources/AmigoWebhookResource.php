@@ -3,14 +3,24 @@
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
 // use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\RelationManagers;
-
+use Filament\Schemas\Schema;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Section;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\BulkAction;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages\ListAmigoWebhooks;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages\CreateAmigoWebhook;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages\ViewAmigoWebhook;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages\EditAmigoWebhook;
 use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
-use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Components\CodeEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -24,7 +34,7 @@ class AmigoWebhookResource extends Resource
 {
     protected static ?string $model = AmigoWebhook::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'far-webhook';
+    protected static string | \BackedEnum | null $navigationIcon = 'far-webhook';
 
     protected static ?string $modelLabel = 'Webhook';
 
@@ -42,12 +52,12 @@ class AmigoWebhookResource extends Resource
         return number_format(static::getModel()::count());
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->columns(3)
             ->schema([
-                Infolists\Components\TextEntry::make('listener.integration.name')
+                TextEntry::make('listener.integration.name')
                     ->label('Integration')
                     ->url(function (AmigoWebhook $record) {
                         return $record->listener?->integration ? AmigoIntegrationResource::getUrl('view', ['record' => $record->listener->integration]) : null;
@@ -55,13 +65,13 @@ class AmigoWebhookResource extends Resource
                     ->placeholder('No Integration')
                     ->icon('far-integral'),
 
-                Infolists\Components\TextEntry::make('listener.display_name')
+                TextEntry::make('listener.display_name')
                     ->label('Listener')
                     ->url(fn (AmigoWebhook $record) => $record->listener ? AmigoListenerResource::getUrl('view', ['record' => $record->listener]) : null)
                     ->placeholder('No Listener')
                     ->icon('far-headphones-simple'),
 
-                Infolists\Components\TextEntry::make('error.message')
+                TextEntry::make('error.message')
                     ->label('Processing Error Message')
                     ->icon(fn (AmigoWebhook $record) => $record->error !== null ? 'far-triangle-exclamation' : 'far-face-cowboy-hat')
                     ->iconColor(fn (AmigoWebhook $record) => $record->error ? Color::Rose : Color::Green)
@@ -70,29 +80,29 @@ class AmigoWebhookResource extends Resource
                     ->default('Processed Successfully. No Errors reported.')
                     ->color(fn (AmigoWebhook $record) => $record->error ? Color::Rose : Color::Green),
 
-                Infolists\Components\TextEntry::make('listener.url')
+                TextEntry::make('listener.url')
                     ->label('Listener Path')
                     ->copyable()
                     ->columnSpan(2)
                     ->formatStateUsing(fn ($state) => new HtmlString('<code>' . $state . '</code>'))
                     ->icon('far-sign-post'),
 
-                Infolists\Components\TextEntry::make('listener.handler')
+                TextEntry::make('listener.handler')
                     ->label('Handler')
                     ->badge()
                     ->icon('far-code'),
 
-                Infolists\Components\TextEntry::make('created_at')
+                TextEntry::make('created_at')
                     ->label('Received At')
                     ->formatStateUsing(fn (AmigoWebhook $record) => Carbon::make($record->created_at)->format('M j, Y H:i:s'))
                     ->icon('far-calendar'),
 
-                Infolists\Components\TextEntry::make('processed_at')
+                TextEntry::make('processed_at')
                     ->label('Processed At')
                     ->formatStateUsing(fn (AmigoWebhook $record) => $record->processed_at ? Carbon::make($record->processed_at)->format('M j, Y H:i:s') : 'Not Processed')
                     ->icon('far-calendar'),
 
-                Infolists\Components\TextEntry::make('processing_time')
+                TextEntry::make('processing_time')
                     ->label('Processing Duration')
                     // ->getStateUsing(function (AmigoWebhook $record) {
                     //     if (!$record->processed_at) {
@@ -119,7 +129,7 @@ class AmigoWebhookResource extends Resource
                     })
                     ->badge(),
 
-                Infolists\Components\Section::make('Request Headers')
+                Section::make('Request Headers')
                     ->collapsible()
                     ->collapsed()
                     ->schema([
@@ -213,10 +223,10 @@ class AmigoWebhookResource extends Resource
             ]);
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 //
             ]);
     }
@@ -226,14 +236,14 @@ class AmigoWebhookResource extends Resource
         return $table
             ->recordUrl(fn (AmigoWebhook $record) => AmigoWebhookResource::getUrl('view', ['record' => $record]))
             ->columns([
-                Tables\Columns\TextColumn::make('listener.display_name')
+                TextColumn::make('listener.display_name')
                     ->label('Listener')
                     // ->url(fn (AmigoWebhook $record) => $record->listener ? AmigoListenerResource::getUrl('view', ['record' => $record->listener]) : null)
                     ->searchable()
                     ->placeholder('No Listener')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('type')
+                TextColumn::make('type')
                     ->label('Type')
                     ->badge()
                     ->placeholder('No Type')
@@ -241,7 +251,7 @@ class AmigoWebhookResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('processed_at')
+                TextColumn::make('processed_at')
                     ->label('Processed')
                     ->icon(fn (AmigoWebhook $record) => $record->processed_at ? 'far-circle-check' : 'far-hourglass-start')
                     ->default('Not Processed')
@@ -250,7 +260,7 @@ class AmigoWebhookResource extends Resource
                     ->badge()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('error.message')
+                TextColumn::make('error.message')
                     ->label('Result / Error Message')
                     // ->icon(fn (AmigoWebhook $record) => $record->error !== null ? 'far-triangle-exclamation' : null)
                     ->words(5)
@@ -259,7 +269,7 @@ class AmigoWebhookResource extends Resource
                     ->color(fn (AmigoWebhook $record) => $record->error ? Color::Rose : Color::Green),
                 // ->tooltip(fn (AmigoWebhook $record) => $record->error ? new HtmlString('<code>' . $record->error['message'] . '</code>') : null),
 
-                Tables\Columns\TextColumn::make('sender')
+                TextColumn::make('sender')
                     ->label('Sender')
                     // ->getStateUsing(fn (AmigoWebhook $record) => $record->sender)
                     // ->html()
@@ -267,14 +277,14 @@ class AmigoWebhookResource extends Resource
                     ->copyable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Received At')
                     ->sortable()
                     ->dateTime()
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('errorMessage')
+                TernaryFilter::make('errorMessage')
                     ->queries(
                         true: fn ($query) => $query->whereNotNull('error'),
                         false: fn ($query) => $query->whereNull('error'),
@@ -282,7 +292,7 @@ class AmigoWebhookResource extends Resource
                     )
                     ->label('Failed')
                     ->default(true),
-                Tables\Filters\SelectFilter::make('listener_id')
+                SelectFilter::make('listener_id')
                     ->relationship('listener', 'display_name')
                     ->label('Listener')
                     ->multiple()
@@ -292,8 +302,8 @@ class AmigoWebhookResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->emptyStateHeading('No Webhooks')
             ->emptyStateDescription('Setup a listener to start receiving webhooks.')
-            ->actions([
-                Tables\Actions\Action::make('reprocess')
+            ->recordActions([
+                Action::make('reprocess')
                     ->label('Reprocess')
                     ->icon('far-arrow-rotate-right')
                     ->action(fn (AmigoWebhook $record) => $record->reprocess())
@@ -302,9 +312,9 @@ class AmigoWebhookResource extends Resource
                 // Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('reprocess')
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('reprocess')
                         ->label('Reprocess')
                         ->icon('far-arrow-rotate-right')
                         ->action(function (Collection $records) {
@@ -327,10 +337,10 @@ class AmigoWebhookResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages\ListAmigoWebhooks::route('/'),
-            'create' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages\CreateAmigoWebhook::route('/create'),
-            'view' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages\ViewAmigoWebhook::route('/{record}'),
-            'edit' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages\EditAmigoWebhook::route('/{record}/edit'),
+            'index' => ListAmigoWebhooks::route('/'),
+            'create' => CreateAmigoWebhook::route('/create'),
+            'view' => ViewAmigoWebhook::route('/{record}'),
+            'edit' => EditAmigoWebhook::route('/{record}/edit'),
         ];
     }
 }

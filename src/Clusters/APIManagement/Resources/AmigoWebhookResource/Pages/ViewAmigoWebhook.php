@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource\Pages;
 
+use Filament\Actions\Action;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Filament\Actions;
@@ -15,7 +16,7 @@ class ViewAmigoWebhook extends ViewRecord
     {
         return [
             // Actions\EditAction::make(),
-            Actions\Action::make('download_large_payload')
+            Action::make('download_large_payload')
                 ->icon('far-download')
                 ->label('Download Payload')
                 ->button()
@@ -33,7 +34,7 @@ class ViewAmigoWebhook extends ViewRecord
                         echo $body;
                     }, $filename, $headers);
                 }),
-            Actions\Action::make('reprocess')
+            Action::make('reprocess')
                 ->label('Reprocess')
                 ->icon('far-arrows-rotate')
                 ->requiresConfirmation()

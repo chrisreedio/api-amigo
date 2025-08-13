@@ -2,6 +2,8 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\Pages;
 
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use Filament\Actions;
@@ -26,10 +28,10 @@ class ViewAmigoListener extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('generateSignature')
+            Action::make('generateSignature')
                 ->label('Generate Payload Signature')
                 ->icon('far-flask-vial')
-                ->form([
+                ->schema([
                     Textarea::make('payload')
                         ->rows(15)
                         ->grow(),
@@ -53,7 +55,7 @@ class ViewAmigoListener extends ViewRecord
                         ->persistent()
                         ->send();
                 }),
-            Actions\EditAction::make(),
+            EditAction::make(),
         ];
     }
 }

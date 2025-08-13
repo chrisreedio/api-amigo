@@ -2,10 +2,16 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\CreateAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -17,11 +23,11 @@ class AmigoRequestsRelationManager extends RelationManager
 {
     protected static string $relationship = 'requests';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('endpoint.name')
+        return $schema
+            ->components([
+                TextInput::make('endpoint.name')
                     ->label('Endpoint')
                     ->required()
                     ->maxLength(255),
@@ -34,23 +40,23 @@ class AmigoRequestsRelationManager extends RelationManager
             // ->recordTitleAttribute('name')
             ->recordUrl(fn (AmigoRequest $record) => $record->response()->exists() ? AmigoResponseResource::getUrl('view', ['record' => $record->response]) : null)
             ->columns([
-                Tables\Columns\TextColumn::make('endpoint.connector.name')
+                TextColumn::make('endpoint.connector.name')
                     ->label('Connector'),
-                Tables\Columns\TextColumn::make('endpoint.name')
+                TextColumn::make('endpoint.name')
                     ->placeholder('No Display Name')
                     ->label('Endpoint Name'),
-                Tables\Columns\TextColumn::make('endpoint.styled_path')
+                TextColumn::make('endpoint.styled_path')
                     ->label('Endpoint Path')
                     ->html()
                     // ->copyable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('response.status_code')
+                TextColumn::make('response.status_code')
                     ->label('Status')
                     ->formatStateUsing(fn (AmigoRequest $record) => $record->response?->status_code?->value . ' ' . $record->response?->status_code?->getLabel())
                     ->alignCenter()
                     ->badge()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('response.duration')
+                TextColumn::make('response.duration')
                     ->label('Duration')
                     ->badge()
                     ->placeholder('No Response')
@@ -68,7 +74,7 @@ class AmigoRequestsRelationManager extends RelationManager
                     // ->suffix('s')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('response.cached')
+                TextColumn::make('response.cached')
                     ->label('Cached')
                     ->icon('far-database')
                     ->color(fn (AmigoRequest $record) => $record->response?->cached ? Color::Green : Color::Red)
@@ -78,7 +84,7 @@ class AmigoRequestsRelationManager extends RelationManager
                     ->alignCenter()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Sent At')
                     ->sortable()
                     ->dateTime()
@@ -87,10 +93,10 @@ class AmigoRequestsRelationManager extends RelationManager
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
-                Tables\Filters\SelectFilter::make('connector_id')
+                SelectFilter::make('connector_id')
                     ->relationship('endpoint.connector', 'name')
                     ->label('Connector'),
-                Tables\Filters\SelectFilter::make('endpoint_id')
+                SelectFilter::make('endpoint_id')
                     ->relationship('endpoint', 'path')
                     ->label('Endpoint')
                     ->searchable()
@@ -98,17 +104,17 @@ class AmigoRequestsRelationManager extends RelationManager
                     ->preload(),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
                 // Tables\Actions\ViewAction::make()
                 //     ->url(fn (AmigoRequest $record) => $record->response()->exists() ? AmigoResponseResource::getUrl('view', ['record' => $record->response]) : null),
                 // Tables\Actions\DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

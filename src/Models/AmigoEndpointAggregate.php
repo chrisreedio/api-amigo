@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -24,10 +25,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $p95_duration
  * @property int $p99_duration
  * @property array $duration_histogram
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \ChrisReedIO\APIAmigo\Models\AmigoEndpoint $endpoint
- * @property-read \ChrisReedIO\APIAmigo\Models\AmigoIntegration $integration
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AmigoEndpoint $endpoint
+ * @property-read AmigoIntegration $integration
  */
 class AmigoEndpointAggregate extends Model
 {

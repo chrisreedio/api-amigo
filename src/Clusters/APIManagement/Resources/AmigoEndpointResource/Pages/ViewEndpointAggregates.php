@@ -2,11 +2,13 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,18 +19,18 @@ class ViewEndpointAggregates extends ManageRelatedRecords
 
     protected static string $relationship = 'aggregates';
 
-    protected static string | BackedEnum | null $navigationIcon = 'far-chart-bar';
+    protected static string | \BackedEnum | null $navigationIcon = 'far-chart-bar';
 
     public static function getNavigationLabel(): string
     {
         return 'Aggregates';
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('window_start')
+        return $schema
+            ->components([
+                TextInput::make('window_start')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -39,17 +41,17 @@ class ViewEndpointAggregates extends ManageRelatedRecords
         return $table
             ->recordTitleAttribute('window_start')
             ->columns([
-                Tables\Columns\TextColumn::make('window_start')->dateTime(),
-                Tables\Columns\TextColumn::make('interval')
+                TextColumn::make('window_start')->dateTime(),
+                TextColumn::make('interval')
                     ->formatStateUsing(fn (AmigoEndpointAggregate $record) => $record->interval / 60)
                     ->suffix(' minutes'),
 
-                Tables\Columns\TextColumn::make('min_duration')
+                TextColumn::make('min_duration')
                     ->label('Min Duration')
                     ->floatDuration()
                     ->toggleable(isToggledHiddenByDefault: false),
 
-                Tables\Columns\TextColumn::make('max_duration')
+                TextColumn::make('max_duration')
                     ->label('Max Duration')
                     ->floatDuration()
                     ->toggleable(isToggledHiddenByDefault: false),
@@ -61,7 +63,7 @@ class ViewEndpointAggregates extends ManageRelatedRecords
                 // Tables\Actions\CreateAction::make(),
                 // Tables\Actions\AssociateAction::make(),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
                 // Tables\Actions\DissociateAction::make(),
                 // Tables\Actions\DeleteAction::make(),

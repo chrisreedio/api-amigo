@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages;
 
+use Filament\Actions\Action;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Filament\Actions;
@@ -33,7 +34,7 @@ class ViewAmigoResponse extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('download_large_response')
+            Action::make('download_large_response')
                 ->icon('far-download')
                 ->label('Download Response')
                 ->button()

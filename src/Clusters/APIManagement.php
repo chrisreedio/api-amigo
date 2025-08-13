@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters;
 
+use Filament\Panel;
 use BackedEnum;
 use ChrisReedIO\APIAmigo\APIAmigoPlugin;
 use Filament;
@@ -36,7 +37,7 @@ class APIManagement extends Cluster
         return config('api-amigo.filament.breadcrumb', 'API Management');
     }
 
-    public static function getSlug(?Filament\Panel $panel = null): string
+    public static function getSlug(?Panel $panel = null): string
     {
         return config('api-amigo.filament.slug', 'api-management');
     }

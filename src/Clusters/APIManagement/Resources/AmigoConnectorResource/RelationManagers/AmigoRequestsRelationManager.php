@@ -2,10 +2,16 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -17,11 +23,11 @@ class AmigoRequestsRelationManager extends RelationManager
 {
     protected static string $relationship = 'requests';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -46,27 +52,27 @@ class AmigoRequestsRelationManager extends RelationManager
                 //     ->html()
                 //     ->copyable()
                 //     ->searchable(),
-                Tables\Columns\TextColumn::make('endpoint.name')
+                TextColumn::make('endpoint.name')
                     ->label('Endpoint')
                     ->tooltip(fn (AmigoRequest $record) => $record->endpoint->path)
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('path')
+                TextColumn::make('path')
                     ->label('Path')
                     ->getStateUsing(fn (AmigoRequest $record) => $record->path ?? $record->endpoint->styled_path)
                     ->html()
                     ->copyable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('response.status_code')
+                TextColumn::make('response.status_code')
                     ->label('Status')
                     ->placeholder('No Response')
                     ->formatStateUsing(fn (AmigoRequest $record) => $record->response->status_code->value . ' ' . $record->response->status_code->getLabel())
                     ->badge()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('response.duration')
+                TextColumn::make('response.duration')
                     ->label('Duration')
                     ->badge()
                     ->color(function ($record) {
@@ -90,7 +96,7 @@ class AmigoRequestsRelationManager extends RelationManager
                 //     ->counts('requests')
                 //     ->sortable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Sent At')
                     ->sortable()
                     ->dateTime()
@@ -101,16 +107,16 @@ class AmigoRequestsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
                 // Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ViewAction::make()->url(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response])),
+                ViewAction::make()->url(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response])),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

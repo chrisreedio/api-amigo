@@ -2,14 +2,23 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\RelationManagers\AmigoEndpointsRelationManager;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\RelationManagers\AmigoRequestsRelationManager;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages\ListAmigoConnectors;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages\ViewAmigoConnector;
 use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages;
 use ChrisReedIO\APIAmigo\Models\AmigoConnector;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -19,7 +28,7 @@ class AmigoConnectorResource extends Resource
 {
     protected static ?string $model = AmigoConnector::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'far-plug';
+    protected static string | \BackedEnum | null $navigationIcon = 'far-plug';
 
     protected static ?string $modelLabel = 'Connector';
 
@@ -37,41 +46,41 @@ class AmigoConnectorResource extends Resource
         return number_format(static::getModel()::count());
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->columns(3)
             ->schema([
                 // Infolists\Components\TextEntry::make('name'),
 
-                Infolists\Components\TextEntry::make('integration.name')
+                TextEntry::make('integration.name')
                     ->url(fn (AmigoConnector $record) => AmigoIntegrationResource::getUrl('view', ['record' => $record->integration]))
                     ->placeholder('All Integrations')
                     ->label('Integration'),
 
-                Infolists\Components\TextEntry::make('display_name')
+                TextEntry::make('display_name')
                     ->placeholder('Not Set')
                     ->label('Display Name'),
 
-                Infolists\Components\TextEntry::make('rate_limit')
+                TextEntry::make('rate_limit')
                     ->numeric()
                     ->badge()
                     ->placeholder('Unknown')
                     ->label('Rate Limit'),
 
-                Infolists\Components\TextEntry::make('rate_usage')
+                TextEntry::make('rate_usage')
                     ->numeric()
                     ->badge()
                     ->placeholder('Unknown')
                     ->label('Rate Usage'),
 
-                Infolists\Components\TextEntry::make('rate_limit_remaining')
+                TextEntry::make('rate_limit_remaining')
                     ->numeric()
                     ->badge()
                     ->placeholder('Unknown')
                     ->label('Rate Limit Remaining'),
 
-                Infolists\Components\TextEntry::make('rate_usage_percentage')
+                TextEntry::make('rate_usage_percentage')
                     ->numeric()
                     ->badge()
                     ->label('Usage Percent')
@@ -103,24 +112,24 @@ class AmigoConnectorResource extends Resource
             ]);
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->readOnly()
                     ->maxLength(255),
 
-                Forms\Components\Select::make('integration_id')
+                Select::make('integration_id')
                     ->relationship('integration', 'name')
                     ->required(),
 
-                Forms\Components\TextInput::make('display_name')
+                TextInput::make('display_name')
                     // ->required()
                     ->maxLength(255),
 
-                Forms\Components\ColorPicker::make('color')
+                ColorPicker::make('color')
                     ->required(),
 
                 // Forms\Components\TextInput::make('total_requests')
@@ -136,26 +145,26 @@ class AmigoConnectorResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('integration.name')
+                TextColumn::make('integration.name')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('display_name')
+                TextColumn::make('display_name')
                     ->placeholder('Not Set')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('rate_limit')
+                TextColumn::make('rate_limit')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('rate_usage')
+                TextColumn::make('rate_usage')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('rate_limit_remaining')
+                TextColumn::make('rate_limit_remaining')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('rate_usage_percentage')
+                TextColumn::make('rate_usage_percentage')
                     ->numeric()
                     ->label('Usage Percent')
                     ->badge()
@@ -171,13 +180,13 @@ class AmigoConnectorResource extends Resource
                     })
                     ->suffix('%')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('endpoints_count')
+                TextColumn::make('endpoints_count')
                     ->label('Endpoints')
                     ->badge()
                     ->counts('endpoints')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('aggregates_sum_total_requests')
+                TextColumn::make('aggregates_sum_total_requests')
                     ->label('Requests')
                     ->badge()
                     ->sum('aggregates', 'total_requests')
@@ -195,11 +204,11 @@ class AmigoConnectorResource extends Resource
                 //     ->dateTime()
                 //     ->sortable()
                 //     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -207,11 +216,11 @@ class AmigoConnectorResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // Tables\Actions\BulkActionGroup::make([
                 //     Tables\Actions\DeleteBulkAction::make(),
                 // ]),
@@ -221,17 +230,17 @@ class AmigoConnectorResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\RelationManagers\AmigoEndpointsRelationManager::class,
-            \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\RelationManagers\AmigoRequestsRelationManager::class,
+            AmigoEndpointsRelationManager::class,
+            AmigoRequestsRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages\ListAmigoConnectors::route('/'),
+            'index' => ListAmigoConnectors::route('/'),
             // 'create' => Pages\CreateAmigoConnector::route('/create'),
-            'view' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages\ViewAmigoConnector::route('/{record}'),
+            'view' => ViewAmigoConnector::route('/{record}'),
             // 'edit' => Pages\EditAmigoConnector::route('/{record}/edit'),
         ];
     }

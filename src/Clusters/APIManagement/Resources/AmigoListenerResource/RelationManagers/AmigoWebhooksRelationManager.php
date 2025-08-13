@@ -2,10 +2,16 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\CreateAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -16,13 +22,13 @@ class AmigoWebhooksRelationManager extends RelationManager
 {
     protected static string $relationship = 'webhooks';
 
-    protected static ?string $icon = 'far-webhook';
+    protected static string | \BackedEnum | null $icon = 'far-webhook';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -33,7 +39,7 @@ class AmigoWebhooksRelationManager extends RelationManager
         return $table
             // ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('processed_at')
+                TextColumn::make('processed_at')
                     ->label('Processed')
                     ->icon(fn (AmigoWebhook $record) => $record->processed_at ? 'far-circle-check' : 'far-hourglass-start')
                     ->default('Not Processed')
@@ -42,7 +48,7 @@ class AmigoWebhooksRelationManager extends RelationManager
                     ->badge()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('type')
+                TextColumn::make('type')
                     ->label('Type')
                     ->badge()
                     ->placeholder('No Type')
@@ -50,7 +56,7 @@ class AmigoWebhooksRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('error.message')
+                TextColumn::make('error.message')
                     ->label('Result / Error Message')
                     // ->icon(fn (AmigoWebhook $record) => $record->error !== null ? 'far-triangle-exclamation' : null)
                     ->words(5)
@@ -67,7 +73,7 @@ class AmigoWebhooksRelationManager extends RelationManager
 
                 // ->tooltip(fn (AmigoWebhook $record) => $record->error ? new HtmlString('<code>' . $record->error['message'] . '</code>') : null),
 
-                Tables\Columns\TextColumn::make('sender')
+                TextColumn::make('sender')
                     ->label('Sender')
                     // ->getStateUsing(fn (AmigoWebhook $record) => $record->sender)
                     // ->html()
@@ -110,7 +116,7 @@ class AmigoWebhooksRelationManager extends RelationManager
                 // //     ->counts('requests')
                 // //     ->sortable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Received At')
                     ->sortable()
                     ->dateTime()
@@ -123,16 +129,16 @@ class AmigoWebhooksRelationManager extends RelationManager
             ->emptyStateHeading('No Webhooks')
             ->emptyStateDescription('No webhooks have been sent yet to this listener.')
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
                 // Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ViewAction::make()->url(fn (AmigoWebhook $record) => AmigoWebhookResource::getUrl('view', ['record' => $record])),
+                ViewAction::make()->url(fn (AmigoWebhook $record) => AmigoWebhookResource::getUrl('view', ['record' => $record])),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

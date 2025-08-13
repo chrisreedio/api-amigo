@@ -2,6 +2,8 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages;
 
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointStatsOverview;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets\EndpointResponsesChart;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Widgets;
 use Filament\Resources\Pages\ViewRecord;
@@ -21,7 +23,7 @@ class ViewAmigoEndpoint extends ViewRecord
     protected function getHeaderWidgets(): array
     {
         return [
-            AmigoEndpointResource\Widgets\EndpointStatsOverview::class,
+            EndpointStatsOverview::class,
         ];
     }
 
@@ -29,7 +31,7 @@ class ViewAmigoEndpoint extends ViewRecord
     {
         return [
             // Widgets\EndpointStatsOverview::class,
-            AmigoEndpointResource\Widgets\EndpointResponsesChart::class,
+            EndpointResponsesChart::class,
             // Widgets\EndpointResponsesChart::class,
         ];
     }

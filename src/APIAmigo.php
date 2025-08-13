@@ -2,6 +2,9 @@
 
 namespace ChrisReedIO\APIAmigo;
 
+use InvalidArgumentException;
+use ReflectionClass;
+use RuntimeException;
 use ChrisReedIO\APIAmigo\Jobs\ProcessWebhookJob;
 use ChrisReedIO\APIAmigo\Middleware\Guzzle\TrackGuzzleRequest;
 use ChrisReedIO\APIAmigo\Middleware\Guzzle\TrackGuzzleResponse;
@@ -20,12 +23,12 @@ class APIAmigo
     {
         // Ensure that the handler job class exists
         if (! class_exists($handlerJobClass)) {
-            throw new \InvalidArgumentException("The webhook handler job class {$handlerJobClass} does not exist.");
+            throw new InvalidArgumentException("The webhook handler job class {$handlerJobClass} does not exist.");
         }
 
         // Also make sure it extends the ProcessWebhookJob class
         if (! is_subclass_of($handlerJobClass, ProcessWebhookJob::class)) {
-            throw new \InvalidArgumentException("The webhook handler job class {$handlerJobClass} must extend the ProcessWebhookJob class.");
+            throw new InvalidArgumentException("The webhook handler job class {$handlerJobClass} must extend the ProcessWebhookJob class.");
         }
 
         // static::$webhookHandlers[$event] = $handler;
@@ -41,9 +44,9 @@ class APIAmigo
     {
         // Get the existing client config via reflection
         try {
-            $config = (new \ReflectionClass($client))->getProperty('config')->getValue($client);
+            $config = (new ReflectionClass($client))->getProperty('config')->getValue($client);
         } catch (ReflectionException $e) {
-            throw new \RuntimeException('Unable to access the Guzzle client configuration.');
+            throw new RuntimeException('Unable to access the Guzzle client configuration.');
         }
 
         // Create a handler stack from the existing client handler stack

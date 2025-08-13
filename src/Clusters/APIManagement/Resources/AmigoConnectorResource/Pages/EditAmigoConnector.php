@@ -2,6 +2,8 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages;
 
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,8 +15,8 @@ class EditAmigoConnector extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            ViewAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

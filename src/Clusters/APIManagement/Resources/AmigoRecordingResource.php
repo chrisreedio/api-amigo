@@ -2,14 +2,32 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\RelationManagers\AmigoRequestsRelationManager;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages\ListAmigoRecordings;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages\ViewAmigoRecording;
 use BackedEnum;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages;
 use ChrisReedIO\APIAmigo\Models\AmigoRecording;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -21,7 +39,7 @@ class AmigoRecordingResource extends Resource
 {
     protected static ?string $model = AmigoRecording::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'far-cassette-tape';
+    protected static string | \BackedEnum | null $navigationIcon = 'far-cassette-tape';
 
     protected static ?string $modelLabel = 'Recording';
 
@@ -39,32 +57,32 @@ class AmigoRecordingResource extends Resource
         return number_format(static::getModel()::count());
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->columns(4)
             ->schema([
-                Infolists\Components\TextEntry::make('name'),
+                TextEntry::make('name'),
 
-                Infolists\Components\TextEntry::make('connector.name')
+                TextEntry::make('connector.name')
                     ->placeholder('All Connectors')
                     ->label('Connector'),
 
-                Infolists\Components\TextEntry::make('started_at')
+                TextEntry::make('started_at')
                     ->placeholder('Not Started')
                     ->icon(fn (AmigoRecording $recording) => $recording->started_at ? 'far-play' : null)
                     ->iconColor(fn (AmigoRecording $recording) => $recording->started_at ? Color::Green : null)
                     ->dateTime()
                     ->label('Started At'),
 
-                Infolists\Components\TextEntry::make('ended_at')
+                TextEntry::make('ended_at')
                     ->placeholder('Not Ended')
                     ->icon(fn (AmigoRecording $recording) => $recording->ended_at ? 'far-stop' : null)
                     ->iconColor(fn (AmigoRecording $recording) => $recording->ended_at ? Color::Red : null)
                     ->dateTime()
                     ->label('Ended At'),
 
-                Infolists\Components\IconEntry::make('global')
+                IconEntry::make('global')
                     ->boolean()
                     ->columnSpan(2)
                     // ->columnSpan([
@@ -74,7 +92,7 @@ class AmigoRecordingResource extends Resource
                     // ->hint('Includes system requests'),
                     ->helperText('Includes system requests'),
 
-                Infolists\Components\IconEntry::make('capture_body')
+                IconEntry::make('capture_body')
                     ->boolean()
                     ->label('Capture Response Body')
                     // ->hint('Could include sensitive data!')
@@ -86,41 +104,41 @@ class AmigoRecordingResource extends Resource
                     // ->hintColor(Color::Yellow),
                     ->helperText('Could include sensitive data!'),
 
-                Infolists\Components\TextEntry::make('description')
+                TextEntry::make('description')
                     ->hidden(fn (AmigoRecording $recording) => ! $recording->description)
                     ->placeholder('No Description')
                     ->columnSpanFull(),
             ]);
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 // Forms\Components\Select::make('user_id')
                 //     ->relationship('user', 'name')
                 //     ->required(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->helperText('A unique name for this recording.')
                     ->maxLength(255),
 
-                Forms\Components\Select::make('connector_id')
+                Select::make('connector_id')
                     ->placeholder('Record all connectors')
                     ->helperText('Capture requests from a specific connector.')
                     ->relationship('connector', 'name'),
 
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->columnSpanFull(),
 
                 // Forms\Components\DateTimePicker::make('started_at'),
                 // Forms\Components\DateTimePicker::make('ended_at'),
 
-                Forms\Components\Toggle::make('global')
+                Toggle::make('global')
                     // ->columnSpan(2)
                     // ->hint('Includes system requests')
                     ->helperText('Capture requests from all users including the system.'),
 
-                Forms\Components\Toggle::make('capture_body')
+                Toggle::make('capture_body')
                     ->label('Capture Response Body')
                     // ->columnSpan(2)
                     ->hintColor(Color::Rose)
@@ -133,49 +151,49 @@ class AmigoRecordingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('connector.name')
+                TextColumn::make('connector.name')
                     ->placeholder('All Connectors')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->placeholder('No Name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('started_at')
+                TextColumn::make('started_at')
                     ->dateTime()
                     ->placeholder('Not Started')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ended_at')
+                TextColumn::make('ended_at')
                     ->dateTime()
                     ->placeholder('Not Ended')
                     ->sortable(),
-                Tables\Columns\IconColumn::make('global')
+                IconColumn::make('global')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('user_id')
+                SelectFilter::make('user_id')
                     ->relationship('user', 'name')
                     ->placeholder('All Users'),
-                Tables\Filters\SelectFilter::make('connector_id')
+                SelectFilter::make('connector_id')
                     ->relationship('connector', 'name')
                     ->placeholder('All Connectors'),
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraints([
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at'),
+                        DateConstraint::make('created_at'),
                     ]),
 
             ])
-            ->actions([
-                Tables\Actions\Action::make('start')
+            ->recordActions([
+                Action::make('start')
                     ->label('Start')
                     ->icon('far-play')
                     ->color(Color::Green)
@@ -183,7 +201,7 @@ class AmigoRecordingResource extends Resource
                     ->requiresConfirmation()
                     ->modalDescription('Are you sure you want to start this recording?')
                     ->action(fn (AmigoRecording $recording) => $recording->start()),
-                Tables\Actions\Action::make('stop')
+                Action::make('stop')
                     ->label('Stop')
                     ->icon('far-stop')
                     ->color(Color::Red)
@@ -191,12 +209,12 @@ class AmigoRecordingResource extends Resource
                     ->requiresConfirmation()
                     ->modalDescription('Are you sure you want to stop this recording?')
                     ->action(fn (AmigoRecording $recording) => $recording->stop()),
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -204,16 +222,16 @@ class AmigoRecordingResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\RelationManagers\AmigoRequestsRelationManager::class,
+            AmigoRequestsRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages\ListAmigoRecordings::route('/'),
+            'index' => ListAmigoRecordings::route('/'),
             // 'create' => Pages\CreateAmigoRecording::route('/create'),
-            'view' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages\ViewAmigoRecording::route('/{record}'),
+            'view' => ViewAmigoRecording::route('/{record}'),
             // 'edit' => Pages\EditAmigoRecording::route('/{record}/edit'),
         ];
     }

@@ -2,9 +2,12 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\CreateAction;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -13,15 +16,15 @@ class AmigoEndpointAggregatesRelationManager extends RelationManager
 {
     protected static string $relationship = 'aggregates';
 
-    protected static ?string $icon = 'far-chart-bar';
+    protected static string | \BackedEnum | null $icon = 'far-chart-bar';
 
     // protected static string $relationship = 'aggregates';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -37,19 +40,19 @@ class AmigoEndpointAggregatesRelationManager extends RelationManager
                 //     ->tooltip(fn (AmigoRequest $record) => $record->endpoint->path)
                 //     ->searchable()
                 //     ->sortable(),
-                Tables\Columns\TextColumn::make('min_duration')
+                TextColumn::make('min_duration')
                     ->label('Min Duration')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
 
-                Tables\Columns\TextColumn::make('max_duration')
+                TextColumn::make('max_duration')
                     ->label('Max Duration')
                     ->sortable()
                     ->formatStateUsing(fn (AmigoEndpointAggregate $record) => $record->max_duration * 1000)
                     ->suffix('ms')
                     ->toggleable(isToggledHiddenByDefault: false),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Sent At')
                     ->sortable()
                     ->dateTime()
@@ -60,9 +63,9 @@ class AmigoEndpointAggregatesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
                 // Tables\Actions\DeleteAction::make(),
                 // Tables\Actions\ViewAction::make()->url(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response])),

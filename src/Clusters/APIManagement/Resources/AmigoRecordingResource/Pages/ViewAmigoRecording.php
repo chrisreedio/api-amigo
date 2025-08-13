@@ -2,6 +2,8 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages;
 
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource;
 use ChrisReedIO\APIAmigo\Models\AmigoRecording;
 use Filament\Actions;
@@ -15,7 +17,7 @@ class ViewAmigoRecording extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('start')
+            Action::make('start')
                 ->label('Start')
                 ->icon('far-play')
                 ->color(Color::Green)
@@ -23,7 +25,7 @@ class ViewAmigoRecording extends ViewRecord
                 ->requiresConfirmation()
                 ->modalDescription('Are you sure you want to start this recording?')
                 ->action(fn (AmigoRecording $recording) => $recording->start()),
-            Actions\Action::make('stop')
+            Action::make('stop')
                 ->label('Stop')
                 ->icon('far-stop')
                 ->color(Color::Red)
@@ -31,7 +33,7 @@ class ViewAmigoRecording extends ViewRecord
                 ->requiresConfirmation()
                 ->modalDescription('Are you sure you want to stop this recording?')
                 ->action(fn (AmigoRecording $recording) => $recording->stop()),
-            Actions\EditAction::make(),
+            EditAction::make(),
         ];
     }
 }
