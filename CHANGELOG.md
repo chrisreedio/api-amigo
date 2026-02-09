@@ -2,6 +2,14 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v4.1.0 - 2026-02-09
+
+### What's Changed
+
+* build(deps): bump dependabot/fetch-metadata from 2.4.0 to 2.5.0 by @dependabot[bot] in https://github.com/chrisreedio/api-amigo/pull/73
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v4.0.0-beta.5...v4.1.0
+
 ## v4.0.0-beta.5 - 2025-08-13
 
 * Add phiki/phiki as a new dependency in composer.json
