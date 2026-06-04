@@ -25,7 +25,7 @@
         "flowframe/laravel-trend": "^0.4.0",
         "laravel/sanctum": "^3.3|^4.0",
         "phiki/phiki": "^1.1",
-        "saloonphp/saloon": "^3.0",
+        "saloonphp/saloon": "^3.0|^4.0",
         "spatie/laravel-package-tools": "^1.15.0",
         "spatie/shiki-php": "^2.0"
     },
