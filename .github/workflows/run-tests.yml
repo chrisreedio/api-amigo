@@ -2,10 +2,9 @@ name: run-tests
 
 on:
   push:
-    branches: [main]
+    branches: [4.x]
   pull_request:
-#    branches: [*]
-#    branches: [main]
+    branches: [4.x]
 
 jobs:
   test:
@@ -18,24 +17,21 @@ jobs:
         laravel: [11.*, 12.*, 13.*]
         stability: [prefer-lowest, prefer-stable]
         include:
-          - laravel: 10.*
-            testbench: ^8.14
-            carbon: ^2.63
           - laravel: 11.*
             testbench: 9.*
             carbon: ^2.63
           - laravel: 12.*
             testbench: 10.*
-            carbon: ^2.63
+            carbon: ^3.8
           - laravel: 13.*
             testbench: 11.*
-            carbon: ^2.63
+            carbon: ^3.8
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
