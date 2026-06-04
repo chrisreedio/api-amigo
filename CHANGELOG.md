@@ -2,6 +2,17 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v4.1.1 - 2026-06-04
+
+### What's Changed
+
+* Update saloonphp/saloon dependency version constraint to support version 4.0 in composer.json by @chrisreedio in https://github.com/chrisreedio/api-amigo/pull/77
+* build(deps): bump dependabot/fetch-metadata from 2.5.0 to 3.1.0 by @dependabot[bot] in https://github.com/chrisreedio/api-amigo/pull/76
+* build(deps): bump ramsey/composer-install from 3 to 4 by @dependabot[bot] in https://github.com/chrisreedio/api-amigo/pull/74
+* build(deps): bump actions/checkout from 4 to 6 by @dependabot[bot] in https://github.com/chrisreedio/api-amigo/pull/72
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v4.1.0...v4.1.1
+
 ## v4.1.0 - 2026-02-09
 
 ### What's Changed
