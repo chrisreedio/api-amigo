@@ -13,12 +13,21 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest] #, windows-latest]
-        php: [8.3, 8.4]
-        laravel: [12.*]
+        php: [8.3, 8.4, 8.5]
+        laravel: [12.*, 13.*]
         stability: [prefer-lowest, prefer-stable]
+        # The oldest dependency set only needs checking on the oldest PHP.
+        exclude:
+          - php: 8.4
+            stability: prefer-lowest
+          - php: 8.5
+            stability: prefer-lowest
         include:
           - laravel: 12.*
             testbench: 10.*
+            carbon: ^3.8
+          - laravel: 13.*
+            testbench: 11.*
             carbon: ^3.8
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
