@@ -1,0 +1,16 @@
+services:
+  demo:
+    cwd: ../repos/api-amigo-demo
+    command: >-
+      php artisan optimize:clear && APP_URL="$PUBLIC_URL" ASSET_URL="$PUBLIC_URL"
+      php artisan serve --host=0.0.0.0 --port="$PORT"
+    health: /up
+    portal:
+      url: /dev/login
+      title: API Amigo Demo
+      description: Signs in as test@example.com (password p4ssw0rd). The demo uses this checkout of the package, so changes show up on reload.
+  docs:
+    cwd: ../repos/api-amigo-docs
+    command: npx nuxt dev --host 0.0.0.0 --port "$PORT"
+    portal:
+      title: API Amigo Docs

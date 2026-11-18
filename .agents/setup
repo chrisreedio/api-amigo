@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+# Prepares an Amp orb for api-amigo: PHP 8.4 + Composer, PostgreSQL, the package's
+# dependencies, the demo app (../repos/api-amigo-demo) linked to this checkout, and
+# the docs site (../repos/api-amigo-docs).
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repos_dir="$(dirname "$repo_root")/repos"
+demo_dir="$repos_dir/api-amigo-demo"
+docs_dir="$repos_dir/api-amigo-docs"
+cd "$repo_root"
+
+step() {
+  local name="$1"
+  shift
+  echo "==> $name"
+  local start=$SECONDS
+  "$@"
+  echo "<== $name ($((SECONDS - start))s)"
+}
+
+# Extensions mirror the run-tests CI workflow (tests use in-memory SQLite); the demo
+# needs PostgreSQL because the package's migrations and aggregation queries do.
+apt_packages=(
+  php8.4-cli php8.4-bcmath php8.4-curl php8.4-gd php8.4-intl php8.4-mbstring
+  php8.4-pgsql php8.4-sqlite3 php8.4-xml php8.4-zip unzip composer postgresql
+)
+
+install_apt_packages() {
+  local missing=()
+  for pkg in "${apt_packages[@]}"; do
+    dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q 'install ok installed' || missing+=("$pkg")
+  done
+  if ((${#missing[@]} == 0)); then
+    echo "all apt packages present"
+    return
+  fi
+  sudo apt-get update -qq
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends "${missing[@]}"
+}
+
+npm_ci_if_needed() {
+  if [ -d node_modules ] && [ node_modules/.package-lock.json -nt package-lock.json ]; then
+    echo "node_modules up to date"
+  else
+    npm ci --no-audit --no-fund
+  fi
+}
+
+# composer.lock is gitignored, so dependencies resolve like CI's prefer-stable job.
+# Composer reuses the restored vendor/ and lock file on a warm run.
+install_package_deps() {
+  if [ -f composer.lock ]; then
+    composer install --prefer-dist --no-interaction --no-progress
+  else
+    composer update --prefer-dist --no-interaction --no-progress
+  fi
+  npm_ci_if_needed
+}
+
+setup_postgres() {
+  local conf
+  conf="$(ls -d /etc/postgresql/*/main | sort -V | tail -1)/conf.d/amp-orb.conf"
+  local tuning=$'fsync = off\nsynchronous_commit = off\nfull_page_writes = off'
+  if [ "$(cat "$conf" 2>/dev/null)" != "$tuning" ]; then
+    echo "$tuning" | sudo tee "$conf" >/dev/null
+    sudo systemctl restart postgresql
+  fi
+  sudo systemctl enable --now postgresql
+  until sudo -u postgres pg_isready -q; do sleep 1; done
+  sudo -u postgres psql -qtAc "SELECT 1 FROM pg_roles WHERE rolname = 'amigo'" | grep -q 1 \
+    || sudo -u postgres psql -qc "CREATE ROLE amigo LOGIN CREATEDB PASSWORD 'amigo'"
+  sudo -u postgres psql -qtAc "SELECT 1 FROM pg_database WHERE datname = 'api_amigo_demo'" | grep -q 1 \
+    || sudo -u postgres createdb -O amigo api_amigo_demo
+}
+
+# The demo requires chrisreedio/api-amigo from a path repository at ../api-amigo and
+# symlinks it into vendor/, so pointing that path at this checkout makes package
+# edits show up in the demo without reinstalling.
+setup_demo() {
+  ln -sfn "$repo_root" "$repos_dir/api-amigo"
+  cd "$demo_dir"
+  [ -f .env ] || cp -- .env.example .env
+  composer install --prefer-dist --no-interaction --no-progress
+  grep -q '^APP_KEY=base64:' .env || php artisan key:generate --force --no-interaction
+  # Picks up migrations added to the package since the demo last published them.
+  php artisan vendor:publish --tag=api-amigo-migrations --no-interaction
+  php artisan migrate --force --no-interaction
+  php artisan db:seed --force --no-interaction
+}
+
+setup_docs() {
+  cd "$docs_dir"
+  npm_ci_if_needed
+}
+
+step "apt packages" install_apt_packages
+step "package dependencies" install_package_deps
+step "postgres" setup_postgres
+if [ -d "$demo_dir" ]; then
+  step "demo app" setup_demo
+else
+  echo "skipping demo app: $demo_dir not found"
+fi
+if [ -d "$docs_dir" ]; then
+  step "docs site" setup_docs
+else
+  echo "skipping docs site: $docs_dir not found"
+fi
