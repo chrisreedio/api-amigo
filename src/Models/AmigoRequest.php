@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -34,22 +35,26 @@ class AmigoRequest extends AmigoModel
         'path',
     ];
 
+    /** @return BelongsTo<Model, $this> */
     public function user(): BelongsTo
     {
         // return $this->belongsTo(User::class, 'user_id');
         return $this->belongsTo(config('api-amigo.models.user'), 'user_id');
     }
 
+    /** @return BelongsTo<AmigoEndpoint, $this> */
     public function endpoint(): BelongsTo
     {
         return $this->belongsTo(AmigoEndpoint::class);
     }
 
+    /** @return HasOne<AmigoResponse, $this> */
     public function response(): HasOne
     {
         return $this->hasOne(AmigoResponse::class, 'request_id');
     }
 
+    /** @return BelongsToMany<AmigoRecording, $this> */
     public function recordings(): BelongsToMany
     {
         return $this->belongsToMany(

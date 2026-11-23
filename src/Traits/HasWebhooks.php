@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  */
 trait HasWebhooks
 {
+    /** @return MorphMany<AmigoWebhook, $this> */
     public function webhooks(): MorphMany
     {
         return $this->morphMany(AmigoWebhook::class, 'webhookable');

@@ -50,11 +50,13 @@ class AmigoEndpointAggregate extends Model
         'duration_histogram',
     ];
 
+    /** @return BelongsTo<AmigoIntegration, $this> */
     public function integration(): BelongsTo
     {
         return $this->belongsTo(AmigoIntegration::class, 'integration_id');
     }
 
+    /** @return BelongsTo<AmigoEndpoint, $this> */
     public function endpoint(): BelongsTo
     {
         return $this->belongsTo(AmigoEndpoint::class, 'endpoint_id');

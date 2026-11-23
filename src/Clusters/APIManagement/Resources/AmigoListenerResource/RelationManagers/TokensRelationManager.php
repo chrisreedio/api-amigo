@@ -17,7 +17,6 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Sanctum\PersonalAccessToken;
 
 use function __;
 
@@ -44,6 +43,7 @@ class TokensRelationManager extends RelationManager
 
     public static function getBadge(Model $ownerRecord, string $pageClass): ?string
     {
+        /** @var AmigoListener $ownerRecord */
         return number_format($ownerRecord->tokens()->count()) ?: null;
     }
 
@@ -65,16 +65,12 @@ class TokensRelationManager extends RelationManager
                 TextColumn::make('name'),
                 TextColumn::make('expires_at')
                     ->label('Expires')
-                    ->formatStateUsing(function (PersonalAccessToken $record) {
-                        return $record->created_at->format('M j, Y H:i:s');
-                    })
+                    ->dateTime('M j, Y H:i:s')
                     ->placeholder('Never')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created')
-                    ->formatStateUsing(function (PersonalAccessToken $record) {
-                        return $record->created_at->format('M j, Y H:i:s');
-                    })
+                    ->dateTime('M j, Y H:i:s')
                     ->sortable(),
             ])
             // ->defaultSort('created_at', 'desc')
@@ -95,7 +91,7 @@ class TokensRelationManager extends RelationManager
                     ])
                     ->color('success')
                     ->action(function (array $data) {
-                        /* @var AmigoListener $record */
+                        /** @var AmigoListener $listener */
                         $listener = $this->ownerRecord;
                         $token = $listener->createToken($data['name']);
                         $plainToken = explode('|', $token->plainTextToken, 2)[1];
@@ -126,12 +122,5 @@ class TokensRelationManager extends RelationManager
                     DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    protected function displayTokenValue($token): void
-    {
-        $this->displayingToken = true;
-        $this->plainTextToken = explode('|', $token->plainTextToken, 2)[1];
-        $this->dispatchBrowserEvent('showing-token-modal');
     }
 }

@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -14,23 +15,23 @@ use Laravel\Sanctum\HasApiTokens;
  * Class AmigoListener
  *
  * @property int $id
- * @property int $integration_id
- * @property string $display_name
+ * @property ?int $integration_id
+ * @property ?string $display_name
  * @property string $unique_id
- * @property string $handler
- * @property string $color
- * @property string $webhook_secret
+ * @property ?string $handler
+ * @property ?string $color
+ * @property ?string $webhook_secret
  * @property string $url
  * @property int $uses
- * @property int $max_uses
+ * @property ?int $max_uses
  * @property ?Carbon $expires_at
- * @property AmigoIntegration $integration
+ * @property ?AmigoIntegration $integration
  * @property AmigoWebhook[] $webhooks
  * @property MorphTo $listenable
  * @property ?string $listenable_type
  * @property ?int $listenable_id
- * @property string $basic_auth_username
- * @property string $basic_auth_password
+ * @property ?string $basic_auth_username
+ * @property ?string $basic_auth_password
  */
 class AmigoListener extends AmigoModel
 {
@@ -61,16 +62,19 @@ class AmigoListener extends AmigoModel
         });
     }
 
+    /** @return BelongsTo<AmigoIntegration, $this> */
     public function integration(): BelongsTo
     {
         return $this->belongsTo(AmigoIntegration::class, 'integration_id');
     }
 
+    /** @return MorphTo<Model, $this> */
     public function listenable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /** @return HasMany<AmigoWebhook, $this> */
     public function webhooks(): HasMany
     {
         return $this->hasMany(AmigoWebhook::class, 'listener_id');

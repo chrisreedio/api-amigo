@@ -51,11 +51,13 @@ class AmigoResponse extends AmigoModel
         'body' => 'array',
     ];
 
+    /** @return BelongsTo<AmigoEndpoint, $this> */
     public function endpoint(): BelongsTo
     {
         return $this->belongsTo(AmigoEndpoint::class);
     }
 
+    /** @return BelongsTo<AmigoRequest, $this> */
     public function request(): BelongsTo
     {
         return $this->belongsTo(AmigoRequest::class, 'request_id');

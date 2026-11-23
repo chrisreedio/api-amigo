@@ -12,9 +12,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @property int $id
  * @property string $name
- * @property string $display_name
- * @property string $color
- * @property string $webhook_secret
+ * @property ?string $display_name
+ * @property ?string $color
+ * @property ?string $webhook_secret
  * @property int $average_duration
  */
 class AmigoIntegration extends Model
@@ -32,6 +32,7 @@ class AmigoIntegration extends Model
         // 'total_errors',
     ];
 
+    /** @return HasMany<AmigoConnector, $this> */
     public function connectors(): HasMany
     {
         return $this->hasMany(AmigoConnector::class, 'integration_id');

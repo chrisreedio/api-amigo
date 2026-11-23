@@ -19,6 +19,7 @@ use function is_subclass_of;
 /** @mixin Model */
 trait HasTransientWebhooks
 {
+    /** @return MorphMany<AmigoListener, $this> */
     public function listeners(): MorphMany
     {
         return $this->morphMany(AmigoListener::class, 'listenable');

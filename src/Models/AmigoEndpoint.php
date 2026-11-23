@@ -25,8 +25,8 @@ use function is_scalar;
  * @property int $id
  * @property int $connector_id
  * @property Method $method
- * @property string $name
- * @property string $class
+ * @property ?string $name
+ * @property ?string $class
  * @property string $path
  * @property string $styled_path
  * @property AmigoConnector $connector
@@ -77,21 +77,25 @@ class AmigoEndpoint extends AmigoModel
         return preg_replace('/\{.*?\}/', '<code style="color:#ea580c;">$0</code>', $path);
     }
 
+    /** @return BelongsTo<AmigoConnector, $this> */
     public function connector(): BelongsTo
     {
         return $this->belongsTo(AmigoConnector::class, 'connector_id');
     }
 
+    /** @return HasMany<AmigoRequest, $this> */
     public function requests(): HasMany
     {
         return $this->hasMany(AmigoRequest::class, 'endpoint_id');
     }
 
+    /** @return HasMany<AmigoResponse, $this> */
     public function responses(): HasMany
     {
         return $this->hasMany(AmigoResponse::class, 'endpoint_id');
     }
 
+    /** @return HasMany<AmigoEndpointAggregate, $this> */
     public function aggregates(): HasMany
     {
         return $this->hasMany(AmigoEndpointAggregate::class, 'endpoint_id');

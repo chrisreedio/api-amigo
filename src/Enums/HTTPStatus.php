@@ -82,7 +82,7 @@ enum HTTPStatus: int implements HasColor, HasLabel
     case NOT_EXTENDED = 510;
     case NETWORK_AUTHENTICATION_REQUIRED = 511;
 
-    public function getColor(): string | array | null
+    public function getColor(): array
     {
         return match ($this) {
             self::OK, self::CREATED, self::ACCEPTED, self::NON_AUTHORITATIVE_INFORMATION,
@@ -101,7 +101,7 @@ enum HTTPStatus: int implements HasColor, HasLabel
         };
     }
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             // 100

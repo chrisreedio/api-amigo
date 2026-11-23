@@ -1,349 +1,66 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 10
-			path: config/api-amigo.php
-
-		-
-			message: '#^Call to an undefined method ChrisReedIO\\APIAmigo\\APIAmigoServiceProvider\:\:sortable\(\)\.$#'
-			identifier: method.notFound
+			message: "#^Call to an undefined method ChrisReedIO\\\\APIAmigo\\\\APIAmigoServiceProvider\\:\\:sortable\\(\\)\\.$#"
 			count: 1
 			path: src/APIAmigoServiceProvider.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$displayName\.$#'
-			identifier: property.notFound
+			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$displayName\\.$#"
 			count: 1
 			path: src/Clusters/APIManagement/Resources/AmigoEndpointResource/Pages/ViewAmigoEndpoint.php
 
 		-
-			message: '#^Call to an undefined method Filament\\Tables\\Columns\\TextColumn\:\:floatDuration\(\)\.$#'
-			identifier: method.notFound
+			message: "#^Call to an undefined method Filament\\\\Tables\\\\Columns\\\\TextColumn\\:\\:floatDuration\\(\\)\\.$#"
 			count: 2
 			path: src/Clusters/APIManagement/Resources/AmigoEndpointResource/Pages/ViewEndpointAggregates.php
 
 		-
-			message: '#^Call to an undefined method Filament\\Forms\\Components\\TextInput\:\:hidePasswordManagerIcons\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoListenerResource.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:expired\(\)\.$#'
-			identifier: method.notFound
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\:\\:expired\\(\\)\\.$#"
 			count: 2
 			path: src/Clusters/APIManagement/Resources/AmigoListenerResource.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:transient\(\)\.$#'
-			identifier: method.notFound
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\:\\:transient\\(\\)\\.$#"
 			count: 2
 			path: src/Clusters/APIManagement/Resources/AmigoListenerResource.php
 
 		-
-			message: '#^Call to static method make\(\) on an unknown class ChrisReedIO\\APIAmigo\\Clusters\\APIManagement\\Resources\\Password\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoListenerResource.php
-
-		-
-			message: '#^Access to an undefined property ChrisReedIO\\APIAmigo\\Clusters\\APIManagement\\Resources\\AmigoListenerResource\\RelationManagers\\TokensRelationManager\:\:\$displayingToken\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoListenerResource/RelationManagers/TokensRelationManager.php
-
-		-
-			message: '#^Access to an undefined property ChrisReedIO\\APIAmigo\\Clusters\\APIManagement\\Resources\\AmigoListenerResource\\RelationManagers\\TokensRelationManager\:\:\$plainTextToken\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoListenerResource/RelationManagers/TokensRelationManager.php
-
-		-
-			message: '#^Access to an undefined property Laravel\\Sanctum\\PersonalAccessToken\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 2
-			path: src/Clusters/APIManagement/Resources/AmigoListenerResource/RelationManagers/TokensRelationManager.php
-
-		-
-			message: '#^Call to an undefined method ChrisReedIO\\APIAmigo\\Clusters\\APIManagement\\Resources\\AmigoListenerResource\\RelationManagers\\TokensRelationManager\:\:dispatchBrowserEvent\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoListenerResource/RelationManagers/TokensRelationManager.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:createToken\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoListenerResource/RelationManagers/TokensRelationManager.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:tokens\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoListenerResource/RelationManagers/TokensRelationManager.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$connector\.$#'
-			identifier: property.notFound
-			count: 2
-			path: src/Clusters/APIManagement/Resources/AmigoResponseResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoResponseResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$path\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoResponseResource.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoResponseResource/Pages/ViewAmigoResponse.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between array and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoWebhookResource/Pages/ViewAmigoWebhook.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between non\-empty\-array and '''' will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Clusters/APIManagement/Resources/AmigoWebhookResource/Pages/ViewAmigoWebhook.php
-
-		-
-			message: '#^Access to an undefined property ChrisReedIO\\APIAmigo\\Models\\AmigoResponse\:\:\$created_at\.$#'
-			identifier: property.notFound
+			message: "#^Access to an undefined property ChrisReedIO\\\\APIAmigo\\\\Models\\\\AmigoResponse\\:\\:\\$created_at\\.$#"
 			count: 1
 			path: src/Commands/ResponsesAggregationCommand.php
 
 		-
-			message: '#^Access to an undefined property ChrisReedIO\\APIAmigo\\Models\\AmigoResponse\:\:\$interval\.$#'
-			identifier: property.notFound
+			message: "#^Access to an undefined property ChrisReedIO\\\\APIAmigo\\\\Models\\\\AmigoResponse\\:\\:\\$interval\\.$#"
 			count: 1
 			path: src/Commands/ResponsesAggregationCommand.php
 
 		-
-			message: '#^Access to an undefined property ChrisReedIO\\APIAmigo\\Models\\AmigoResponse\:\:\$max_requests_per_minute\.$#'
-			identifier: property.notFound
+			message: "#^Access to an undefined property ChrisReedIO\\\\APIAmigo\\\\Models\\\\AmigoResponse\\:\\:\\$max_requests_per_minute\\.$#"
 			count: 1
 			path: src/Commands/ResponsesAggregationCommand.php
 
 		-
-			message: '#^Access to an undefined property ChrisReedIO\\APIAmigo\\Models\\AmigoResponse\:\:\$window_start\.$#'
-			identifier: property.notFound
+			message: "#^Access to an undefined property ChrisReedIO\\\\APIAmigo\\\\Models\\\\AmigoResponse\\:\\:\\$window_start\\.$#"
 			count: 1
 			path: src/Commands/ResponsesAggregationCommand.php
 
 		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Commands\\ResponsesAggregationCommand\:\:printDay\(\) is unused\.$#'
-			identifier: method.unused
+			message: "#^Method ChrisReedIO\\\\APIAmigo\\\\Commands\\\\ResponsesAggregationCommand\\:\\:printDay\\(\\) is unused\\.$#"
 			count: 1
 			path: src/Commands/ResponsesAggregationCommand.php
 
 		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Commands\\ResponsesAggregationCommand\:\:printStats\(\) is unused\.$#'
-			identifier: method.unused
+			message: "#^Method ChrisReedIO\\\\APIAmigo\\\\Commands\\\\ResponsesAggregationCommand\\:\\:printStats\\(\\) is unused\\.$#"
 			count: 1
 			path: src/Commands/ResponsesAggregationCommand.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$unique_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Controllers/WebhookController.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:fail\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Controllers/WebhookController.php
-
-		-
-			message: '#^Result of && is always true\.$#'
-			identifier: booleanAnd.alwaysTrue
-			count: 1
-			path: src/Controllers/WebhookController.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between int and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: src/Controllers/WebhookController.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 4
-			path: src/Controllers/WebhookController.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Controllers/WebhookController.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Enums\\ChartFilters\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/Enums/ChartFilters.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Enums\\HTTPStatus\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/Enums/HTTPStatus.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Enums\\HTTPStatus\:\:getColor\(\) never returns string so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/Enums/HTTPStatus.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Enums\\HTTPStatus\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/Enums/HTTPStatus.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Enums\\Method\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/Enums/Method.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Enums\\Method\:\:getColor\(\) never returns string so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/Enums/Method.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Enums\\Method\:\:getLabel\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/Enums/Method.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:attachRecordings\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Middleware/Guzzle/TrackGuzzleRequest.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Middleware\\Guzzle\\TrackGuzzleRequest\:\:getEndpoint\(\) should return ChrisReedIO\\APIAmigo\\Models\\AmigoEndpoint but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Middleware/Guzzle/TrackGuzzleRequest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:responses\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Middleware/Guzzle/TrackGuzzleResponse.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\:\:active\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Middleware/Guzzle/TrackGuzzleResponse.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:attachRecordings\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Middleware/Saloon/TrackSaloonRequest.php
-
-		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
+			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: src/Models/AmigoConnector.php
 
 		-
-			message: '#^Result of \|\| is always false\.$#'
-			identifier: booleanOr.alwaysFalse
+			message: "#^Strict comparison using \\=\\=\\= between false and 'Saloon\\\\\\\\Http\\\\\\\\SoloRequest' will always evaluate to false\\.$#"
 			count: 2
 			path: src/Models/AmigoConnector.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between false and ''Saloon\\\\Http\\\\SoloRequest'' will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 2
-			path: src/Models/AmigoConnector.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between int and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 4
-			path: src/Models/AmigoConnector.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Models\\AmigoEndpoint\:\:track\(\) should return ChrisReedIO\\APIAmigo\\Models\\AmigoEndpoint but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Models/AmigoEndpoint.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:attachRecordings\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Models/AmigoRequest.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Models\\AmigoRequest\:\:track\(\) should return ChrisReedIO\\APIAmigo\\Models\\AmigoRequest but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Models/AmigoRequest.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between int and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: src/Models/AmigoRequest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\:\:active\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Models/AmigoResponse.php
-
-		-
-			message: '#^Method ChrisReedIO\\APIAmigo\\Models\\AmigoResponse\:\:track\(\) should return ChrisReedIO\\APIAmigo\\Models\\AmigoResponse\|null but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Models/AmigoResponse.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Models/AmigoWebhook.php
-
-		-
-			message: '#^Trait ChrisReedIO\\APIAmigo\\Traits\\HasAmigoRecordings is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: src/Traits/HasAmigoRecordings.php
-
-		-
-			message: '#^Trait ChrisReedIO\\APIAmigo\\Traits\\HasTransientWebhooks is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: src/Traits/HasTransientWebhooks.php
-
-		-
-			message: '#^Trait ChrisReedIO\\APIAmigo\\Traits\\HasWebhooks is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: src/Traits/HasWebhooks.php
