@@ -1,0 +1,49 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    // CREATE INDEX CONCURRENTLY cannot run inside a transaction.
+    public $withinTransaction = false;
+
+    public function up(): void
+    {
+        foreach ($this->indexes() as $name => [$table, $definition]) {
+            DB::statement("CREATE INDEX CONCURRENTLY IF NOT EXISTS {$name} ON {$table} {$definition}");
+        }
+    }
+
+    public function down(): void
+    {
+        foreach (array_keys($this->indexes()) as $name) {
+            DB::statement("DROP INDEX CONCURRENTLY IF EXISTS {$name}");
+        }
+    }
+
+    /**
+     * Indexes for the newest-first list pages, relation managers, aggregation, and pruning.
+     *
+     * @return array<string, array{string, string}>
+     */
+    private function indexes(): array
+    {
+        $prefix = config('api-amigo.table_prefix');
+        $responses = $prefix . 'responses';
+        $requests = $prefix . 'requests';
+        $webhooks = $prefix . 'webhooks';
+
+        return [
+            "{$responses}_created_at_index" => [$responses, '(created_at)'],
+            "{$responses}_endpoint_id_created_at_index" => [$responses, '(endpoint_id, created_at)'],
+            "{$requests}_created_at_index" => [$requests, '(created_at)'],
+            "{$requests}_endpoint_id_created_at_index" => [$requests, '(endpoint_id, created_at)'],
+            "{$webhooks}_created_at_index" => [$webhooks, '(created_at)'],
+            "{$webhooks}_listener_id_created_at_index" => [$webhooks, '(listener_id, created_at)'],
+            "{$webhooks}_failed_created_at_index" => [$webhooks, '(created_at) WHERE error IS NOT NULL'],
+            'amigo_recording_amigo_request_request_id_index' => ['amigo_recording_amigo_request', '(request_id)'],
+            'amigo_recording_amigo_request_recording_id_index' => ['amigo_recording_amigo_request', '(recording_id)'],
+        ];
+    }
+};

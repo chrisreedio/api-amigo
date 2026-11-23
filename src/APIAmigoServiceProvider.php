@@ -222,6 +222,7 @@ class APIAmigoServiceProvider extends PackageServiceProvider
             'alter_amigo_responses_add_cached_flag',
             'alter_amigo_webhooks_add_webhookable',
             'alter_amigo_listeners_add_basic_auth_columns',
+            'add_amigo_performance_indexes',
         ];
     }
 }
