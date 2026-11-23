@@ -17,14 +17,14 @@ use function config;
  *
  * @property int $id
  * @property int $user_id
- * @property int $connector_id
+ * @property ?int $connector_id
  * @property string $name
  * @property string $description
  * @property ?Carbon $started_at
  * @property ?Carbon $ended_at
  * @property bool $global
  * @property bool $capture_body
- * @property AmigoConnector $connector
+ * @property ?AmigoConnector $connector
  * @property AmigoRequest[] $requests
  */
 class AmigoRecording extends Model
@@ -65,17 +65,20 @@ class AmigoRecording extends Model
         return $query->where('global', $isGlobal);
     }
 
+    /** @return BelongsTo<Model, $this> */
     public function user(): BelongsTo
     {
         // return $this->belongsTo(User::class, 'user_id');
         return $this->belongsTo(config('api-amigo.models.user'), 'user_id');
     }
 
+    /** @return BelongsTo<AmigoConnector, $this> */
     public function connector(): BelongsTo
     {
         return $this->belongsTo(AmigoConnector::class, 'connector_id');
     }
 
+    /** @return BelongsToMany<AmigoRequest, $this> */
     public function requests(): BelongsToMany
     {
         return $this->belongsToMany(

@@ -22,15 +22,15 @@ use function get_parent_class;
  * Represents a connector to an API
  *
  * @property int $id
- * @property int $integration_id
+ * @property ?int $integration_id
  * @property string $name
- * @property string $display_name
+ * @property ?string $display_name
  * @property string $base_url
- * @property int $rate_limit
- * @property int $rate_limit_remaining
+ * @property ?int $rate_limit
+ * @property ?int $rate_limit_remaining
  * @property int $total_requests
  * @property int $total_errors
- * @property AmigoIntegration $integration
+ * @property ?AmigoIntegration $integration
  * @property AmigoEndpoint[] $endpoints
  * @property AmigoRequest[] $requests
  * @property AmigoEndpointAggregate[] $aggregates
@@ -57,21 +57,25 @@ class AmigoConnector extends Model
         return Str::title(str_replace('_', ' ', $snake));
     }
 
+    /** @return BelongsTo<AmigoIntegration, $this> */
     public function integration(): BelongsTo
     {
         return $this->belongsTo(AmigoIntegration::class);
     }
 
+    /** @return HasMany<AmigoEndpoint, $this> */
     public function endpoints(): HasMany
     {
         return $this->hasMany(AmigoEndpoint::class, 'connector_id');
     }
 
+    /** @return HasManyThrough<AmigoRequest, AmigoEndpoint, $this> */
     public function requests(): HasManyThrough
     {
         return $this->hasManyThrough(AmigoRequest::class, AmigoEndpoint::class, 'connector_id', 'endpoint_id');
     }
 
+    /** @return HasManyThrough<AmigoEndpointAggregate, AmigoEndpoint, $this> */
     public function aggregates(): HasManyThrough
     {
         return $this->hasManyThrough(AmigoEndpointAggregate::class, AmigoEndpoint::class, 'connector_id', 'endpoint_id');
@@ -130,7 +134,7 @@ class AmigoConnector extends Model
 
     public function getRateUsagePercentageAttribute(): float
     {
-        if ($this->rate_usage === null || $this->rate_limit === null) {
+        if ($this->rate_limit === null) {
             return 0;
         }
 

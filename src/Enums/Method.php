@@ -18,7 +18,7 @@ enum Method: string implements HasColor, HasLabel
     case CONNECT = 'CONNECT';
     case TRACE = 'TRACE';
 
-    public function getColor(): string | array | null
+    public function getColor(): array
     {
         return match ($this) {
             self::GET => Color::Green,
@@ -33,7 +33,7 @@ enum Method: string implements HasColor, HasLabel
         };
     }
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return $this->name;
     }

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 /** @mixin Model */
 trait HasAmigoRecordings
 {
+    /** @return BelongsToMany<AmigoRecording, $this> */
     public function recordings(): BelongsToMany
     {
         // return $this->belongsToMany(config('api-amigo.models.recording'), 'user_id');

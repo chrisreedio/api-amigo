@@ -10,6 +10,7 @@ use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\RelationManagers\TokensRelationManager;
 use ChrisReedIO\APIAmigo\Facades\APIAmigo;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
+use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -18,6 +19,7 @@ use Filament\Infolists;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -155,7 +157,6 @@ class AmigoListenerResource extends Resource
                     ->password()
                     ->revealable()
                     ->copyable()
-                    ->hidePasswordManagerIcons()
                     ->autocomplete(false)
                     ->maxLength(255),
 
@@ -186,20 +187,19 @@ class AmigoListenerResource extends Resource
                     ->columnSpan(1)
                     ->maxLength(255),
 
-                Password::make('basic_auth_password')
+                TextInput::make('basic_auth_password')
                     ->label('Basic Auth Password')
                     ->columnSpan(1)
                     ->helperText('Leave blank to disable Basic Auth.')
+                    ->password()
+                    ->revealable()
                     ->copyable()
-                    ->hidePasswordManagerIcons()
                     ->autocomplete(false)
-                    // ->regeneratePassword()
-                    // ->generatePasswordUsing(fn () => Str::password(symbols: false))
-                    ->regeneratePassword(
-                        condition: true,
-                        color: 'primary',
-                        using: fn () => Str::password(symbols: false),
-                        notify: true,
+                    ->suffixAction(
+                        Action::make('regeneratePassword')
+                            ->icon('far-arrow-rotate-right')
+                            ->tooltip('Generate Password')
+                            ->action(fn (Set $set) => $set('basic_auth_password', Str::password(symbols: false))),
                     )
                     ->maxLength(255),
 

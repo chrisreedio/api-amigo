@@ -11,4 +11,13 @@ parameters:
     checkOctaneCompatibility: true
     checkModelProperties: true
 #    checkMissingIterableValueType: false
+    ignoreErrors:
+        # env() belongs in the package config file; Larastan only recognizes the app's config path.
+        -
+            identifier: larastan.noEnvCallsOutsideOfConfig
+            path: config/*
+        # These traits are for consuming apps' models, so nothing in the package uses them.
+        -
+            identifier: trait.unused
+            path: src/Traits/*
 

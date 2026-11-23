@@ -17,7 +17,7 @@ enum ChartFilters: string implements HasLabel
     case SixMonths = 'six_months';
     case Year = 'year';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return match ($this) {
             self::Today => 'Today',

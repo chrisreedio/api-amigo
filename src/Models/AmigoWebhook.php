@@ -19,15 +19,15 @@ use function now;
  * Class AmigoWebhook
  *
  * @property int $id
- * @property int $listener_id
+ * @property ?int $listener_id
  * @property string $unique_id
  * @property string $url
  * @property string $sender
- * @property array $headers
- * @property array $payload
+ * @property ?array $headers
+ * @property ?array $payload
  * @property int $status
  * @property string $status_message
- * @property string $processed_at
+ * @property ?string $processed_at
  * @property ?array $error
  * @property ?AmigoListener $listener
  * @property Carbon $created_at
@@ -75,11 +75,13 @@ class AmigoWebhook extends AmigoModel
         return $this->created_at->diffInSeconds($this->processed_at);
     }
 
+    /** @return BelongsTo<AmigoListener, $this> */
     public function listener(): BelongsTo
     {
         return $this->belongsTo(AmigoListener::class, 'listener_id');
     }
 
+    /** @return MorphTo<Model, $this> */
     public function webhookable(): MorphTo
     {
         return $this->morphTo();
