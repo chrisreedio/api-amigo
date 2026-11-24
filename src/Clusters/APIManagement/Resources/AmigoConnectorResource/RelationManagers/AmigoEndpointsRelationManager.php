@@ -4,6 +4,7 @@ namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorRe
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
+use ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
@@ -14,6 +15,7 @@ use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class AmigoEndpointsRelationManager extends RelationManager
 {
@@ -32,6 +34,12 @@ class AmigoEndpointsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            // Averages each endpoint's hourly aggregates, weighted by their request counts.
+            ->modifyQueryUsing(fn (Builder $query) => $query->addSelect([
+                'avg_duration' => AmigoEndpointAggregate::query()
+                    ->selectRaw('sum(avg_duration * total_requests) / nullif(sum(total_requests), 0)')
+                    ->whereColumn('endpoint_id', $query->qualifyColumn('id')),
+            ]))
             // ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
@@ -43,16 +51,18 @@ class AmigoEndpointsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('styled_path')
                     ->label('Path')
-                    ->sortable()
+                    ->sortable(['path'])
                     ->html()
-                    ->searchable(),
-                TextColumn::make('responses_count')
+                    ->searchable(['path']),
+                TextColumn::make('aggregates_sum_total_requests')
                     ->label('Responses')
                     ->badge()
-                    ->counts('responses')
+                    ->sum('aggregates', 'total_requests')
+                    ->placeholder('No Data')
+                    ->numeric()
                     ->sortable(),
-                TextColumn::make('responses_avg_duration')
-                    ->avg('responses', 'duration')
+                TextColumn::make('avg_duration')
+                    ->placeholder('No Data')
                     ->badge()
                     ->formatStateUsing(fn ($state) => round($state * 1000) . 'ms')
                     ->color(function ($state) {
@@ -66,9 +76,9 @@ class AmigoEndpointsRelationManager extends RelationManager
                     })
                     ->label('Avg. Duration')
                     // ->numeric()
-                    ->sortable(),
+                    ->sortable(query: fn (Builder $query, string $direction) => $query->orderBy('avg_duration', $direction)),
             ])
-            ->defaultSort('responses_count', 'desc')
+            ->defaultSort(fn (Builder $query) => $query->orderByRaw('aggregates_sum_total_requests desc nulls last'))
             ->filters([
                 //
             ])

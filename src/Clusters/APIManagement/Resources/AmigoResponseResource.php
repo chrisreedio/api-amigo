@@ -8,6 +8,7 @@ use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\ListAmigoResponses;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\ViewAmigoResponse;
 use ChrisReedIO\APIAmigo\Enums\HTTPStatus;
+use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\CodeEntry;
@@ -24,7 +25,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Number;
 use Phiki\Grammar\Grammar;
@@ -54,9 +55,7 @@ class AmigoResponseResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return Cache::remember('amigo_response_count', 60 * 1, fn () => number_format(static::getModel()::count()));
-        // TODO: This should be used once we have hourly aggregation going
-        // return number_format(AmigoEndpointAggregate::query()->sum('total_requests'));
+        return number_format(AmigoResponse::estimatedCount());
     }
 
     public static function infolist(Schema $schema): Schema
@@ -190,6 +189,11 @@ class AmigoResponseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // The list never shows bodies or headers, which can be megabytes per response.
+            ->modifyQueryUsing(fn (Builder $query) => $query->select($query->qualifyColumns([
+                'id', 'request_id', 'endpoint_id', 'status_code', 'duration', 'cached', 'created_at', 'updated_at',
+            ])))
+            // Relationship columns aren't sortable: sorting by them orders every response with a correlated subquery.
             ->columns([
                 // Tables\Columns\TextColumn::make('name')
                 //     ->searchable(),
@@ -201,22 +205,18 @@ class AmigoResponseResource extends Resource
                 TextColumn::make('endpoint.connector.integration.name')
                     ->label('Integration')
                     // ->badge()
-                    ->searchable()
-                    ->toggleable()
-                    ->sortable(),
+                    ->toggleable(),
 
                 TextColumn::make('endpoint.connector.name')
                     ->label('Connector')
                     // ->tooltip(fn (AmigoResponse $record) => $record->endpoint->connector->base_url)
                     // ->badge()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('endpoint.method')
                     ->label('Method')
                     ->alignCenter()
-                    ->badge()
-                    ->sortable(),
+                    ->badge(),
 
                 TextColumn::make('endpoint.display_name')
                     ->label('Endpoint')
@@ -225,8 +225,13 @@ class AmigoResponseResource extends Resource
                     ->placeholder('No Endpoint')
                     ->badge(fn (AmigoResponse $record) => $record->endpoint->name !== null)
                     // ->url(fn (AmigoResponse $record) => AmigoEndpointResource::getUrl('view', ['record' => $record->endpoint]))
-                    ->searchable()
-                    ->sortable(),
+                    // Matches endpoints first, so Postgres can use the endpoint_id index instead of
+                    // checking every response with nested EXISTS subqueries. Also covers the integration name.
+                    ->searchable(query: fn (Builder $query, string $search) => $query->whereIn('endpoint_id', AmigoEndpoint::query()
+                        ->whereLike('name', "%{$search}%")
+                        ->orWhereLike('path', "%{$search}%")
+                        ->orWhereHas('connector.integration', fn (Builder $integration) => $integration->whereLike('name', "%{$search}%"))
+                        ->select('id'))),
 
                 TextColumn::make('status_code')
                     ->label('Status')
@@ -293,8 +298,8 @@ class AmigoResponseResource extends Resource
                     ->falseLabel('Failed')
                     ->trueLabel('Success')
                     ->queries(
-                        true: fn ($query, $value) => $query->where('status_code', 'like', '2%'),
-                        false: fn ($query, $value) => $query->where('status_code', 'not like', '2%'),
+                        true: fn ($query, $value) => $query->whereBetween('status_code', [200, 299]),
+                        false: fn ($query, $value) => $query->whereNotBetween('status_code', [200, 299]),
                         blank: fn ($query, $value) => $query,
                     ),
                 // ->getOptionLabelUsing(fn ($value) => 'hi'), //$value->value . ' - ' . $value->getLabel()),

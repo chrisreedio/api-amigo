@@ -15,6 +15,8 @@ use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 use function config;
 
@@ -35,6 +37,10 @@ class AmigoRequestsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            // Only the response columns the table shows, not its body and headers.
+            ->modifyQueryUsing(fn (Builder $query) => $query->with([
+                'response' => fn (HasOne $response) => $response->select(['id', 'request_id', 'status_code', 'duration', 'cached']),
+            ]))
             // ->recordTitleAttribute('name')
             ->columns([
                 // Tables\Columns\TextColumn::make('endpoint.connector.name')

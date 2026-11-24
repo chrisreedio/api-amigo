@@ -24,6 +24,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 // use LaraZeus\InlineChart\Tables\Columns\InlineChart;
 
@@ -118,14 +119,16 @@ class AmigoEndpointResource extends Resource
                 TextColumn::make('styled_path')
                     ->label('Path')
                     ->copyable()
-                    ->sortable()
+                    ->sortable(['path'])
                     ->html()
-                    ->searchable(),
-                TextColumn::make('responses_count')
+                    ->searchable(['path']),
+                // Summed from the aggregates rather than counting every response of every endpoint.
+                TextColumn::make('aggregates_sum_total_requests')
                     ->label('Responses')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => number_format($state))
-                    ->counts('responses')
+                    ->sum('aggregates', 'total_requests')
+                    ->placeholder('No Data')
+                    ->numeric()
                     ->sortable(),
                 // InlineChart::make('response_chart')
                 //     ->label('Successful vs Failed Requests')
@@ -163,7 +166,7 @@ class AmigoEndpointResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('responses_count', 'desc')
+            ->defaultSort(fn (Builder $query) => $query->orderByRaw('aggregates_sum_total_requests desc nulls last'))
             ->filters([
                 SelectFilter::make('connector_id')
                     ->label('Connector')
