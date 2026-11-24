@@ -73,11 +73,14 @@ jobs:
         run: composer show -D
 
       - name: Execute tests
-        run: vendor/bin/pest --no-coverage
+        run: vendor/bin/pest --parallel --no-coverage
 
   coverage:
     runs-on: ubuntu-latest
     name: Coverage
+    # Publishes the README badge's data to the badges branch after pushes to 4.x.
+    permissions:
+      contents: write
 
     services:
       postgres:
@@ -96,7 +99,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -112,7 +115,7 @@ jobs:
 
       # Raise the minimum as coverage improves, so it can't quietly drop.
       - name: Execute tests with coverage
-        run: vendor/bin/pest --coverage --min=74
+        run: vendor/bin/pest --parallel --coverage --min=82
 
       - name: Coverage summary
         if: always()
@@ -120,3 +123,16 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           sed 's/\x1b\[[0-9;]*m//g' build/coverage.txt | head -9 >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      # The README badge reads coverage.json through shields.io's endpoint badge.
+      - name: Publish coverage badge
+        if: github.event_name == 'push' && github.ref == 'refs/heads/4.x'
+        run: |
+          percent=$(sed 's/\x1b\[[0-9;]*m//g' build/coverage.txt | grep -m1 -oP 'Lines:\s+\K[0-9.]+')
+          color=$(awk -v p="$percent" 'BEGIN { print (p >= 90) ? "brightgreen" : (p >= 80) ? "green" : (p >= 70) ? "yellow" : "red" }')
+          mkdir badge && cd badge
+          printf '{"schemaVersion":1,"label":"coverage","message":"%.1f%%","color":"%s"}\n' "$percent" "$color" > coverage.json
+          git init -q -b badges
+          git add coverage.json
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -qm "Coverage ${percent}%"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" badges

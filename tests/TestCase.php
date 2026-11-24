@@ -40,6 +40,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         if (! self::$migrated) {
+            $this->createWorkerDatabase();
             $this->migrate();
             self::$migrated = true;
         }
@@ -80,7 +81,7 @@ class TestCase extends Orchestra
     {
         $app['config']->set('app.key', 'base64:' . base64_encode(str_repeat('a', 32)));
         $app['config']->set('database.default', 'pgsql');
-        $app['config']->set('database.connections.pgsql', [
+        $connection = [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '5432'),
@@ -90,7 +91,10 @@ class TestCase extends Orchestra
             'charset' => 'utf8',
             'prefix' => '',
             'search_path' => 'public',
-        ]);
+        ];
+        // The configured database, used to create each parallel worker's own database.
+        $app['config']->set('database.connections.pgsql_base', $connection);
+        $app['config']->set('database.connections.pgsql', ['database' => self::workerDatabase($connection['database'])] + $connection);
 
         // Read at boot, so it has to be set here rather than in a test.
         $app['config']->set('api-amigo.enabled', true);
@@ -105,6 +109,26 @@ class TestCase extends Orchestra
     {
         // Apps register this in routes/web.php, whose group provides route model binding.
         Route::middleware('web')->group(fn () => Route::webhooks());
+    }
+
+    /** Parallel runs (`pest --parallel`) give each worker its own database, named after its token. */
+    private static function workerDatabase(string $database): string
+    {
+        $token = $_SERVER['TEST_TOKEN'] ?? getenv('TEST_TOKEN');
+
+        return $token ? "{$database}_{$token}" : $database;
+    }
+
+    private function createWorkerDatabase(): void
+    {
+        $database = config('database.connections.pgsql.database');
+        $base = DB::connection('pgsql_base');
+
+        if ($database !== $base->getDatabaseName() && ! $base->table('pg_database')->where('datname', $database)->exists()) {
+            $base->getSchemaBuilder()->createDatabase($database);
+        }
+
+        $base->disconnect();
     }
 
     private function migrate(): void
