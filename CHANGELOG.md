@@ -2,6 +2,74 @@
 
 All notable changes to `api-amigo` will be documented in this file.
 
+## v4.2.0 - 2026-11-24
+
+### Upgrading from 4.1.x
+
+This release adds two database migrations. After updating the package, publish and run them:
+
+1. Update the package:
+   ```bash
+   composer update chrisreedio/api-amigo
+   
+   ```
+2. Publish the new migrations. Migrations you already published are skipped, and only the two new ones are copied:
+   ```bash
+   php artisan vendor:publish --tag=api-amigo-migrations
+   
+   ```
+3. Run them:
+   ```bash
+   php artisan migrate
+   
+   ```
+
+What the migrations do:
+
+- **`add_amigo_performance_indexes`** adds indexes for the list pages, aggregation, and pruning. It builds them with `CREATE INDEX CONCURRENTLY`, so tracking keeps writing while it runs. On tables with millions of rows it can take a few minutes.
+- **`alter_amigo_requests_add_payload_columns`** adds nullable `headers` and `body` columns to `amigo_requests`. It finishes instantly, even on large tables.
+
+**Config file:** no change is needed. Header redaction works even if you published `config/api-amigo.php` before this release; it falls back to redacting `Authorization`, `Proxy-Authorization`, `Cookie`, `X-Api-Key`, `Api-Key`, and `X-Auth-Token`. To customize the list, add `redact_headers` to the `requests` section of your config (see the package's [config file](https://github.com/chrisreedio/api-amigo/blob/4.x/config/api-amigo.php)); set it to `[]` to store headers as sent.
+
+#### Upgrading with an AI agent
+
+The steps above are enough for a person. To have a coding agent do the upgrade, give it these instructions:
+
+```text
+Upgrade chrisreedio/api-amigo to v4.2.0 in this Laravel app.
+
+1. Run `composer update chrisreedio/api-amigo` and confirm composer.lock now has v4.2.0.
+2. Run `php artisan vendor:publish --tag=api-amigo-migrations`. Exactly two new files should appear in
+   database/migrations: *_add_amigo_performance_indexes.php and *_alter_amigo_requests_add_payload_columns.php.
+   If existing API Amigo migrations show up as changed or duplicated, stop and report instead of continuing.
+3. Do not change config/api-amigo.php; header redaction works without the new redact_headers option.
+4. Run `php artisan migrate` locally and confirm the amigo_requests table now has headers and body columns.
+   Do not run migrations against production; leave that to the normal deploy.
+5. Run the app's test suite, then commit the two new migrations.
+
+Report the files changed and the migration output.
+
+```
+### What's new
+
+- **Request tracking** (#90): each tracked call has one page showing the request and its response side by side, with headers and bodies. Request payloads are captured whenever response bodies are: for failed responses by default, for every call with `responses.capture_body`, or during a recording that captures bodies.
+- **Requests list** (#90): defaults to the last 24 hours and filters by status, success, slow calls, and captured payloads. It replaces the Responses list in the navigation; old response links redirect to the request page.
+- **Faster admin pages on large tables** (#79, #82, #90): new indexes, estimated page counts instead of full `COUNT(*)` scans, and cheaper search.
+- **Fewer queries per tracked call** (#86): 7 instead of 13.
+
+### Fixes
+
+- Hourly aggregation counted a response logged exactly on the hour in two windows (#88).
+- Connectors with none of their rate limit used showed 100% usage instead of 0% (#88).
+- Request header redaction falls back to its defaults when an older published config has no `redact_headers` list (#91).
+
+### Internal
+
+- Tests run on PostgreSQL, in parallel, with an 82% coverage minimum in CI (#83, #87, #88).
+- PHPStan errors fixed instead of baselined (#80); dead code removed (#88).
+
+**Full Changelog**: https://github.com/chrisreedio/api-amigo/compare/v4.1.1...v4.2.0
+
 ## v1.0.0-beta.21 - 2025-05-09
 
 ### What's Changed
