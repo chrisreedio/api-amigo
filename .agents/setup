@@ -80,7 +80,22 @@ setup_postgres() {
 setup_demo() {
   ln -sfn "$repo_root" "$repos_dir/api-amigo"
   cd "$demo_dir"
-  [ -f .env ] || cp -- .env.example .env
+  # The demo no longer ships a .env.example, so write the local settings that match
+  # the role and database setup_postgres creates.
+  [ -f .env ] || cat >.env <<'EOF'
+APP_NAME="API Amigo Demo"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=api_amigo_demo
+DB_USERNAME=amigo
+DB_PASSWORD=amigo
+EOF
   composer install --prefer-dist --no-interaction --no-progress
   grep -q '^APP_KEY=base64:' .env || php artisan key:generate --force --no-interaction
   # Picks up migrations added to the package since the demo last published them.
