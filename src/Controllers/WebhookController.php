@@ -45,13 +45,16 @@ class WebhookController extends Controller
             // Validate the request token against the listener tokens
             // The tokens in the db are not plain text, so we need to hash the token
             $hashedToken = hash('sha256', $token);
-            $validToken = $listener->tokens()->where('token', $hashedToken)->first();
+            $validToken = $listener->tokens()
+                ->where('token', $hashedToken)
+                ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+                ->first();
             if ($validToken === null) {
                 return response()->json(['error' => 'Invalid token'], 401);
             }
 
-            // If the token is valid, we should update the token's last_used_at timestamp
-            $validToken->update(['last_used_at' => now()]);
+            // last_used_at isn't mass assignable on Sanctum's token model.
+            $validToken->forceFill(['last_used_at' => now()])->save();
         }
 
         // Check to see if the existing uses is >= the max uses for the listener
