@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\RelationManagers;
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
+use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -15,6 +16,8 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 use function config;
 
@@ -36,8 +39,12 @@ class AmigoRequestsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            // Only the response columns the table shows, not its body and headers.
+            ->modifyQueryUsing(fn (Builder $query) => $query->with([
+                'response' => fn (HasOne $response) => $response->select(['id', 'request_id', 'status_code', 'duration', 'cached']),
+            ]))
             // ->recordTitleAttribute('name')
-            ->recordUrl(fn (AmigoRequest $record) => $record->response()->exists() ? AmigoResponseResource::getUrl('view', ['record' => $record->response]) : null)
+            ->recordUrl(fn (AmigoRequest $record) => $record->response ? AmigoResponseResource::getUrl('view', ['record' => $record->response]) : null)
             ->columns([
                 TextColumn::make('endpoint.connector.name')
                     ->label('Connector'),
@@ -48,7 +55,10 @@ class AmigoRequestsRelationManager extends RelationManager
                     ->label('Endpoint Path')
                     ->html()
                     // ->copyable()
-                    ->searchable(),
+                    ->searchable(query: fn (Builder $query, string $search) => $query->whereIn(
+                        $query->qualifyColumn('endpoint_id'),
+                        AmigoEndpoint::query()->whereLike('path', "%{$search}%")->select('id'),
+                    )),
                 TextColumn::make('response.status_code')
                     ->label('Status')
                     ->formatStateUsing(fn (AmigoRequest $record) => $record->response?->status_code?->value . ' ' . $record->response?->status_code?->getLabel())
@@ -60,7 +70,7 @@ class AmigoRequestsRelationManager extends RelationManager
                     ->badge()
                     ->placeholder('No Response')
                     ->color(function (AmigoRequest $record) {
-                        $duration = $record->response()->exists() ? $record->response->duration : 99999;
+                        $duration = $record->response->duration ?? 99999;
                         if ($duration >= config('api-amigo.thresholds.duration.error')) {
                             return Color::Red;
                         } elseif ($duration >= config('api-amigo.thresholds.duration.warning')) {

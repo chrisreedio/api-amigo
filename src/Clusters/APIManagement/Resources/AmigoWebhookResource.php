@@ -48,7 +48,7 @@ class AmigoWebhookResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return number_format(static::getModel()::count());
+        return number_format(AmigoWebhook::estimatedCount());
     }
 
     public static function infolist(Schema $schema): Schema
