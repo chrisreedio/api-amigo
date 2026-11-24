@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
 use Saloon\Http\Response;
 
-use function class_basename;
 use function config;
 use function gettype;
 
@@ -63,74 +62,32 @@ class AmigoResponse extends AmigoModel
         return $this->belongsTo(AmigoRequest::class, 'request_id');
     }
 
+    /**
+     * Records the response, using what AmigoRequest::track stored in the request's config.
+     */
     public static function track(Response $saloonResponse): ?self
     {
-        // dd('hi', $saloonResponse);
-        // $responseIdKey = config('api-amigo.responses.headers.keys.request_id');
-        $rateLimitKey = config('api-amigo.responses.headers.keys.rate.limit');
-        $rateLimitRemainingKey = config('api-amigo.responses.headers.keys.rate.remaining');
-        // Here we need to log the response
-        // Important things to track are the request URL, the response status code, and any quota headers
-        $pendingRequest = $saloonResponse->getPendingRequest();
-        $connector = $pendingRequest->getConnector();
-        // dump('Integration Connector: ' . class_basename($connector));
-
-        $amigoRequestId = $pendingRequest->config()->get('amigo.request_id');
-        $requestTime = $pendingRequest->config()->get('amigo.request_time');
-        $responseTime = microtime(true);
-        $responseTimeDelta = $responseTime - $requestTime;
-        // dump('Response Time: ' . round($responseTimeDelta, 3) . ' seconds');
-
-        $rateLimit = $saloonResponse->headers()->get($rateLimitKey);
-        $rateLimitRemaining = $saloonResponse->headers()->get($rateLimitRemainingKey);
-
-        // dump("Rate Limit Total: $rateLimit - Remaining: $rateLimitRemaining");
-
-        // dump('Original Request Config:', $pendingRequest->config()->all());
-
-        // $responseRequestId = $saloonResponse->headers()->get($responseIdKey);
-
-        // dump('Amigo Request ID: ' . $amigoRequestId);
-        // dump('Response Request ID: ' . $responseRequestId);
-
-        // dump('Full Response Headers:');
-        // dump($saloonResponse->headers()->all());
+        $config = $saloonResponse->getPendingRequest()->config();
 
         try {
-            $endpoint = AmigoEndpoint::track($saloonResponse->getPendingRequest());
+            AmigoConnector::recordRateLimit(
+                $config->get('amigo.connector_id'),
+                $saloonResponse->headers()->get(config('api-amigo.responses.headers.keys.rate.limit')),
+                $saloonResponse->headers()->get(config('api-amigo.responses.headers.keys.rate.remaining')),
+            );
 
-            // Update latest rate limit information
-            $endpoint->connector->rate_limit = $rateLimit;
-            $endpoint->connector->rate_limit_remaining = $rateLimitRemaining;
-            $endpoint->connector->save();
+            $recordBody = $config->get('amigo.capture_body')
+                || config('api-amigo.responses.capture_body')
+                || (config('api-amigo.responses.capture_body_on_error') && $saloonResponse->failed());
 
-            // Find the request that this response belongs to (if any)
-            $request = AmigoRequest::where('unique_id', $amigoRequestId)->first();
-
-            // Should we log the response body?
-            // Do we have an active recording that wants to capture the body?
-            $recordBody = $request?->recordings()->active()->where('capture_body', true)->count() > 0;
-            // Capture all bodies based on config
-            if (! $recordBody) {
-                $recordBody = config('api-amigo.responses.capture_body');
-            }
-            // Capture Error bodies if enabled
-            if (! $recordBody) {
-                $recordBody = config('api-amigo.responses.capture_body_on_error') && $saloonResponse->failed();
-            }
-
-            // dd("'" . $saloonResponse->body() . "'");
-            // dd('Cached Response? ', $saloonResponse->isCached());
-            return $endpoint->responses()->create([
-                'request_id' => $request?->id,
+            return self::create([
+                'endpoint_id' => $config->get('amigo.endpoint_id'),
+                'request_id' => $config->get('amigo.request_key'),
+                'request_unique_id' => $config->get('amigo.request_id'),
                 'status_code' => $saloonResponse->status(),
-                // 'status_message' => $response->status(),
                 'headers' => $saloonResponse->headers()->all(),
                 'body' => $recordBody ? trim($saloonResponse->body()) : null,
-                'request_unique_id' => $amigoRequestId,
-                // 'rate_limit' => $rateLimit,
-                // 'rate_limit_remaining' => $rateLimitRemaining,
-                'duration' => $responseTimeDelta,
+                'duration' => microtime(true) - $config->get('amigo.request_time'),
                 'cached' => $saloonResponse->isCached(),
             ]);
         } catch (Exception $e) {
@@ -140,8 +97,6 @@ class AmigoResponse extends AmigoModel
             ]);
 
             return null;
-            // dump($e->getMessage());
-            // dd($e->getTraceAsString());
         }
     }
 

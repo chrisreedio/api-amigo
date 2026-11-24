@@ -71,61 +71,61 @@ class AmigoRequest extends AmigoModel
     }
 
     /**
-     * Track a request
-     *
-     * @deprecated
+     * Records the request before it's sent, and stores what the response side needs in the
+     * request's config so it doesn't have to look any of it up again.
      */
     public static function track(PendingRequest $pendingRequest): self
     {
         $requestId = self::generateId();
-        $pendingRequest->config()->add('amigo.request_id', $requestId);
-        $pendingRequest->config()->add('amigo.request_time', microtime(true));
-        // dump('Injected Amigo tracking data into request config');
+        $config = $pendingRequest->config();
+        $config->add('amigo.request_id', $requestId);
+        $config->add('amigo.request_time', microtime(true));
 
-        // Find or create the endpoint
         $endpoint = AmigoEndpoint::track($pendingRequest);
 
-        $user = auth()->user();
-
-        $pathParts = $pendingRequest->getUri();
-        $path = $pathParts->getPath();
-        $query = $pathParts->getQuery();
-        if ($query !== '') {
-            $path .= '?' . $query;
+        $uri = $pendingRequest->getUri();
+        $path = $uri->getPath();
+        if ($uri->getQuery() !== '') {
+            $path .= '?' . $uri->getQuery();
         }
 
         $request = $endpoint->requests()->create([
             'unique_id' => $requestId,
-            'user_id' => $user?->id,
-            // 'path' => $pendingRequest->getRequest()->resolveEndpoint(),
+            'user_id' => auth()->user()?->id,
             'path' => $path,
         ]);
+        $request->setRelation('endpoint', $endpoint);
 
-        // Check for any active global recordings
-        $request->attachRecordings();
+        $config->add('amigo.request_key', $request->id);
+        $config->add('amigo.endpoint_id', $endpoint->id);
+        $config->add('amigo.connector_id', $endpoint->connector_id);
+        $config->add('amigo.capture_body', $request->attachRecordings());
 
         return $request;
     }
 
-    public function attachRecordings(): void
+    /**
+     * Attaches the request to the active recordings that include it.
+     *
+     * @return bool Whether any of those recordings captures response bodies.
+     */
+    public function attachRecordings(): bool
     {
-        // Check for any active global recordings
-        AmigoRecording::active()
-            ->each(function (AmigoRecording $recording) {
-                $user = auth()->user();
+        $user = auth()->user();
 
-                // If this isn't a global recording and the user is not the owner, skip it
-                if (! $recording->global && (is_null($user) || $recording->user_id !== $user->id)) {
-                    return;
-                }
+        $recordings = AmigoRecording::active()->get()->filter(function (AmigoRecording $recording) use ($user) {
+            // Non-global recordings only include their owner's requests.
+            if (! $recording->global && (is_null($user) || $recording->user_id !== $user->id)) {
+                return false;
+            }
 
-                // Now do a connector check to make sure it's not been filtered out
-                if ($recording->connector_id !== null && $recording->connector_id !== $this->endpoint->connector_id) {
-                    return;
-                }
+            return $recording->connector_id === null || $recording->connector_id === $this->endpoint->connector_id;
+        });
 
-                // dd('Recording request', $recording, $request);
-                $recording->requests()->attach($this);
-            });
+        if ($recordings->isNotEmpty()) {
+            $this->recordings()->attach($recordings->modelKeys());
+        }
+
+        return $recordings->contains('capture_body', true);
     }
 }
