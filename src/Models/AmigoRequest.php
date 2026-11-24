@@ -51,6 +51,19 @@ class AmigoRequest extends AmigoModel
      */
     private const int MAX_CAPTURED_STREAM_SIZE = 1024 * 1024;
 
+    /**
+     * Redacted when the app's config has no requests.redact_headers, such as a config file
+     * published before that option existed. Laravel merges package config one level deep only.
+     */
+    public const array DEFAULT_REDACTED_HEADERS = [
+        'authorization',
+        'proxy-authorization',
+        'cookie',
+        'x-api-key',
+        'api-key',
+        'x-auth-token',
+    ];
+
     /** @return BelongsTo<Model, $this> */
     public function user(): BelongsTo
     {
@@ -202,7 +215,7 @@ class AmigoRequest extends AmigoModel
      */
     private static function payload(array $headers, ?string $body): array
     {
-        $redacted = array_map('strtolower', config('api-amigo.requests.redact_headers', []));
+        $redacted = array_map('strtolower', config('api-amigo.requests.redact_headers') ?? self::DEFAULT_REDACTED_HEADERS);
 
         foreach ($headers as $name => $value) {
             if (in_array(strtolower($name), $redacted, true)) {

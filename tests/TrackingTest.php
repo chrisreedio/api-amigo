@@ -265,3 +265,28 @@ it('captures Guzzle request payloads, but not bodies too large to buffer', funct
         ->and((string) $history[0]['request']->getBody())->toBe('small=1')
         ->and(strlen((string) $history[1]['request']->getBody()))->toBe(strlen($large));
 });
+
+it('redacts the default headers when the app config predates redact_headers', function () {
+    config()->set('api-amigo.responses.capture_body', true);
+    // A config file published before 4.2 replaces the whole requests array, so the key is missing.
+    config()->set('api-amigo.requests', ['header_key' => 'X-Amigo-Request-Id']);
+
+    (new AcmeConnector)
+        ->withMockClient(new MockClient([MockResponse::make(['id' => 7], 201)]))
+        ->send(new CreateWidget(['name' => 'Sprocket']));
+
+    expect(AmigoRequest::sole()->headers)
+        ->Authorization->toBe('[redacted]')
+        ->{'X-Signature'}->toBe('abc123');
+});
+
+it('stores every header as sent when redaction is turned off', function () {
+    config()->set('api-amigo.responses.capture_body', true);
+    config()->set('api-amigo.requests.redact_headers', []);
+
+    (new AcmeConnector)
+        ->withMockClient(new MockClient([MockResponse::make(['id' => 7], 201)]))
+        ->send(new CreateWidget(['name' => 'Sprocket']));
+
+    expect(AmigoRequest::sole()->headers['Authorization'])->toBe('Bearer secret');
+});
