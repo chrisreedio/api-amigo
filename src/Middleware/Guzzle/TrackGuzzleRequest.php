@@ -5,6 +5,7 @@ namespace ChrisReedIO\APIAmigo\Middleware\Guzzle;
 use ChrisReedIO\APIAmigo\Models\AmigoConnector;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
+use ChrisReedIO\APIAmigo\Models\AmigoRecording;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Psr\Http\Message\RequestInterface;
 
@@ -26,17 +27,21 @@ class TrackGuzzleRequest
 
             $endpoint = $this->getEndpoint($pendingRequest);
 
+            $recordings = AmigoRecording::activeFor($endpoint->connector_id);
+            $capturePayload = AmigoRequest::capturesPayload($recordings);
+
             $request = $endpoint->requests()->create([
                 'unique_id' => $requestId,
-                'user_id' => auth()->user()?->id,
+                'user_id' => auth()->user()?->getAuthIdentifier(),
                 'path' => $this->getPath($pendingRequest),
+                ...($capturePayload ? AmigoRequest::psrPayload($pendingRequest) : []),
             ]);
-            $request->setRelation('endpoint', $endpoint);
+            $request->attachRecordings($recordings);
 
             // Passed to TrackGuzzleResponse so it doesn't look these up again.
             $options['amigo']['request_key'] = $request->id;
             $options['amigo']['endpoint_id'] = $endpoint->id;
-            $options['amigo']['capture_body'] = $request->attachRecordings();
+            $options['amigo']['capture_payload'] = $capturePayload;
 
             return $handler($pendingRequest, $options);
             // return $pendingRequest;

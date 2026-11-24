@@ -8,12 +8,14 @@ use ChrisReedIO\APIAmigo\Models\AmigoRecording;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use ChrisReedIO\APIAmigo\Tests\Fixtures\Integrations\Acme\AcmeConnector;
+use ChrisReedIO\APIAmigo\Tests\Fixtures\Integrations\Acme\Requests\CreateWidget;
 use ChrisReedIO\APIAmigo\Tests\Fixtures\Integrations\Acme\Requests\GetStatus;
 use ChrisReedIO\APIAmigo\Tests\Fixtures\Integrations\Acme\Requests\GetWidget;
 use ChrisReedIO\APIAmigo\Tests\Fixtures\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -209,4 +211,57 @@ it('tracks a Saloon SoloRequest under its integration\'s Solo Requests connector
         // Requests live in Acme\Requests, so the integration is the namespace above.
         ->and($endpoint->connector->integration->name)->toBe('Acme')
         ->and(AmigoResponse::sole()->endpoint_id)->toBe($endpoint->id);
+});
+
+it('captures the request payload with the response and redacts secret headers', function () {
+    config()->set('api-amigo.responses.capture_body', true);
+    config()->set('api-amigo.requests.redact_headers', ['authorization', 'X-Signature']);
+
+    (new AcmeConnector)
+        ->withMockClient(new MockClient([MockResponse::make(['id' => 7], 201)]))
+        ->send(new CreateWidget(['name' => 'Sprocket']));
+
+    $request = AmigoRequest::sole();
+    expect($request->body)->toBe('{"name":"Sprocket"}')
+        // Matching is case-insensitive in both directions; other headers are kept as sent.
+        ->and($request->headers['Authorization'])->toBe('[redacted]')
+        ->and($request->headers['X-Signature'])->toBe('[redacted]')
+        ->and($request->headers['Accept'])->toBe('application/json')
+        ->and(json_decode($request->response->getRawOriginal('body')))->toBe('{"id":7}');
+});
+
+it('captures the request payload only for failed responses by default', function () {
+    (new AcmeConnector)
+        ->withMockClient(new MockClient([MockResponse::make(['ok' => true], 200)]))
+        ->send(new CreateWidget(['name' => 'Ok']));
+    (new AcmeConnector)
+        ->withMockClient(new MockClient([MockResponse::make(['error' => 'invalid'], 422)]))
+        ->send(new CreateWidget(['name' => 'Bad']));
+
+    [$succeeded, $failed] = AmigoRequest::orderBy('id')->get();
+    expect($succeeded->headers)->toBeNull()
+        ->and($succeeded->body)->toBeNull()
+        ->and($failed->body)->toBe('{"name":"Bad"}')
+        ->and($failed->headers['Authorization'])->toBe('[redacted]');
+});
+
+it('captures Guzzle request payloads, but not bodies too large to buffer', function () {
+    config()->set('api-amigo.responses.capture_body', true);
+    $history = [];
+    $stack = HandlerStack::create(new MockHandler([new Response(200), new Response(200)]));
+    $stack->push(Middleware::history($history));
+    $client = APIAmigo::hookGuzzle(new Client(['base_uri' => 'https://legacy.example.test', 'handler' => $stack]));
+
+    $client->post('/upload', ['body' => 'small=1', 'headers' => ['Authorization' => 'Bearer secret']]);
+    $large = str_repeat('x', 1024 * 1024 + 1);
+    $client->post('/upload', ['body' => $large]);
+
+    [$small, $big] = AmigoRequest::orderBy('id')->get();
+    expect($small->body)->toBe('small=1')
+        ->and($small->headers['Authorization'])->toBe('[redacted]')
+        ->and($big->body)->toBeNull()
+        ->and($big->headers)->not->toBeNull()
+        // Capturing must leave the bodies intact for the request that's actually sent.
+        ->and((string) $history[0]['request']->getBody())->toBe('small=1')
+        ->and(strlen((string) $history[1]['request']->getBody()))->toBe(strlen($large));
 });

@@ -66,6 +66,20 @@ Optionally, you can publish the views using
 php artisan vendor:publish --tag="api-amigo-views"
 ```
 
+## Request Tracking
+
+Every outbound Saloon request, and every Guzzle request through a client hooked with `APIAmigo::hookGuzzle()`, is tracked. The **Requests** page lists them, and each request's page shows the request and its response side by side, with method, path, status, duration, headers, and bodies.
+
+Headers and bodies are captured:
+
+- for failed responses, when `responses.capture_body_on_error` is on (the default);
+- for every call, when `responses.capture_body` is on;
+- while a recording that captures bodies is running.
+
+Headers listed in `requests.redact_headers` (such as `Authorization`, `Cookie`, and `X-Api-Key`; matched case-insensitively) are stored as `[redacted]`. Streamed and multipart Saloon bodies, and Guzzle bodies over 1 MB or that can't be rewound, aren't captured, so uploads are never read into memory.
+
+Upgrading? Publish and run the migrations again to add the request payload columns.
+
 ## Response Aggregation
 
 API Amigo provides powerful commands to aggregate API response data for analytics and reporting. These commands help you track performance metrics, success rates, and usage patterns over time.

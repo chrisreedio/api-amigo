@@ -19,6 +19,17 @@ return [
     'requests' => [
         'header_key' => env('AMIGO_REQUEST_ID_KEY', 'X-Amigo-Request-Id'),
         // 'header_key' => env('AMIGO_REQUEST_ID_KEY', 'X-Request-Id'),
+
+        // Request headers and bodies are captured whenever the response body is (see 'responses' below).
+        // These headers are stored as "[redacted]". Matching is case-insensitive.
+        'redact_headers' => [
+            'authorization',
+            'proxy-authorization',
+            'cookie',
+            'x-api-key',
+            'api-key',
+            'x-auth-token',
+        ],
     ],
 
     'responses' => [

@@ -20,7 +20,7 @@ use function gettype;
  *
  * @property int $id
  * @property int $endpoint_id
- * @property int $request_id
+ * @property ?int $request_id
  * @property string $request_unique_id
  * @property array $headers
  * @property array $body
@@ -76,9 +76,13 @@ class AmigoResponse extends AmigoModel
                 $saloonResponse->headers()->get(config('api-amigo.responses.headers.keys.rate.remaining')),
             );
 
-            $recordBody = $config->get('amigo.capture_body')
-                || config('api-amigo.responses.capture_body')
-                || (config('api-amigo.responses.capture_body_on_error') && $saloonResponse->failed());
+            $captured = $config->get('amigo.capture_payload');
+            $recordBody = $captured || AmigoRequest::capturesPayloadOnError($saloonResponse->failed());
+
+            // Keep the request's payload alongside a response body captured because it failed.
+            if ($recordBody && ! $captured) {
+                AmigoRequest::recordPayload($config->get('amigo.request_key'), AmigoRequest::saloonPayload($saloonResponse->getPendingRequest()));
+            }
 
             return self::create([
                 'endpoint_id' => $config->get('amigo.endpoint_id'),
