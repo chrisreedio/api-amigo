@@ -8,6 +8,7 @@ use ChrisReedIO\APIAmigo\Models\AmigoRecording;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use ChrisReedIO\APIAmigo\Tests\Fixtures\Integrations\Acme\AcmeConnector;
+use ChrisReedIO\APIAmigo\Tests\Fixtures\Integrations\Acme\Requests\GetStatus;
 use ChrisReedIO\APIAmigo\Tests\Fixtures\Integrations\Acme\Requests\GetWidget;
 use ChrisReedIO\APIAmigo\Tests\Fixtures\User;
 use GuzzleHttp\Client;
@@ -197,4 +198,15 @@ it('captures Guzzle response bodies for recordings that ask for it', function ()
     $request = AmigoRequest::sole();
     expect($request->recordings->modelKeys())->toBe([$recording->id])
         ->and($request->response->body)->toBe(['ok' => true]);
+});
+
+it('tracks a Saloon SoloRequest under its integration\'s Solo Requests connector', function () {
+    (new GetStatus)->withMockClient(new MockClient([MockResponse::make(['up' => true])]))->send();
+
+    $endpoint = AmigoEndpoint::sole();
+    expect($endpoint->connector->getRawOriginal('name'))->toBe('Solo Requests')
+        ->and($endpoint->connector->base_url)->toBe('status.acme.test')
+        // Requests live in Acme\Requests, so the integration is the namespace above.
+        ->and($endpoint->connector->integration->name)->toBe('Acme')
+        ->and(AmigoResponse::sole()->endpoint_id)->toBe($endpoint->id);
 });

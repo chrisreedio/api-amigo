@@ -13,6 +13,6 @@ class ProcessTestWebhook extends ProcessWebhookJob
             throw new RuntimeException('Handler failed');
         }
 
-        return true;
+        return ! ($this->webhook->payload['reject'] ?? false);
     }
 }

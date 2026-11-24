@@ -1,5 +1,6 @@
 <?php
 
+use ChrisReedIO\APIAmigo\APIAmigo;
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
@@ -108,4 +109,21 @@ it('rejects listeners that are used up or expired', function (array $attributes)
 
 it('accepts listeners under their limits', function () {
     postWebhook(makeListener(['uses' => 2, 'max_uses' => 3, 'expires_at' => now()->addMinute()]))->assertOk();
+});
+
+it('fails the webhook when the handler reports failure without an error', function () {
+    $listener = makeListener();
+
+    postWebhook($listener, ['reject' => true])->assertOk();
+
+    expect(AmigoWebhook::sole()->error)->toBe(['code' => 500, 'message' => 'An unknown error occurred.'])
+        ->and($listener->fresh()->uses)->toBe(0);
+});
+
+it('registers only webhook job classes as handlers', function () {
+    APIAmigo::registerWebhookHandler(ProcessTestWebhook::class);
+
+    expect(APIAmigo::getWebhookHandlers())->toContain(ProcessTestWebhook::class)
+        ->and(fn () => APIAmigo::registerWebhookHandler('App\\Missing'))->toThrow(InvalidArgumentException::class, 'does not exist')
+        ->and(fn () => APIAmigo::registerWebhookHandler(stdClass::class))->toThrow(InvalidArgumentException::class, 'must extend');
 });
