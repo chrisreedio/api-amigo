@@ -14,6 +14,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -51,6 +53,45 @@ it('tracks Saloon requests under one endpoint per request class', function () {
             ->and($request->response->endpoint_id)->toBe($endpoint->id)
             ->and($request->response->status_code)->toBe(HTTPStatus::OK);
     }
+});
+
+it('tracks a call in 7 queries once its endpoint exists', function () {
+    $connector = (new AcmeConnector)->withMockClient(new MockClient([
+        MockResponse::make(['id' => 1], 200, ['X-RateLimit-Limit' => '100', 'X-RateLimit-Remaining' => '99']),
+        MockResponse::make(['id' => 2], 200, ['X-RateLimit-Limit' => '100', 'X-RateLimit-Remaining' => '98']),
+    ]));
+    $connector->send(new GetWidget(1));
+
+    DB::enableQueryLog();
+    $connector->send(new GetWidget(2));
+
+    // Endpoint lookup (3), request insert, active recordings, rate limit update, response insert.
+    expect(DB::getQueryLog())->toHaveCount(7)
+        ->and(AmigoResponse::count())->toBe(2);
+});
+
+it('only writes rate limits that changed', function () {
+    sendWidgetRequests(MockResponse::make([], 200, ['X-RateLimit-Limit' => '100', 'X-RateLimit-Remaining' => '99']));
+    $connector = AmigoConnector::sole();
+    $connector->forceFill(['updated_at' => Carbon::parse('2026-01-01')])->saveQuietly();
+
+    sendWidgetRequests(
+        MockResponse::make([], 200, ['X-RateLimit-Limit' => '100', 'X-RateLimit-Remaining' => '99']),
+        MockResponse::make([], 200),
+    );
+
+    // Neither an unchanged value nor a response without the headers touches the connector.
+    expect($connector->fresh())
+        ->rate_limit->toBe(100)
+        ->rate_limit_remaining->toBe(99)
+        ->updated_at->toEqual(Carbon::parse('2026-01-01'));
+
+    sendWidgetRequests(MockResponse::make([], 200, ['X-RateLimit-Limit' => 'unlimited', 'X-RateLimit-Remaining' => '42']));
+
+    expect($connector->fresh())
+        ->rate_limit->toBeNull()
+        ->rate_limit_remaining->toBe(42)
+        ->and(AmigoResponse::count())->toBe(4);
 });
 
 it('only captures response bodies for errors by default', function () {
@@ -102,6 +143,20 @@ it('attaches requests to active recordings and captures bodies they ask for', fu
         ->and($ended->requests()->count())->toBe(0);
 });
 
+it('captures the body when any of the request\'s recordings asks for it', function (bool $anyCaptures) {
+    $this->actingAs(User::create(['name' => 'Owner', 'email' => 'owner@example.com', 'password' => 'secret']));
+    $recordings = [
+        AmigoRecording::create(['started_at' => now(), 'global' => true]),
+        AmigoRecording::create(['started_at' => now(), 'global' => true, 'capture_body' => $anyCaptures]),
+    ];
+
+    sendWidgetRequests(MockResponse::make(['ok' => true], 200));
+
+    $request = AmigoRequest::sole();
+    expect($request->recordings->modelKeys())->toEqualCanonicalizing(array_map(fn ($recording) => $recording->id, $recordings))
+        ->and($request->response->getRawOriginal('body') !== null)->toBe($anyCaptures);
+})->with(['one recording captures' => true, 'none capture' => false]);
+
 it('tracks Guzzle requests made through a hooked client', function () {
     $client = APIAmigo::hookGuzzle(new Client([
         'base_uri' => 'https://legacy.example.test',
@@ -127,4 +182,19 @@ it('tracks Guzzle requests made through a hooked client', function () {
     expect($requests->pluck('path')->all())->toBe(['/status?verbose=1', '/status'])
         ->and($requests->map(fn ($request) => $request->response->status_code->value)->all())->toBe([200, 503])
         ->and($requests[1]->response->body)->toBe(['error' => 'down']);
+});
+
+it('captures Guzzle response bodies for recordings that ask for it', function () {
+    $this->actingAs(User::create(['name' => 'Owner', 'email' => 'owner@example.com', 'password' => 'secret']));
+    $recording = AmigoRecording::create(['started_at' => now(), 'global' => true, 'capture_body' => true]);
+
+    $client = APIAmigo::hookGuzzle(new Client([
+        'base_uri' => 'https://legacy.example.test',
+        'handler' => HandlerStack::create(new MockHandler([new Response(200, [], '{"ok":true}')])),
+    ]));
+    $client->get('/status');
+
+    $request = AmigoRequest::sole();
+    expect($request->recordings->modelKeys())->toBe([$recording->id])
+        ->and($request->response->body)->toBe(['ok' => true]);
 });
