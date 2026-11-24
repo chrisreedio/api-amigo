@@ -1,9 +1,10 @@
 # API Quota Management and Analytics
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/chrisreedio/api-amigo.svg?style=flat-square)](https://packagist.org/packages/chrisreedio/api-amigo)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/chrisreedio/api-amigo/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/chrisreedio/api-amigo/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchrisreedio%2Fapi-amigo%2Fbadges%2Fcoverage.json&style=flat-square)](https://github.com/chrisreedio/api-amigo/actions/workflows/run-tests.yml?query=branch%3A4.x)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/chrisreedio/api-amigo/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/chrisreedio/api-amigo/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Tests Action Status](https://github.com/chrisreedio/api-amigo/actions/workflows/run-tests.yml/badge.svg?branch=4.x)](https://github.com/chrisreedio/api-amigo/actions/workflows/run-tests.yml?query=branch%3A4.x)
+[![Code Style Action Status](https://github.com/chrisreedio/api-amigo/actions/workflows/fix-php-code-styling.yml/badge.svg?branch=4.x)](https://github.com/chrisreedio/api-amigo/actions/workflows/fix-php-code-styling.yml?query=branch%3A4.x)
+[![PHPStan Action Status](https://github.com/chrisreedio/api-amigo/actions/workflows/phpstan.yml/badge.svg?branch=4.x)](https://github.com/chrisreedio/api-amigo/actions/workflows/phpstan.yml?query=branch%3A4.x)
+[![Code Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchrisreedio%2Fapi-amigo%2Fbadges%2Fcoverage.json&style=flat-square)](https://github.com/chrisreedio/api-amigo/actions/workflows/run-tests.yml?query=branch%3A4.x)
 [![Total Downloads](https://img.shields.io/packagist/dt/chrisreedio/api-amigo.svg?style=flat-square)](https://packagist.org/packages/chrisreedio/api-amigo)
 
 
