@@ -74,3 +74,49 @@ jobs:
 
       - name: Execute tests
         run: vendor/bin/pest --no-coverage
+
+  coverage:
+    runs-on: ubuntu-latest
+    name: Coverage
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: amigo
+          POSTGRES_PASSWORD: amigo
+          POSTGRES_DB: api_amigo_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_pgsql, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          coverage: pcov
+
+      - name: Install dependencies
+        run: |
+          composer require --dev "laravel/framework:13.*" "orchestra/testbench:11.*" "nesbot/carbon:^3.8" --no-interaction --no-update
+          composer update --prefer-stable --prefer-dist --no-interaction
+
+      # Raise the minimum as coverage improves, so it can't quietly drop.
+      - name: Execute tests with coverage
+        run: vendor/bin/pest --coverage --min=74
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          sed 's/\x1b\[[0-9;]*m//g' build/coverage.txt | head -9 >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
