@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages;
 
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRequestResource;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Filament\Actions;
@@ -16,6 +17,16 @@ use function response;
 class ViewAmigoResponse extends ViewRecord
 {
     protected static string $resource = AmigoResponseResource::class;
+
+    /** Responses are shown on their request's page, which has both sides of the call. */
+    public function mount(int | string $record): void
+    {
+        parent::mount($record);
+
+        if ($this->record->request_id !== null) {
+            $this->redirect(AmigoRequestResource::getUrl('view', ['record' => $this->record->request_id]));
+        }
+    }
 
     public function getHeading(): string
     {

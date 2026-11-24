@@ -48,6 +48,10 @@ class AmigoResponseResource extends Resource
 
     protected static ?string $slug = 'responses';
 
+    // Deprecated in favor of Requests, which shows each response with its request. The pages stay
+    // routable so existing links keep working, and response views redirect to their request.
+    protected static bool $shouldRegisterNavigation = false;
+
     // public static function getNavigationGroup(): ?string
     // {
     //     return config('api-amigo.filament.navigation_group');
@@ -312,6 +316,9 @@ class AmigoResponseResource extends Resource
             ->persistFiltersInSession()
             ->filtersFormWidth('xl')
             ->defaultSort('created_at', 'desc')
+            ->recordUrl(fn (AmigoResponse $record) => $record->request_id === null
+                ? self::getUrl('view', ['record' => $record])
+                : AmigoRequestResource::getUrl('view', ['record' => $record->request_id]))
             ->recordActions([
                 // Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),

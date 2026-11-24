@@ -8,8 +8,9 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Paginates an unfiltered table with the estimated row count instead of a COUNT(*) over the whole table.
- * Filtered and searched tables still count exactly, since an estimate can't account for the filter.
+ * Paginates with PostgreSQL's row estimates instead of a COUNT(*) over every matching row: the table's
+ * statistics when unfiltered, and the planner's estimate for the query when filtered or searched.
+ * Small results are counted exactly.
  */
 trait EstimatesTableRecordCount
 {
@@ -18,14 +19,14 @@ trait EstimatesTableRecordCount
         $model = $query->getModel();
         $perPage = $this->getTableRecordsPerPage();
 
-        if (! $model instanceof AmigoModel || $perPage === 'all' || $query->toBase()->wheres !== []) {
+        if (! $model instanceof AmigoModel || $perPage === 'all') {
             return parent::paginateTableQuery($query);
         }
 
         return $query->paginate(
             perPage: $perPage,
             pageName: $this->getTablePaginationPageName(),
-            total: $model::estimatedCount(),
+            total: $query->toBase()->wheres === [] ? $model::estimatedCount() : $model::estimatedCountFor($query),
         )->onEachSide(0);
     }
 }

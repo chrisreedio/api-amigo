@@ -2,7 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\RelationManagers;
 
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRequestResource;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -117,7 +117,7 @@ class AmigoRequestsRelationManager extends RelationManager
             ->recordActions([
                 // Tables\Actions\EditAction::make(),
                 // Tables\Actions\DeleteAction::make(),
-                ViewAction::make()->url(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response])),
+                ViewAction::make()->url(fn (AmigoRequest $request) => AmigoRequestResource::getUrl('view', ['record' => $request])),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
