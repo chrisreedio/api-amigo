@@ -2,7 +2,6 @@
 
 namespace ChrisReedIO\APIAmigo;
 
-use ChrisReedIO\APIAmigo\Commands\APIAmigoCommand;
 use ChrisReedIO\APIAmigo\Commands\PruneResponsesCommand;
 use ChrisReedIO\APIAmigo\Commands\ResponsesAggregationCommand;
 use ChrisReedIO\APIAmigo\Commands\ResponsesDailyAggregationCommand;
@@ -167,7 +166,6 @@ class APIAmigoServiceProvider extends PackageServiceProvider
     protected function getCommands(): array
     {
         return [
-            APIAmigoCommand::class,
             ResponsesAggregationCommand::class,
             ResponsesDailyAggregationCommand::class,
             PruneResponsesCommand::class,

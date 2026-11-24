@@ -3,7 +3,6 @@
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages\ListAmigoConnectors;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\Pages\ViewAmigoConnector;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoConnectorResource\RelationManagers\AmigoEndpointsRelationManager;
@@ -238,9 +237,7 @@ class AmigoConnectorResource extends Resource
     {
         return [
             'index' => ListAmigoConnectors::route('/'),
-            // 'create' => Pages\CreateAmigoConnector::route('/create'),
             'view' => ViewAmigoConnector::route('/{record}'),
-            // 'edit' => Pages\EditAmigoConnector::route('/{record}/edit'),
         ];
     }
 }

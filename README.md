@@ -2,6 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/chrisreedio/api-amigo.svg?style=flat-square)](https://packagist.org/packages/chrisreedio/api-amigo)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/chrisreedio/api-amigo/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/chrisreedio/api-amigo/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchrisreedio%2Fapi-amigo%2Fbadges%2Fcoverage.json&style=flat-square)](https://github.com/chrisreedio/api-amigo/actions/workflows/run-tests.yml?query=branch%3A4.x)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/chrisreedio/api-amigo/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/chrisreedio/api-amigo/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/chrisreedio/api-amigo.svg?style=flat-square)](https://packagist.org/packages/chrisreedio/api-amigo)
 
@@ -156,6 +157,8 @@ The `--all` command will:
 - Show progress and statistics during processing
 
 ## Testing
+
+The tests need PostgreSQL. They connect to `api_amigo_test` as `amigo`/`amigo` on localhost unless `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, or `DB_PASSWORD` say otherwise, and run in parallel, with each worker creating its own `api_amigo_test_<n>` database.
 
 ```bash
 composer test

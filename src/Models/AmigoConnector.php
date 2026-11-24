@@ -153,15 +153,7 @@ class AmigoConnector extends Model
 
     public function getRateUsagePercentageAttribute(): float
     {
-        if ($this->rate_limit === null) {
-            return 0;
-        }
-
-        if ($this->rate_usage === 0) {
-            return 100;
-        }
-
-        if ($this->rate_limit === 0) {
+        if (! $this->rate_limit) {
             return 0;
         }
 

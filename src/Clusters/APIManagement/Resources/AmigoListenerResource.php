@@ -421,9 +421,7 @@ class AmigoListenerResource extends Resource
     {
         return [
             'index' => ListAmigoListeners::route('/'),
-            // 'create' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\Pages\CreateAmigoListener::route('/create'),
             'view' => ViewAmigoListener::route('/{record}'),
-            // 'edit' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\Pages\EditAmigoListener::route('/{record}/edit'),
         ];
     }
 }

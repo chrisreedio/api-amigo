@@ -46,16 +46,6 @@ parameters:
 			path: src/Commands/ResponsesAggregationCommand.php
 
 		-
-			message: "#^Method ChrisReedIO\\\\APIAmigo\\\\Commands\\\\ResponsesAggregationCommand\\:\\:printDay\\(\\) is unused\\.$#"
-			count: 1
-			path: src/Commands/ResponsesAggregationCommand.php
-
-		-
-			message: "#^Method ChrisReedIO\\\\APIAmigo\\\\Commands\\\\ResponsesAggregationCommand\\:\\:printStats\\(\\) is unused\\.$#"
-			count: 1
-			path: src/Commands/ResponsesAggregationCommand.php
-
-		-
 			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: src/Models/AmigoConnector.php

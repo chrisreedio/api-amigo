@@ -3,7 +3,6 @@
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources;
 
 use ChrisReedIO\APIAmigo\Clusters\APIManagement;
-use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages\ListAmigoRecordings;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages\ViewAmigoRecording;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\RelationManagers\AmigoRequestsRelationManager;
@@ -227,9 +226,7 @@ class AmigoRecordingResource extends Resource
     {
         return [
             'index' => ListAmigoRecordings::route('/'),
-            // 'create' => Pages\CreateAmigoRecording::route('/create'),
             'view' => ViewAmigoRecording::route('/{record}'),
-            // 'edit' => Pages\EditAmigoRecording::route('/{record}/edit'),
         ];
     }
 }

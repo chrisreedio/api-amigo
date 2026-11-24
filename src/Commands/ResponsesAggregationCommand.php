@@ -17,7 +17,6 @@ use function collect;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\outro;
 use function Laravel\Prompts\progress;
-use function Laravel\Prompts\table;
 use function Laravel\Prompts\warning;
 use function microtime;
 use function number_format;
@@ -205,7 +204,9 @@ class ResponsesAggregationCommand extends Command
                 'ROUND(PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY duration)::numeric, 6) as p99_duration',
                 config('api-amigo.tdigest.enabled', false) ? 'tdigest(duration, 100) AS duration_histogram' : null,
             ])))
-            ->whereBetween('amigo_responses.created_at', [$start->toDateTimeString(), $end->toDateTimeString()])
+            // Half-open windows, so a response on the hour is counted once.
+            ->where('amigo_responses.created_at', '>=', $start->toDateTimeString())
+            ->where('amigo_responses.created_at', '<', $end->toDateTimeString())
             ->join('amigo_endpoints', 'amigo_endpoints.id', '=', 'amigo_responses.endpoint_id')
             ->join('amigo_connectors', 'amigo_connectors.id', '=', 'amigo_endpoints.connector_id')
             ->groupBy(['endpoint_id', 'amigo_connectors.integration_id'])
@@ -228,10 +229,8 @@ class ResponsesAggregationCommand extends Command
             DB::raw("to_char(created_at, 'YYYY-MM-DD HH24:MI') as minute"),
             DB::raw('COUNT(*) as requests_per_minute'),
         ])
-            ->whereBetween('created_at', [
-                $start->toDateTimeString(),
-                $start->copy()->addMinutes(self::INTERVAL)->toDateTimeString(),
-            ])
+            ->where('created_at', '>=', $start->toDateTimeString())
+            ->where('created_at', '<', $start->copy()->addMinutes(self::INTERVAL)->toDateTimeString())
             ->groupBy('endpoint_id', 'minute')
             ->get();
 
@@ -276,90 +275,5 @@ class ResponsesAggregationCommand extends Command
 
             return null;
         }
-    }
-
-    private function printDay(Collection $stats): void
-    {
-        $stats = $stats->map(fn ($stat) => [
-            $stat->window_start,
-            $stat->interval,
-            $stat['name'] ?? $stat['endpoint_id'],
-            number_format($stat['total_requests']),
-            number_format($stat['successful_requests']),
-            number_format($stat['failed_requests']),
-            number_format($stat['max_requests_per_minute']),
-            round($stat['min_duration'] * 1000) . ' ms',
-            round($stat['avg_duration'] * 1000) . ' ms',
-            round($stat['p50_duration'] * 1000) . ' ms',
-            round($stat['p75_duration'] * 1000) . ' ms',
-            round($stat['p95_duration'] * 1000) . ' ms',
-            round($stat['p99_duration'] * 1000) . ' ms',
-            round($stat['max_duration'] * 1000) . ' ms',
-        ]);
-
-        table(
-            [
-                'Window Start',
-                'Interval',
-                'Endpoint',
-                'Total',
-                'Successful',
-                'Failed',
-                'Req/Min',
-                'Minimum',
-                'Average',
-                '50th %',
-                '75th %',
-                '95th %',
-                '99th %',
-                'Maximum',
-            ],
-            $stats,
-        );
-    }
-
-    private function printStats($stats): void
-    {
-        table(
-            [
-                'Date',
-                'Total Responses',
-                'Successful Responses',
-                'Failed Responses',
-                'Average Duration',
-                'Processing Time',
-            ],
-            $stats,
-        );
-
-        $sums = $stats->reduce(
-            fn ($carry, $item) => [
-                $carry[0],
-                $carry[1] + (int) str_replace(',', '', $item[1]),
-                $carry[2] + (int) str_replace(',', '', $item[2]),
-                $carry[3] + (int) str_replace(',', '', $item[3]),
-                $carry[4] + (int) str_replace(',', '', str_replace(' ms', '', $item[4])),
-                $carry[5] + (int) str_replace(',', '', str_replace(' ms', '', $item[5])),
-            ],
-            ['Totals', 0, 0, 0, 0, 0],
-        );
-
-        $sums[1] = number_format($sums[1]);
-        $sums[2] = number_format($sums[2]);
-        $sums[3] = number_format($sums[3]);
-        $sums[4] = number_format($sums[4] / $stats->count()) . ' ms';
-        $sums[5] = number_format($sums[5] / $stats->count()) . ' ms';
-
-        table(
-            [
-                'Date',
-                'Total Responses',
-                'Successful Responses',
-                'Failed Responses',
-                'Average Duration',
-                'Processing Time',
-            ],
-            [$sums],
-        );
     }
 }
