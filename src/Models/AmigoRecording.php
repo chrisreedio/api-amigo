@@ -3,6 +3,7 @@
 namespace ChrisReedIO\APIAmigo\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -58,6 +59,21 @@ class AmigoRecording extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->whereNotNull('started_at')->whereNull('ended_at');
+    }
+
+    /**
+     * The active recordings that include the signed-in user's requests to this connector.
+     *
+     * @return Collection<int, self>
+     */
+    public static function activeFor(int $connectorId): Collection
+    {
+        $user = auth()->user();
+
+        return static::active()->get()
+            ->filter(fn (self $recording) => ($recording->global || ($user !== null && $recording->user_id === $user->getAuthIdentifier()))
+                && ($recording->connector_id === null || $recording->connector_id === $connectorId))
+            ->values();
     }
 
     public function scopeGlobal(Builder $query, bool $isGlobal = true): Builder

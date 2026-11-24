@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\RelationManagers;
 
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRequestResource;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use Filament\Actions\BulkActionGroup;
@@ -41,7 +42,7 @@ class AmigoRequestsRelationManager extends RelationManager
                 'response' => fn (HasOne $response) => $response->select(['id', 'request_id', 'status_code', 'duration', 'cached']),
             ]))
             // ->recordTitleAttribute('name')
-            ->recordUrl(fn (AmigoRequest $request) => $request->response == null ? null : AmigoResponseResource::getUrl('view', ['record' => $request->response]))
+            ->recordUrl(fn (AmigoRequest $request) => AmigoRequestResource::getUrl('view', ['record' => $request]))
             ->columns([
                 // Tables\Columns\TextColumn::make('endpoint.name')
                 //     ->label('Endpoint')

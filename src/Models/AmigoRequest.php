@@ -2,15 +2,18 @@
 
 namespace ChrisReedIO\APIAmigo\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
+use Psr\Http\Message\RequestInterface;
 use Saloon\Http\PendingRequest;
+use Stringable;
 
 use function config;
-use function is_null;
+use function in_array;
 
 /**
  * AmigoRequest
@@ -22,6 +25,8 @@ use function is_null;
  * @property string $unique_id
  * @property string $path
  * @property int $user_id
+ * @property ?array $headers
+ * @property ?string $body
  * @property AmigoEndpoint $endpoint
  * @property ?AmigoResponse $response
  * @property AmigoRecording[] $recordings
@@ -33,7 +38,18 @@ class AmigoRequest extends AmigoModel
         'unique_id',
         'endpoint_id',
         'path',
+        'headers',
+        'body',
     ];
+
+    protected $casts = [
+        'headers' => 'array',
+    ];
+
+    /**
+     * Larger PSR request bodies, such as file uploads, aren't read into memory to be captured.
+     */
+    private const int MAX_CAPTURED_STREAM_SIZE = 1024 * 1024;
 
     /** @return BelongsTo<Model, $this> */
     public function user(): BelongsTo
@@ -89,43 +105,111 @@ class AmigoRequest extends AmigoModel
             $path .= '?' . $uri->getQuery();
         }
 
+        $recordings = AmigoRecording::activeFor($endpoint->connector_id);
+        $capturePayload = self::capturesPayload($recordings);
+
         $request = $endpoint->requests()->create([
             'unique_id' => $requestId,
-            'user_id' => auth()->user()?->id,
+            'user_id' => auth()->user()?->getAuthIdentifier(),
             'path' => $path,
+            ...($capturePayload ? self::saloonPayload($pendingRequest) : []),
         ]);
-        $request->setRelation('endpoint', $endpoint);
+        $request->attachRecordings($recordings);
 
         $config->add('amigo.request_key', $request->id);
         $config->add('amigo.endpoint_id', $endpoint->id);
         $config->add('amigo.connector_id', $endpoint->connector_id);
-        $config->add('amigo.capture_body', $request->attachRecordings());
+        $config->add('amigo.capture_payload', $capturePayload);
 
         return $request;
     }
 
     /**
-     * Attaches the request to the active recordings that include it.
+     * Whether to capture the request and response payloads before the response is known:
+     * when configured to always, or when one of the request's recordings asks for it.
      *
-     * @return bool Whether any of those recordings captures response bodies.
+     * @param  Collection<int, AmigoRecording>  $recordings
      */
-    public function attachRecordings(): bool
+    public static function capturesPayload(Collection $recordings): bool
     {
-        $user = auth()->user();
+        return config('api-amigo.responses.capture_body') || $recordings->contains('capture_body', true);
+    }
 
-        $recordings = AmigoRecording::active()->get()->filter(function (AmigoRecording $recording) use ($user) {
-            // Non-global recordings only include their owner's requests.
-            if (! $recording->global && (is_null($user) || $recording->user_id !== $user->id)) {
-                return false;
-            }
+    /**
+     * Whether to capture the payloads once the response has failed, when they weren't captured up front.
+     */
+    public static function capturesPayloadOnError(bool $failed): bool
+    {
+        return $failed && config('api-amigo.responses.capture_body_on_error');
+    }
 
-            return $recording->connector_id === null || $recording->connector_id === $this->endpoint->connector_id;
-        });
-
+    /**
+     * @param  Collection<int, AmigoRecording>  $recordings
+     */
+    public function attachRecordings(Collection $recordings): void
+    {
         if ($recordings->isNotEmpty()) {
             $this->recordings()->attach($recordings->modelKeys());
         }
+    }
 
-        return $recordings->contains('capture_body', true);
+    /**
+     * Stores payloads captured after the request was recorded, such as when its response failed.
+     *
+     * @param  array{headers: array<string, mixed>, body: ?string}  $payload
+     */
+    public static function recordPayload(int $requestKey, array $payload): void
+    {
+        static::query()->whereKey($requestKey)->update([
+            'headers' => json_encode($payload['headers']),
+            'body' => $payload['body'],
+        ]);
+    }
+
+    /**
+     * Streamed and multipart Saloon bodies aren't captured, since reading them could consume or load the upload.
+     *
+     * @return array{headers: array<string, mixed>, body: ?string}
+     */
+    public static function saloonPayload(PendingRequest $pendingRequest): array
+    {
+        $body = $pendingRequest->body();
+
+        return self::payload($pendingRequest->headers()->all(), $body instanceof Stringable ? (string) $body : null);
+    }
+
+    /**
+     * Unseekable and large PSR bodies aren't captured; captured ones are rewound for sending.
+     *
+     * @return array{headers: array<string, mixed>, body: ?string}
+     */
+    public static function psrPayload(RequestInterface $request): array
+    {
+        $stream = $request->getBody();
+        $body = null;
+
+        if ($stream->isSeekable() && $stream->getSize() !== null && $stream->getSize() <= self::MAX_CAPTURED_STREAM_SIZE) {
+            $body = (string) $stream;
+            $stream->rewind();
+        }
+
+        return self::payload($request->getHeaders(), $body);
+    }
+
+    /**
+     * @param  array<string, mixed>  $headers
+     * @return array{headers: array<string, mixed>, body: ?string}
+     */
+    private static function payload(array $headers, ?string $body): array
+    {
+        $redacted = array_map('strtolower', config('api-amigo.requests.redact_headers', []));
+
+        foreach ($headers as $name => $value) {
+            if (in_array(strtolower($name), $redacted, true)) {
+                $headers[$name] = '[redacted]';
+            }
+        }
+
+        return ['headers' => $headers, 'body' => $body === '' ? null : $body];
     }
 }

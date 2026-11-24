@@ -2,11 +2,11 @@
 
 namespace ChrisReedIO\APIAmigo\Middleware\Guzzle;
 
+use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-use function config;
 use function trim;
 
 class TrackGuzzleResponse
@@ -15,13 +15,17 @@ class TrackGuzzleResponse
     {
         return function (RequestInterface $request, array $options) use ($handler) {
             return $handler($request, $options)->then(
-                function (ResponseInterface $response) use ($options) {
+                function (ResponseInterface $response) use ($request, $options) {
                     // Set by TrackGuzzleRequest.
                     $amigo = $options['amigo'];
 
-                    $recordBody = $amigo['capture_body']
-                        || config('api-amigo.responses.capture_body')
-                        || (config('api-amigo.responses.capture_body_on_error') && $response->getStatusCode() >= 400);
+                    $captured = $amigo['capture_payload'];
+                    $recordBody = $captured || AmigoRequest::capturesPayloadOnError($response->getStatusCode() >= 400);
+
+                    // Keep the request's payload alongside a response body captured because it failed.
+                    if ($recordBody && ! $captured) {
+                        AmigoRequest::recordPayload($amigo['request_key'], AmigoRequest::psrPayload($request));
+                    }
 
                     AmigoResponse::create([
                         'endpoint_id' => $amigo['endpoint_id'],

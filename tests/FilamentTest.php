@@ -17,6 +17,9 @@ use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoListenerResource\
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\Pages\ViewAmigoRecording;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\RelationManagers\AmigoRequestsRelationManager as RecordingRequestsRelationManager;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRequestResource;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRequestResource\Pages\ListAmigoRequests;
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRequestResource\Pages\ViewAmigoRequest;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource\Pages\ListAmigoResponses;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoWebhookResource;
@@ -27,11 +30,13 @@ use ChrisReedIO\APIAmigo\Models\AmigoEndpointAggregate;
 use ChrisReedIO\APIAmigo\Models\AmigoIntegration;
 use ChrisReedIO\APIAmigo\Models\AmigoListener;
 use ChrisReedIO\APIAmigo\Models\AmigoRecording;
+use ChrisReedIO\APIAmigo\Models\AmigoRequest;
 use ChrisReedIO\APIAmigo\Models\AmigoResponse;
 use ChrisReedIO\APIAmigo\Models\AmigoWebhook;
 use ChrisReedIO\APIAmigo\Tests\Fixtures\User;
 use ChrisReedIO\APIAmigo\Tests\Fixtures\Webhooks\ProcessTestWebhook;
 use Filament\Facades\Filament;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
 /**
@@ -106,8 +111,9 @@ it('renders every resource page', function () {
         AmigoEndpointResource::getUrl('index'),
         AmigoEndpointResource::getUrl('view', ['record' => $data['widgets']]),
         AmigoEndpointResource::getUrl('stats', ['record' => $data['widgets']]),
+        AmigoRequestResource::getUrl('index'),
+        AmigoRequestResource::getUrl('view', ['record' => $data['responses'][1]->request_id]),
         AmigoResponseResource::getUrl('index'),
-        AmigoResponseResource::getUrl('view', ['record' => $data['responses'][1]]),
         AmigoListenerResource::getUrl('index'),
         AmigoListenerResource::getUrl('view', ['record' => $data['listener']]),
         AmigoWebhookResource::getUrl('index'),
@@ -119,6 +125,10 @@ it('renders every resource page', function () {
     foreach ($urls as $url) {
         $this->get($url)->assertOk();
     }
+
+    // A response's page sends you to its request's page, which shows both sides of the call.
+    $this->get(AmigoResponseResource::getUrl('view', ['record' => $data['responses'][1]]))
+        ->assertRedirect(AmigoRequestResource::getUrl('view', ['record' => $data['responses'][1]->request_id]));
 });
 
 it('renders every relation manager with its records', function (string $relationManager, string $owner, string $pageClass, int $count) {
@@ -207,4 +217,118 @@ it('paginates with exact totals while the tables are small', function () {
         ->and(AmigoWebhook::estimatedCount())->toBe(2);
 
     Livewire::test(ListAmigoResponses::class)->assertCountTableRecords(4);
+});
+
+/** Requests from seedPanelData plus one sent three days ago, with varied durations and one captured payload. */
+function seedRequestList(): array
+{
+    $data = seedPanelData();
+    $requests = AmigoRequest::orderBy('id')->get();
+    [$ok, $notFound, $created, $serverError] = $requests;
+
+    $notFound->response->update(['duration' => 0.08]);
+    $serverError->response->update(['duration' => 0.25]);
+    $created->update(['headers' => ['Accept' => 'application/json'], 'body' => '{"sku":"A-1"}']);
+
+    $old = $data['widgets']->requests()->create(['unique_id' => 'req-old', 'path' => '/widgets/9']);
+    $old->forceFill(['created_at' => now()->subDays(3)])->save();
+
+    return compact('ok', 'notFound', 'created', 'serverError', 'old');
+}
+
+it('lists the last 24 hours of requests by default', function () {
+    ['old' => $old] = $recent = seedRequestList();
+    unset($recent['old']);
+
+    Livewire::test(ListAmigoRequests::class)
+        ->assertCanSeeTableRecords($recent)
+        ->assertCanNotSeeTableRecords([$old])
+        ->filterTable('sent', 'week')
+        ->assertCanSeeTableRecords([$old])
+        ->filterTable('sent', 'hour')
+        ->assertCanNotSeeTableRecords([$old])
+        ->filterTable('sent', null)
+        ->assertCountTableRecords(5);
+});
+
+it('filters requests by their response', function () {
+    ['ok' => $ok, 'notFound' => $notFound, 'created' => $created, 'serverError' => $serverError] = seedRequestList();
+
+    Livewire::test(ListAmigoRequests::class)
+        ->filterTable('status_code', [404, 500])
+        ->assertCanSeeTableRecords([$notFound, $serverError])
+        ->assertCanNotSeeTableRecords([$ok, $created])
+        ->removeTableFilter('status_code')
+        ->filterTable('success', true)
+        ->assertCanSeeTableRecords([$ok, $created])
+        ->assertCanNotSeeTableRecords([$notFound, $serverError])
+        ->filterTable('success', false)
+        ->assertCanSeeTableRecords([$notFound, $serverError])
+        ->assertCanNotSeeTableRecords([$ok, $created]);
+});
+
+it('filters slow requests by the error threshold or a custom cutoff', function () {
+    ['ok' => $ok, 'notFound' => $notFound, 'serverError' => $serverError] = seedRequestList();
+    config()->set('api-amigo.thresholds.duration.error', 0.25);
+
+    Livewire::test(ListAmigoRequests::class)
+        // The threshold itself counts as slow.
+        ->filterTable('slow')
+        ->assertCanSeeTableRecords([$serverError])
+        ->assertCanNotSeeTableRecords([$ok, $notFound])
+        ->removeTableFilter('slow')
+        // A custom cutoff is in milliseconds and exclusive: 0.05s calls aren't slower than 50ms.
+        ->filterTable('duration', ['slower_than' => 50])
+        ->assertCanSeeTableRecords([$notFound, $serverError])
+        ->assertCanNotSeeTableRecords([$ok]);
+});
+
+it('filters requests by whether their payload was captured', function () {
+    ['ok' => $ok, 'created' => $created] = seedRequestList();
+
+    Livewire::test(ListAmigoRequests::class)
+        ->filterTable('captured', true)
+        ->assertCanSeeTableRecords([$created])
+        ->assertCanNotSeeTableRecords([$ok])
+        ->filterTable('captured', false)
+        ->assertCanSeeTableRecords([$ok])
+        ->assertCanNotSeeTableRecords([$created]);
+});
+
+it('shows a request and its response side by side', function () {
+    ['created' => $created, 'ok' => $ok] = seedRequestList();
+
+    $this->get(AmigoRequestResource::getUrl('view', ['record' => $created]))
+        ->assertOk()
+        // Bodies are syntax-highlighted token by token, so this checks the tokens in reading order.
+        ->assertSeeInOrder(['/orders', '201 Created', 'Request', 'sku', 'A-1', 'Response', 'ok', 'true']);
+
+    $this->get(AmigoRequestResource::getUrl('view', ['record' => $ok]))
+        ->assertOk()
+        ->assertSee('Not captured. Enable api-amigo.responses.capture_body');
+});
+
+it('downloads the response body from the request page', function () {
+    ['created' => $created] = seedRequestList();
+
+    Livewire::test(ViewAmigoRequest::class, ['record' => $created->getRouteKey()])
+        ->callAction('download_response')
+        ->assertFileDownloaded("amigo-response-{$created->response->id}.json", '{"ok":true}');
+});
+
+it('counts large filtered results with the planner estimate', function () {
+    $endpoint = seedPanelData()['widgets'];
+    DB::insert("insert into amigo_requests (endpoint_id, unique_id, path, created_at, updated_at)
+        select ?, 'bulk-' || n, '/widgets/' || n, now(), now() from generate_series(1, 20000) n", [$endpoint->id]);
+    DB::statement('analyze amigo_requests');
+
+    $query = AmigoRequest::query()->where('created_at', '>=', now()->subDay());
+    DB::enableQueryLog();
+    $estimate = AmigoRequest::estimatedCountFor($query);
+
+    // No COUNT(*) ran, and the estimate is close to the 20,004 matching rows.
+    expect(collect(DB::getQueryLog())->pluck('query')->filter(fn ($sql) => str_contains($sql, 'count(')))->toBeEmpty()
+        ->and($estimate)->toBeGreaterThan(18_000)->toBeLessThan(22_000)
+        // Small results are still counted exactly.
+        ->and(AmigoRequest::estimatedCountFor(AmigoRequest::query()->where('path', '/orders')))->toBe(2);
 });

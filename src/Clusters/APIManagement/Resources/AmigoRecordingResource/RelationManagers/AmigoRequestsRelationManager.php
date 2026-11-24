@@ -2,6 +2,7 @@
 
 namespace ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRecordingResource\RelationManagers;
 
+use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoRequestResource;
 use ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoResponseResource;
 use ChrisReedIO\APIAmigo\Models\AmigoEndpoint;
 use ChrisReedIO\APIAmigo\Models\AmigoRequest;
@@ -44,7 +45,7 @@ class AmigoRequestsRelationManager extends RelationManager
                 'response' => fn (HasOne $response) => $response->select(['id', 'request_id', 'status_code', 'duration', 'cached']),
             ]))
             // ->recordTitleAttribute('name')
-            ->recordUrl(fn (AmigoRequest $record) => $record->response ? AmigoResponseResource::getUrl('view', ['record' => $record->response]) : null)
+            ->recordUrl(fn (AmigoRequest $record) => AmigoRequestResource::getUrl('view', ['record' => $record]))
             ->columns([
                 TextColumn::make('endpoint.connector.name')
                     ->label('Connector'),
