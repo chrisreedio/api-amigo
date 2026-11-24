@@ -195,9 +195,7 @@ class AmigoEndpointResource extends Resource
     {
         return [
             'index' => ListAmigoEndpoints::route('/'),
-            // 'create' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages\CreateAmigoEndpoint::route('/create'),
             'view' => ViewAmigoEndpoint::route('/{record}'),
-            // 'edit' => \ChrisReedIO\APIAmigo\Clusters\APIManagement\Resources\AmigoEndpointResource\Pages\EditAmigoEndpoint::route('/{record}/edit'),
             'stats' => ViewEndpointAggregates::route('/{record}/stats'),
         ];
     }
