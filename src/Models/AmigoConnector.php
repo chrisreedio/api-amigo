@@ -123,6 +123,25 @@ class AmigoConnector extends Model
         ]);
     }
 
+    /**
+     * Stores the latest rate limit headers in one UPDATE that matches no row, and so takes no
+     * lock, when the values haven't changed. Responses without the headers keep the last values.
+     */
+    public static function recordRateLimit(int $connectorId, ?string $limit, ?string $remaining): void
+    {
+        if ($limit === null && $remaining === null) {
+            return;
+        }
+
+        $limit = is_numeric($limit) ? (int) $limit : null;
+        $remaining = is_numeric($remaining) ? (int) $remaining : null;
+
+        static::query()
+            ->whereKey($connectorId)
+            ->whereRaw('(rate_limit, rate_limit_remaining) is distinct from (?::integer, ?::integer)', [$limit, $remaining])
+            ->update(['rate_limit' => $limit, 'rate_limit_remaining' => $remaining]);
+    }
+
     public function getRateUsageAttribute(): int
     {
         if ($this->rate_limit_remaining === null || $this->rate_limit === null) {

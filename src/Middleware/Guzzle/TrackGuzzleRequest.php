@@ -31,8 +31,12 @@ class TrackGuzzleRequest
                 'user_id' => auth()->user()?->id,
                 'path' => $this->getPath($pendingRequest),
             ]);
+            $request->setRelation('endpoint', $endpoint);
 
-            $request->attachRecordings();
+            // Passed to TrackGuzzleResponse so it doesn't look these up again.
+            $options['amigo']['request_key'] = $request->id;
+            $options['amigo']['endpoint_id'] = $endpoint->id;
+            $options['amigo']['capture_body'] = $request->attachRecordings();
 
             return $handler($pendingRequest, $options);
             // return $pendingRequest;
