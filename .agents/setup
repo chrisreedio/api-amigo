@@ -55,7 +55,6 @@ install_package_deps() {
   else
     composer update --prefer-dist --no-interaction --no-progress
   fi
-  npm_ci_if_needed
 }
 
 setup_postgres() {

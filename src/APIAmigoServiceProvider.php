@@ -158,9 +158,6 @@ class APIAmigoServiceProvider extends PackageServiceProvider
     protected function getAssets(): array
     {
         return [
-            // AlpineComponent::make('api-amigo', __DIR__ . '/../resources/dist/components/api-amigo.js'),
-            // Css::make('api-amigo-styles', __DIR__ . '/../resources/dist/api-amigo.css'),
-            // Js::make('api-amigo-scripts', __DIR__ . '/../resources/dist/api-amigo.js'),
         ];
     }
 
